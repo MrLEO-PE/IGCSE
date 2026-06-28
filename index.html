@@ -1,0 +1,1093 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IGCSE PE Workbook</title>
+<style>
+  /* ── RESET & BASE ─────────────────────────────────────── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --green: #1a6b3c;
+    --green-dark: #155530;
+    --green-light: #e6f4ed;
+    --green-mid: #a8d5b8;
+    --amber: #d97706;
+    --amber-light: #fef3c7;
+    --red: #c0392b;
+    --red-light: #fdf0f0;
+    --surface-0: #f5f5f3;
+    --surface-1: #efefec;
+    --surface-2: #ffffff;
+    --text-primary: #1a1a18;
+    --text-secondary: #5a5a56;
+    --text-muted: #9a9a94;
+    --border: rgba(0,0,0,.1);
+    --border-strong: rgba(0,0,0,.18);
+    --radius: 8px;
+    --font: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --surface-0: #1a1a18;
+      --surface-1: #242422;
+      --surface-2: #2e2e2b;
+      --text-primary: #f0f0ec;
+      --text-secondary: #a8a8a0;
+      --text-muted: #6a6a64;
+      --border: rgba(255,255,255,.1);
+      --border-strong: rgba(255,255,255,.18);
+      --green-light: #0f2e1c;
+      --green-mid: #1a4a2c;
+    }
+  }
+  body {
+    font-family: var(--font);
+    background: var(--surface-0);
+    color: var(--text-primary);
+    min-height: 100vh;
+    line-height: 1.6;
+    font-size: 15px;
+  }
+
+  /* ── LAYOUT ───────────────────────────────────────────── */
+  .app { max-width: 860px; margin: 0 auto; padding: 1.5rem 1rem 4rem; }
+
+  /* ── TOP BAR ──────────────────────────────────────────── */
+  .top-bar {
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 1.5rem; padding-bottom: 1rem;
+    border-bottom: 0.5px solid var(--border);
+  }
+  .logo {
+    width: 38px; height: 38px; border-radius: 10px;
+    background: var(--green); color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; font-weight: 700; flex-shrink: 0;
+    letter-spacing: -.5px;
+  }
+  .top-bar h1 { font-size: 18px; font-weight: 600; flex: 1; }
+  .badge {
+    font-size: 11px; background: var(--green-light); color: var(--green);
+    padding: 3px 10px; border-radius: 20px; font-weight: 600;
+    border: 0.5px solid var(--green-mid);
+  }
+
+  /* ── API KEY BANNER ───────────────────────────────────── */
+  .api-banner {
+    background: var(--amber-light); border: 0.5px solid #fcd34d;
+    border-radius: var(--radius); padding: .75rem 1rem;
+    margin-bottom: 1.25rem; font-size: 13px; color: #78350f;
+    display: flex; align-items: flex-start; gap: 8px;
+  }
+  @media (prefers-color-scheme: dark) {
+    .api-banner { background: #2d1f00; color: #fcd34d; border-color: #78350f; }
+  }
+  .api-banner input {
+    margin-top: .4rem; width: 100%; padding: .45rem .75rem;
+    border: 0.5px solid #fcd34d; border-radius: 6px;
+    font-size: 13px; font-family: monospace;
+    background: rgba(255,255,255,.7); color: #1a1a18;
+  }
+  .api-banner .save-key {
+    margin-top: .4rem; padding: .4rem .9rem;
+    background: var(--amber); color: #fff;
+    border: none; border-radius: 6px; font-size: 12px;
+    cursor: pointer; font-weight: 600;
+  }
+
+  /* ── STATS ────────────────────────────────────────────── */
+  .stat-row {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 10px; margin-bottom: 1rem;
+  }
+  .stat {
+    background: var(--surface-1); border-radius: 10px;
+    padding: .75rem; text-align: center;
+    border: 0.5px solid var(--border);
+  }
+  .stat-n { font-size: 24px; font-weight: 700; color: var(--green); }
+  .stat-l { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+  .progress-bar {
+    height: 4px; background: var(--surface-1); border-radius: 2px;
+    margin-bottom: 1.25rem; overflow: hidden;
+    border: 0.5px solid var(--border);
+  }
+  .progress-fill {
+    height: 100%; background: var(--green);
+    border-radius: 2px; transition: width .4s ease;
+  }
+
+  /* ── TABS ─────────────────────────────────────────────── */
+  .tabs {
+    display: flex; gap: 4px; margin-bottom: 1.25rem;
+    background: var(--surface-1); border-radius: 10px;
+    padding: 4px; border: 0.5px solid var(--border);
+  }
+  .tab {
+    flex: 1; padding: 7px 10px; border: none;
+    background: transparent; border-radius: 7px;
+    font-size: 13px; cursor: pointer; color: var(--text-secondary);
+    font-family: var(--font); font-weight: 500;
+    transition: all .15s; white-space: nowrap;
+  }
+  .tab.active {
+    background: var(--surface-2); color: var(--text-primary);
+    box-shadow: 0 0 0 0.5px var(--border-strong);
+  }
+  .section { display: none; }
+  .section.active { display: block; }
+
+  /* ── UPLOAD ───────────────────────────────────────────── */
+  .upload-panel { display: flex; flex-direction: column; gap: 1rem; }
+  .upload-zone {
+    border: 1.5px dashed var(--border-strong); border-radius: 12px;
+    padding: 2.5rem; text-align: center; cursor: pointer;
+    background: var(--surface-1); transition: all .2s;
+  }
+  .upload-zone:hover { border-color: var(--green); background: var(--green-light); }
+  .upload-zone .icon { font-size: 2.5rem; margin-bottom: .75rem; }
+  .upload-zone strong { display: block; font-size: 15px; margin-bottom: .25rem; }
+  .upload-zone p { color: var(--text-secondary); font-size: 13px; }
+  #pdf-input { display: none; }
+
+  .divider {
+    display: flex; align-items: center; gap: .75rem;
+    color: var(--text-muted); font-size: 12px;
+  }
+  .divider::before, .divider::after {
+    content: ''; flex: 1; height: 0.5px; background: var(--border);
+  }
+
+  .topic-select {
+    width: 100%; padding: .65rem .75rem;
+    border: 0.5px solid var(--border-strong); border-radius: var(--radius);
+    font-size: 14px; background: var(--surface-2);
+    color: var(--text-primary); font-family: var(--font);
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right .75rem center;
+    padding-right: 2rem;
+  }
+
+  /* ── BUTTONS ──────────────────────────────────────────── */
+  .btn {
+    padding: 8px 18px; border-radius: var(--radius);
+    font-size: 13px; cursor: pointer; font-family: var(--font);
+    border: 0.5px solid var(--border-strong);
+    background: var(--surface-2); color: var(--text-primary);
+    transition: all .15s; font-weight: 500;
+  }
+  .btn:hover { background: var(--surface-1); }
+  .btn:active { transform: scale(.98); }
+  .btn.primary {
+    background: var(--green); color: #fff; border-color: var(--green);
+  }
+  .btn.primary:hover { background: var(--green-dark); }
+  .btn.primary:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+  .btn.full { width: 100%; }
+
+  /* ── QUESTION CARDS ───────────────────────────────────── */
+  .q-card {
+    background: var(--surface-2); border: 0.5px solid var(--border);
+    border-radius: 12px; padding: 1.25rem; margin-bottom: 1rem;
+  }
+  .q-header { display: flex; gap: 10px; align-items: flex-start; margin-bottom: 1rem; }
+  .q-num {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: var(--green); color: #fff;
+    font-size: 12px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .q-text { font-size: 14px; line-height: 1.7; flex: 1; }
+  .marks {
+    font-size: 11px; color: var(--text-muted);
+    background: var(--surface-1); padding: 2px 8px;
+    border-radius: 20px; white-space: nowrap; flex-shrink: 0;
+    border: 0.5px solid var(--border);
+  }
+  textarea.answer-box {
+    width: 100%; border: 0.5px solid var(--border-strong);
+    border-radius: var(--radius); padding: .75rem;
+    font-size: 14px; font-family: var(--font); line-height: 1.6;
+    background: var(--surface-1); color: var(--text-primary);
+    resize: vertical; min-height: 90px;
+    transition: border-color .2s;
+  }
+  textarea.answer-box:focus { outline: none; border-color: var(--green); }
+  .q-footer { display: flex; gap: 8px; align-items: center; margin-top: .75rem; flex-wrap: wrap; }
+
+  /* ── THINKING DOTS ────────────────────────────────────── */
+  .thinking { display: none; align-items: center; gap: 8px; color: var(--text-muted); font-size: 13px; }
+  .thinking.show { display: flex; }
+  .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); animation: bounce .9s infinite; }
+  .dot:nth-child(2) { animation-delay: .15s; }
+  .dot:nth-child(3) { animation-delay: .3s; }
+  @keyframes bounce { 0%,60%,100% { transform: translateY(0); } 30% { transform: translateY(-6px); } }
+
+  /* ── FEEDBACK ─────────────────────────────────────────── */
+  .feedback-box {
+    margin-top: 1rem; border-radius: var(--radius);
+    padding: 1rem; font-size: 13px; line-height: 1.7; display: none;
+  }
+  .feedback-box.show { display: block; }
+  .feedback-box.correct { background: var(--green-light); border: 0.5px solid var(--green-mid); color: #0f3320; }
+  .feedback-box.partial { background: var(--amber-light); border: 0.5px solid #fcd34d; color: #5a3e00; }
+  .feedback-box.incorrect { background: var(--red-light); border: 0.5px solid #f5b8b8; color: #5a1a1a; }
+  @media (prefers-color-scheme: dark) {
+    .feedback-box.correct { color: #a8d5b8; }
+    .feedback-box.partial { color: #fcd34d; }
+    .feedback-box.incorrect { color: #f5b8b8; }
+  }
+  .feedback-header {
+    font-weight: 700; margin-bottom: .4rem;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .score-pill {
+    font-size: 11px; font-weight: 600;
+    padding: 2px 8px; border-radius: 20px;
+    background: rgba(255,255,255,.6); margin-left: auto;
+  }
+
+  /* ── DIAGRAM GAMES ────────────────────────────────────── */
+  .game-area {
+    background: var(--surface-2); border: 0.5px solid var(--border);
+    border-radius: 12px; padding: 1.25rem; margin-bottom: 1rem;
+  }
+  .game-title { font-size: 14px; font-weight: 600; margin-bottom: .3rem; }
+  .game-subtitle { font-size: 12px; color: var(--text-muted); margin-bottom: 1rem; }
+  .diagram-wrap { position: relative; margin-bottom: 1.25rem; }
+  .diagram-wrap svg { width: 100%; display: block; border-radius: 8px; background: var(--surface-1); }
+  .drop-zone {
+    position: absolute; border: 1.5px dashed #aaa;
+    border-radius: 6px; background: rgba(255,255,255,.88);
+    cursor: pointer; font-size: 10px; color: #666; line-height: 1.2;
+    display: flex; align-items: center; justify-content: center;
+    text-align: center; padding: 2px 4px;
+    transition: all .2s; user-select: none;
+  }
+  @media (prefers-color-scheme: dark) {
+    .drop-zone { background: rgba(30,30,28,.9); color: #aaa; border-color: #555; }
+  }
+  .drop-zone.filled { border-color: var(--green); background: var(--green-light); color: var(--green); border-style: solid; font-weight: 600; }
+  .drop-zone.wrong { border-color: var(--red); background: var(--red-light); color: var(--red); border-style: solid; }
+  .drop-zone.correct-flash { background: var(--green-light); border-color: var(--green); }
+  .labels-pool { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 1rem; }
+  .label-chip {
+    padding: 5px 12px; border: 0.5px solid var(--border-strong);
+    border-radius: 20px; font-size: 12px; cursor: grab;
+    background: var(--surface-1); color: var(--text-primary);
+    user-select: none; transition: all .2s; font-weight: 500;
+  }
+  .label-chip:hover { background: var(--green-light); border-color: var(--green); color: var(--green); }
+  .label-chip.used { opacity: .3; cursor: not-allowed; pointer-events: none; }
+  .game-footer { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .result-msg { font-size: 13px; font-weight: 600; display: none; }
+  .result-msg.show { display: block; }
+  .result-msg.win { color: var(--green); }
+  .result-msg.fail { color: var(--red); }
+
+  /* ── EMPTY STATES ─────────────────────────────────────── */
+  .empty-state { text-align: center; padding: 3rem 1rem; color: var(--text-secondary); }
+  .empty-state .big-icon { font-size: 3rem; margin-bottom: 1rem; }
+  .empty-state h2 { font-size: 16px; font-weight: 600; margin-bottom: .4rem; }
+  .empty-state p { font-size: 13px; color: var(--text-muted); max-width: 340px; margin: 0 auto; }
+
+  /* ── RESPONSIVE ───────────────────────────────────────── */
+  @media (max-width: 500px) {
+    .stat-n { font-size: 20px; }
+    .tab { font-size: 11px; padding: 6px 6px; }
+    .top-bar h1 { font-size: 15px; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- TOP BAR -->
+  <div class="top-bar">
+    <div class="logo">PE</div>
+    <h1>IGCSE PE Workbook</h1>
+    <span class="badge" id="topic-badge" style="display:none"></span>
+  </div>
+
+  <!-- API KEY BANNER -->
+  <div class="api-banner" id="api-banner">
+    <div style="flex:1">
+      <strong>⚙️ Add your Anthropic API key to enable AI marking</strong>
+      <p style="font-size:12px;margin:.2rem 0 .4rem">Your key is stored only in your browser (localStorage). Never shared.</p>
+      <div style="display:flex;gap:6px;align-items:center">
+        <input type="password" id="api-key-input" placeholder="sk-ant-api03-..." value="">
+        <button class="save-key" onclick="saveApiKey()">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- STATS + PROGRESS (hidden until topic loaded) -->
+  <div class="stat-row" id="stats" style="display:none">
+    <div class="stat"><div class="stat-n" id="s-done">0</div><div class="stat-l">answered</div></div>
+    <div class="stat"><div class="stat-n" id="s-score">—</div><div class="stat-l">avg score</div></div>
+    <div class="stat"><div class="stat-n" id="s-total">0</div><div class="stat-l">questions</div></div>
+  </div>
+  <div class="progress-bar" id="pbar" style="display:none">
+    <div class="progress-fill" id="pfill" style="width:0%"></div>
+  </div>
+
+  <!-- TABS (hidden until topic loaded) -->
+  <div class="tabs" id="tab-bar" style="display:none">
+    <button class="tab active" onclick="switchTab('questions')">📋 Questions</button>
+    <button class="tab" onclick="switchTab('diagrams')">🧩 Diagram games</button>
+    <button class="tab" onclick="switchTab('upload')">📂 Topics</button>
+  </div>
+
+  <!-- SECTIONS -->
+  <div class="section active" id="sec-upload">
+    <div class="upload-panel">
+
+      <div class="upload-zone" id="drop-area" onclick="document.getElementById('pdf-input').click()">
+        <div class="icon">📄</div>
+        <strong>Drop a PDF here to extract questions</strong>
+        <p>Works with plain-text PDFs. Scanned images need OCR preprocessing.</p>
+      </div>
+      <input type="file" id="pdf-input" accept=".pdf" onchange="handlePDF(event)">
+
+      <div class="divider">or choose a built-in topic</div>
+
+      <select class="topic-select" id="topic-sel">
+        <option value="">Select a topic…</option>
+        <option value="anatomy">Anatomy — the skeletal system</option>
+        <option value="muscles">Muscular system</option>
+        <option value="cardiovascular">Cardiovascular system</option>
+        <option value="respiration">Respiration &amp; exercise</option>
+        <option value="fitness">Health, fitness &amp; training</option>
+        <option value="diet">Diet &amp; nutrition</option>
+        <option value="skill">Skill, practice &amp; feedback</option>
+      </select>
+      <button class="btn primary full" onclick="loadBuiltIn()">Load topic</button>
+
+      <p style="font-size:12px;color:var(--text-muted);text-align:center">
+        AI marking uses the Anthropic API (Claude). Add your key above to activate.
+      </p>
+    </div>
+  </div>
+
+  <div class="section" id="sec-questions">
+    <div id="q-list"></div>
+  </div>
+
+  <div class="section" id="sec-diagrams">
+    <div id="game-list"></div>
+  </div>
+
+</div>
+
+<script>
+/* ══════════════════════════════════════════════════════
+   CONFIG — edit this block to customise the workbook
+   ══════════════════════════════════════════════════════ */
+
+// ── API KEY ──────────────────────────────────────────────
+// Option A: hard-code a key here (fine for local / classroom intranet use)
+// Option B: leave empty — user enters it in the banner above
+// Option C: set window.ANTHROPIC_API_KEY before this script loads (e.g. via a
+//           server-side template or Cloudflare Worker proxy)
+const HARDCODED_KEY = '';   // e.g. 'sk-ant-api03-...'
+
+// ── TOPIC DATA ────────────────────────────────────────────
+// Add/remove topics here. Each topic needs:
+//   title    : string
+//   questions: array of { id, text, marks, model }
+//   diagrams : array of { id, title, svgFn, positions }
+//              svgFn = name of a function in DIAGRAM_SVG below
+//              positions = [{ x, y, w, h, ans }] as CSS % strings
+const TOPICS = {
+  anatomy: {
+    title: 'The Skeletal System',
+    questions: [
+      { id:1, marks:4, text:'State four functions of the skeletal system.',
+        model:'Functions include: (1) Protection — skull protects the brain; ribs protect the heart and lungs. (2) Support — provides structural framework for the body. (3) Movement — bones act as levers with muscles attached at joints. (4) Blood cell production (haematopoiesis) — red and white blood cells produced in red bone marrow. (5) Mineral storage — stores calcium and phosphorus.' },
+      { id:2, marks:4, text:'Describe the difference between a ball-and-socket joint and a hinge joint. Give one example of each.',
+        model:'Ball-and-socket joint (e.g. hip or shoulder) — allows movement in all planes: flexion, extension, abduction, adduction and rotation, because a rounded bone head sits inside a cup-shaped socket. Hinge joint (e.g. knee or elbow) — allows movement in only one plane (flexion and extension), similar to a door hinge.' },
+      { id:3, marks:3, text:'Explain what cartilage is and describe its role in a synovial joint.',
+        model:'Cartilage is a smooth, flexible connective tissue covering the ends of bones inside synovial joints. It reduces friction between articulating surfaces, absorbs shock during movement and prevents bone-on-bone wear.' },
+      { id:4, marks:3, text:'Name the three types of muscle and state which is responsible for voluntary movement.',
+        model:'(1) Skeletal (striated/voluntary) — responsible for voluntary movement. (2) Cardiac — involuntary, found only in the heart wall. (3) Smooth (involuntary) — found in organ walls and blood vessels.' },
+    ],
+    diagrams: [
+      { id:'sk1', title:'Label the major bones of the skeleton', svgFn:'skeletonSVG',
+        labels:['Skull','Clavicle','Sternum','Humerus','Radius','Ulna','Femur','Tibia','Fibula','Patella'],
+        positions:[
+          {x:'39%',y:'2%', w:'22%',h:'14%',ans:'Skull'},
+          {x:'20%',y:'19%',w:'18%',h:'7%', ans:'Clavicle'},
+          {x:'40%',y:'19%',w:'18%',h:'12%',ans:'Sternum'},
+          {x:'3%', y:'26%',w:'17%',h:'20%',ans:'Humerus'},
+          {x:'0%', y:'48%',w:'15%',h:'16%',ans:'Radius'},
+          {x:'15%',y:'48%',w:'15%',h:'16%',ans:'Ulna'},
+          {x:'28%',y:'57%',w:'18%',h:'22%',ans:'Femur'},
+          {x:'26%',y:'79%',w:'14%',h:'18%',ans:'Tibia'},
+          {x:'41%',y:'79%',w:'13%',h:'18%',ans:'Fibula'},
+          {x:'40%',y:'71%',w:'14%',h:'9%', ans:'Patella'},
+        ]
+      }
+    ]
+  },
+  muscles: {
+    title: 'The Muscular System',
+    questions: [
+      { id:1, marks:2, text:'Name the agonist and antagonist when performing a bicep curl (flexion at the elbow).',
+        model:'Agonist (prime mover) = Biceps brachii — it contracts to produce flexion. Antagonist = Triceps brachii — it relaxes and lengthens to allow the movement.' },
+      { id:2, marks:3, text:'Define muscle hypertrophy and explain how training achieves it.',
+        model:'Muscle hypertrophy is an increase in the cross-sectional size of muscle fibres, leading to larger, stronger muscles. It is achieved through progressive overload in resistance training — repeated overloading causes micro-tears; during recovery fibres repair thicker and stronger (the SAID principle / adaptation).' },
+      { id:3, marks:4, text:'Describe the difference between slow-twitch (Type I) and fast-twitch (Type II) muscle fibres.',
+        model:'Slow-twitch (Type I): contract slowly, highly fatigue-resistant, rely on aerobic respiration, high myoglobin content (appear red), suited to endurance activities (e.g. long-distance running). Fast-twitch (Type II): contract rapidly, fatigue quickly, rely on anaerobic respiration, less myoglobin (appear white), generate greater force, suited to power/speed events (e.g. sprinting, throwing).' },
+      { id:4, marks:3, text:'Explain what is meant by the term "antagonistic muscle pair" and give one example from the leg.',
+        model:'An antagonistic pair is two muscles that work against each other around a joint: when one (the agonist) contracts, the other (the antagonist) relaxes and lengthens. Example in the leg: during knee flexion (e.g. leg curl), the hamstrings are the agonist and the quadriceps are the antagonist.' },
+    ],
+    diagrams: [
+      { id:'mu1', title:'Label the major muscles of the body', svgFn:'muscleSVG',
+        labels:['Deltoid','Pectorals','Biceps','Rectus abdominis','Quadriceps','Gastrocnemius','Trapezius','Gluteus maximus','Hamstrings','Triceps'],
+        positions:[
+          {x:'5%', y:'19%',w:'18%',h:'8%', ans:'Deltoid'},
+          {x:'30%',y:'22%',w:'20%',h:'9%', ans:'Pectorals'},
+          {x:'4%', y:'29%',w:'15%',h:'11%',ans:'Biceps'},
+          {x:'30%',y:'32%',w:'20%',h:'9%', ans:'Rectus abdominis'},
+          {x:'25%',y:'55%',w:'20%',h:'16%',ans:'Quadriceps'},
+          {x:'26%',y:'80%',w:'18%',h:'12%',ans:'Gastrocnemius'},
+          {x:'55%',y:'14%',w:'20%',h:'7%', ans:'Trapezius'},
+          {x:'54%',y:'44%',w:'20%',h:'9%', ans:'Gluteus maximus'},
+          {x:'54%',y:'58%',w:'20%',h:'14%',ans:'Hamstrings'},
+          {x:'72%',y:'30%',w:'17%',h:'11%',ans:'Triceps'},
+        ]
+      }
+    ]
+  },
+  cardiovascular: {
+    title: 'The Cardiovascular System',
+    questions: [
+      { id:1, marks:4, text:'Explain how heart rate responds to exercise. Describe two mechanisms that cause this response.',
+        model:'Heart rate increases during exercise to deliver more oxygen to working muscles and remove CO₂ faster. Mechanisms: (1) Neural — the sympathetic nervous system releases adrenaline, stimulating the SA node to fire faster. (2) Chemical — rising CO₂ and falling pH (lactic acid) are detected by chemoreceptors; these signal the cardiac control centre in the medulla oblongata, increasing HR. (3) Proprioceptors in muscles also signal increased demand.' },
+      { id:2, marks:3, text:'Define stroke volume and cardiac output, and state the equation linking them.',
+        model:'Stroke volume (SV) = volume of blood ejected from the left ventricle per beat (mL/beat). Cardiac output (Q) = total volume of blood pumped per minute (L/min). Equation: Q = HR × SV.' },
+      { id:3, marks:4, text:'Describe the long-term effects of aerobic training on the cardiovascular system.',
+        model:'Long-term aerobic adaptations: (1) Cardiac hypertrophy — left ventricle increases in size and strength. (2) Increased stroke volume — larger ventricle ejects more blood per beat. (3) Lower resting heart rate (bradycardia) — same cardiac output achieved more efficiently. (4) Increased capillary density around muscles — improves oxygen delivery. (5) Increased blood volume and red blood cell count — greater oxygen-carrying capacity.' },
+    ],
+    diagrams: [
+      { id:'cv1', title:'Label the chambers and vessels of the heart', svgFn:'heartSVG',
+        labels:['Right atrium','Left atrium','Right ventricle','Left ventricle','Aorta','Pulmonary artery','Tricuspid valve','Bicuspid valve'],
+        positions:[
+          {x:'55%',y:'20%',w:'20%',h:'9%', ans:'Right atrium'},
+          {x:'26%',y:'20%',w:'20%',h:'9%', ans:'Left atrium'},
+          {x:'55%',y:'52%',w:'20%',h:'10%',ans:'Right ventricle'},
+          {x:'26%',y:'52%',w:'20%',h:'10%',ans:'Left ventricle'},
+          {x:'33%',y:'4%', w:'15%',h:'9%', ans:'Aorta'},
+          {x:'53%',y:'4%', w:'20%',h:'9%', ans:'Pulmonary artery'},
+          {x:'55%',y:'37%',w:'20%',h:'8%', ans:'Tricuspid valve'},
+          {x:'26%',y:'37%',w:'20%',h:'8%', ans:'Bicuspid valve'},
+        ]
+      }
+    ]
+  },
+  respiration: {
+    title: 'Respiration & Exercise',
+    questions: [
+      { id:1, marks:2, text:'Write the word equation and balanced chemical equation for aerobic respiration.',
+        model:'Word equation: Glucose + Oxygen → Carbon dioxide + Water (+ energy/ATP). Balanced: C₆H₁₂O₆ + 6O₂ → 6CO₂ + 6H₂O + ATP.' },
+      { id:2, marks:3, text:'Describe anaerobic respiration and state the waste product produced in the muscles.',
+        model:'Anaerobic respiration occurs without oxygen, during very high-intensity exercise when the aerobic system cannot meet energy demands. In muscles: Glucose → Lactic acid + ATP (small amount). The waste product is lactic acid (lactate), which accumulates causing muscle fatigue and the burning sensation.' },
+      { id:3, marks:4, text:'Explain what is meant by EPOC ("oxygen debt") and describe what happens during recovery.',
+        model:'EPOC (Excess Post-exercise Oxygen Consumption) is the elevated oxygen uptake above resting levels that continues after exercise ceases. During recovery the body uses the extra O₂ to: (1) Resynthesise ATP and phosphocreatine (PC) stores. (2) Convert lactic acid back to glycogen (Cori cycle in the liver) or oxidise it to CO₂ and water. (3) Restore elevated heart rate, breathing rate and body temperature to resting levels.' },
+    ],
+    diagrams: []
+  },
+  fitness: {
+    title: 'Health, Fitness & Training',
+    questions: [
+      { id:1, marks:5, text:'State and explain the five components of health-related fitness.',
+        model:'(1) Cardiovascular endurance — ability to exercise the whole body for long periods without fatigue. (2) Muscular strength — maximum force a muscle (or group) can exert in one contraction. (3) Muscular endurance — ability of a muscle to make repeated contractions without fatigue. (4) Flexibility — range of movement possible around a joint. (5) Body composition — ratio of fat mass to lean mass (muscle, bone, organs).' },
+      { id:2, marks:4, text:'Explain the principles of training using the FITT acronym.',
+        model:'FITT stands for: Frequency — how often you train (e.g. 3×/week); Intensity — how hard (e.g. % of 1RM or % of max HR); Time — duration of each session; Type — the mode of exercise (e.g. interval, continuous, resistance). These four variables are adjusted to ensure training is progressive, specific and appropriate to the athlete\'s goals.' },
+      { id:3, marks:3, text:'Describe the principle of progressive overload and explain why it is essential for improvement.',
+        model:'Progressive overload means gradually and systematically increasing the demands placed on the body (via FITT) so it is continually challenged beyond its current capacity. Without it the body adapts fully to the existing load and performance plateaus. Applying overload triggers further adaptation (muscle hypertrophy, increased VO₂ max, etc.).' },
+    ],
+    diagrams: []
+  },
+  diet: {
+    title: 'Diet & Nutrition',
+    questions: [
+      { id:1, marks:6, text:'Name the six classes of nutrients and give the primary function of each.',
+        model:'(1) Carbohydrates — primary energy source; fuel for working muscles and the brain. (2) Proteins — growth and repair of muscle tissue; enzymes and hormones. (3) Fats — long-term energy store; insulation; transport fat-soluble vitamins (A, D, E, K). (4) Vitamins — regulate metabolism and immune function (e.g. Vitamin C for immunity, D for calcium absorption). (5) Minerals — bone formation (calcium), oxygen transport in haemoglobin (iron). (6) Water — thermoregulation, joint lubrication, nutrient transport.' },
+      { id:2, marks:4, text:'Explain how the dietary needs of an endurance athlete differ from those of a power athlete.',
+        model:'Endurance athlete (e.g. marathon runner): higher carbohydrate intake to maximise glycogen stores for prolonged aerobic work; moderate protein for recovery; relatively lower fat %. May use carbohydrate loading before competition. Power athlete (e.g. sprinter / weightlifter): higher protein intake to support muscle hypertrophy and repair; higher total calorie intake; moderate carbohydrate; may supplement with creatine; less reliance on fat as fuel.' },
+    ],
+    diagrams: []
+  },
+  skill: {
+    title: 'Skill, Practice & Feedback',
+    questions: [
+      { id:1, marks:3, text:'Define "skill" in sport and give one example of a closed skill and one example of an open skill.',
+        model:'Skill = a learned ability to bring about a pre-determined result with maximum certainty and minimum outlay of time and energy. Closed skill — performed in a stable, predictable environment (e.g. a gymnastic vault — the performer controls pace; no opponents). Open skill — performed in a constantly changing environment requiring adaptation (e.g. dribbling in football — must react to defenders).' },
+      { id:2, marks:4, text:'Describe massed practice and distributed practice and explain which is more suitable for a beginner learning a complex skill.',
+        model:'Massed practice — continuous practice with minimal or no rest; builds stamina and efficient for well-learned, simple skills, but causes fatigue and cognitive overload in beginners. Distributed (spaced) practice — practice broken into sessions with rest intervals; rest allows consolidation of motor programmes, reduces fatigue and promotes reflection. For a beginner learning a complex skill, distributed practice is more suitable as the rest periods allow time to process and consolidate the new movement patterns without excessive fatigue.' },
+      { id:3, marks:3, text:'State three types of feedback and give a practical example of each in a PE context.',
+        model:'(1) Intrinsic feedback — internal, from proprioceptors and senses (e.g. a footballer "feeling" that a pass was hit cleanly). (2) Extrinsic (augmented) feedback — external, from coach or video (e.g. a teacher telling a swimmer their elbow dropped on the catch). (3) Knowledge of results (KR) — outcome-based (e.g. seeing the ball go in the net). (4) Knowledge of performance (KP) — about the quality of the movement itself (e.g. a coach commenting on the technique of a tennis serve).' },
+    ],
+    diagrams: []
+  }
+};
+
+/* ══════════════════════════════════════════════════════
+   DIAGRAM SVG GENERATORS
+   Add more functions here and reference them in TOPICS
+   ══════════════════════════════════════════════════════ */
+const DIAGRAM_SVG = {
+  skeletonSVG() {
+    return `
+      <svg viewBox="0 0 300 420" xmlns="http://www.w3.org/2000/svg" style="background:#f8faf9;border-radius:8px">
+        <!-- skull -->
+        <ellipse cx="150" cy="35" rx="28" ry="32" fill="#e6f4ed" stroke="#1a6b3c" stroke-width="1.5"/>
+        <rect x="136" y="60" width="28" height="12" rx="4" fill="#e6f4ed" stroke="#1a6b3c" stroke-width="1"/>
+        <!-- spine -->
+        <rect x="146" y="72" width="8" height="140" rx="4" fill="#c3dfc9" stroke="#1a6b3c" stroke-width="1"/>
+        <!-- clavicle -->
+        <line x1="100" y1="82" x2="146" y2="78" stroke="#1a6b3c" stroke-width="3" stroke-linecap="round"/>
+        <line x1="154" y1="78" x2="200" y2="82" stroke="#1a6b3c" stroke-width="3" stroke-linecap="round"/>
+        <!-- sternum -->
+        <rect x="143" y="78" width="14" height="52" rx="4" fill="#b8d9c4" stroke="#1a6b3c" stroke-width="1"/>
+        <!-- ribs -->
+        <path d="M100,90 Q80,100 86,116 Q100,122 146,110" fill="none" stroke="#1a6b3c" stroke-width="1.2" opacity=".7"/>
+        <path d="M200,90 Q220,100 214,116 Q200,122 154,110" fill="none" stroke="#1a6b3c" stroke-width="1.2" opacity=".7"/>
+        <path d="M102,102 Q78,115 86,132 Q102,138 146,124" fill="none" stroke="#1a6b3c" stroke-width="1.2" opacity=".6"/>
+        <path d="M198,102 Q222,115 214,132 Q198,138 154,124" fill="none" stroke="#1a6b3c" stroke-width="1.2" opacity=".6"/>
+        <!-- pelvis -->
+        <ellipse cx="150" cy="220" rx="42" ry="22" fill="#e6f4ed" stroke="#1a6b3c" stroke-width="1.5"/>
+        <ellipse cx="150" cy="216" rx="20" ry="14" fill="#f8faf9" stroke="#1a6b3c" stroke-width="1"/>
+        <!-- humerus -->
+        <rect x="70" y="84" width="14" height="75" rx="7" fill="#d4ecdf" stroke="#1a6b3c" stroke-width="1.5"/>
+        <rect x="216" y="84" width="14" height="75" rx="7" fill="#d4ecdf" stroke="#1a6b3c" stroke-width="1.5"/>
+        <!-- radius -->
+        <rect x="62" y="160" width="9" height="60" rx="4" fill="#c3dfc9" stroke="#1a6b3c" stroke-width="1.2"/>
+        <rect x="216" y="160" width="9" height="60" rx="4" fill="#c3dfc9" stroke="#1a6b3c" stroke-width="1.2"/>
+        <!-- ulna -->
+        <rect x="73" y="160" width="9" height="60" rx="4" fill="#b8d9c4" stroke="#1a6b3c" stroke-width="1.2"/>
+        <rect x="225" y="160" width="9" height="60" rx="4" fill="#b8d9c4" stroke="#1a6b3c" stroke-width="1.2"/>
+        <!-- femur -->
+        <rect x="112" y="238" width="22" height="90" rx="11" fill="#d4ecdf" stroke="#1a6b3c" stroke-width="1.5"/>
+        <rect x="166" y="238" width="22" height="90" rx="11" fill="#d4ecdf" stroke="#1a6b3c" stroke-width="1.5"/>
+        <!-- patella -->
+        <ellipse cx="123" cy="315" rx="11" ry="9" fill="#c3dfc9" stroke="#1a6b3c" stroke-width="1.2"/>
+        <ellipse cx="177" cy="315" rx="11" ry="9" fill="#c3dfc9" stroke="#1a6b3c" stroke-width="1.2"/>
+        <!-- tibia -->
+        <rect x="114" y="326" width="14" height="80" rx="7" fill="#d4ecdf" stroke="#1a6b3c" stroke-width="1.5"/>
+        <rect x="172" y="326" width="14" height="80" rx="7" fill="#d4ecdf" stroke="#1a6b3c" stroke-width="1.5"/>
+        <!-- fibula -->
+        <rect x="130" y="328" width="8" height="76" rx="4" fill="#c3dfc9" stroke="#1a6b3c" stroke-width="1.2"/>
+        <rect x="188" y="328" width="8" height="76" rx="4" fill="#c3dfc9" stroke="#1a6b3c" stroke-width="1.2"/>
+      </svg>`;
+  },
+  muscleSVG() {
+    return `
+      <svg viewBox="0 0 340 420" xmlns="http://www.w3.org/2000/svg" style="background:#f8faf9;border-radius:8px">
+        <!-- FRONT BODY -->
+        <text x="85" y="16" font-size="9" fill="#888" font-family="sans-serif">FRONT</text>
+        <!-- head -->
+        <ellipse cx="100" cy="32" rx="22" ry="26" fill="#fce8e8" stroke="#c0392b" stroke-width="1.5"/>
+        <!-- torso -->
+        <rect x="70" y="58" width="60" height="70" rx="10" fill="#fce8e8" stroke="#c0392b" stroke-width="1.5"/>
+        <!-- pectorals -->
+        <ellipse cx="85" cy="78" rx="16" ry="12" fill="#f9c6c6" stroke="#c0392b" stroke-width="1.2"/>
+        <ellipse cx="115" cy="78" rx="16" ry="12" fill="#f9c6c6" stroke="#c0392b" stroke-width="1.2"/>
+        <!-- rectus abdominis (6-pack grid) -->
+        <rect x="88" y="93" width="10" height="12" rx="3" fill="#f5aeae" stroke="#c0392b" stroke-width="1"/>
+        <rect x="102" y="93" width="10" height="12" rx="3" fill="#f5aeae" stroke="#c0392b" stroke-width="1"/>
+        <rect x="88" y="107" width="10" height="10" rx="3" fill="#f5aeae" stroke="#c0392b" stroke-width="1"/>
+        <rect x="102" y="107" width="10" height="10" rx="3" fill="#f5aeae" stroke="#c0392b" stroke-width="1"/>
+        <!-- deltoid -->
+        <ellipse cx="68" cy="68" rx="12" ry="14" fill="#f9c6c6" stroke="#c0392b" stroke-width="1.2"/>
+        <ellipse cx="132" cy="68" rx="12" ry="14" fill="#f9c6c6" stroke="#c0392b" stroke-width="1.2"/>
+        <!-- bicep -->
+        <rect x="52" y="82" width="15" height="40" rx="7" fill="#f9c6c6" stroke="#c0392b" stroke-width="1.2"/>
+        <rect x="133" y="82" width="15" height="40" rx="7" fill="#f9c6c6" stroke="#c0392b" stroke-width="1.2"/>
+        <!-- pelvis area -->
+        <rect x="76" y="128" width="48" height="18" rx="6" fill="#fce8e8" stroke="#c0392b" stroke-width="1.2"/>
+        <!-- quads -->
+        <rect x="78" y="146" width="20" height="72" rx="10" fill="#f9c6c6" stroke="#c0392b" stroke-width="1.5"/>
+        <rect x="102" y="146" width="20" height="72" rx="10" fill="#f9c6c6" stroke="#c0392b" stroke-width="1.5"/>
+        <!-- patella -->
+        <ellipse cx="88" cy="224" rx="9" ry="7" fill="#f5aeae" stroke="#c0392b" stroke-width="1"/>
+        <ellipse cx="112" cy="224" rx="9" ry="7" fill="#f5aeae" stroke="#c0392b" stroke-width="1"/>
+        <!-- gastrocnemius (front) -->
+        <rect x="80" y="232" width="16" height="52" rx="8" fill="#fce8e8" stroke="#c0392b" stroke-width="1.2"/>
+        <rect x="104" y="232" width="16" height="52" rx="8" fill="#fce8e8" stroke="#c0392b" stroke-width="1.2"/>
+
+        <!-- BACK BODY -->
+        <text x="235" y="16" font-size="9" fill="#888" font-family="sans-serif">BACK</text>
+        <!-- head -->
+        <ellipse cx="255" cy="32" rx="22" ry="26" fill="#fce8e8" stroke="#c0392b" stroke-width="1.5"/>
+        <!-- torso back -->
+        <rect x="222" y="58" width="66" height="70" rx="10" fill="#fce8e8" stroke="#c0392b" stroke-width="1.5"/>
+        <!-- trapezius -->
+        <path d="M222,58 Q255,48 288,58 L278,80 Q255,72 232,80 Z" fill="#f9c6c6" stroke="#c0392b" stroke-width="1.2"/>
+        <!-- latissimus dorsi -->
+        <path d="M222,80 Q210,100 220,118 Q238,128 255,124" fill="#f5aeae" stroke="#c0392b" stroke-width="1.2"/>
+        <path d="M288,80 Q300,100 290,118 Q272,128 255,124" fill="#f5aeae" stroke="#c0392b" stroke-width="1.2"/>
+        <!-- deltoid back -->
+        <ellipse cx="220" cy="70" rx="12" ry="14" fill="#f9c6c6" stroke="#c0392b" stroke-width="1.2"/>
+        <ellipse cx="290" cy="70" rx="12" ry="14" fill="#f9c6c6" stroke="#c0392b" stroke-width="1.2"/>
+        <!-- triceps -->
+        <rect x="203" y="84" width="15" height="40" rx="7" fill="#f9c6c6" stroke="#c0392b" stroke-width="1.2"/>
+        <rect x="292" y="84" width="15" height="40" rx="7" fill="#f9c6c6" stroke="#c0392b" stroke-width="1.2"/>
+        <!-- glutes -->
+        <ellipse cx="242" cy="142" rx="20" ry="16" fill="#f9c6c6" stroke="#c0392b" stroke-width="1.2"/>
+        <ellipse cx="268" cy="142" rx="20" ry="16" fill="#f9c6c6" stroke="#c0392b" stroke-width="1.2"/>
+        <!-- hamstrings -->
+        <rect x="228" y="154" width="22" height="66" rx="11" fill="#f9c6c6" stroke="#c0392b" stroke-width="1.5"/>
+        <rect x="260" y="154" width="22" height="66" rx="11" fill="#f9c6c6" stroke="#c0392b" stroke-width="1.5"/>
+        <!-- gastroc back -->
+        <rect x="230" y="228" width="16" height="56" rx="8" fill="#fce8e8" stroke="#c0392b" stroke-width="1.5"/>
+        <rect x="264" y="228" width="16" height="56" rx="8" fill="#fce8e8" stroke="#c0392b" stroke-width="1.5"/>
+      </svg>`;
+  },
+  heartSVG() {
+    return `
+      <svg viewBox="0 0 320 300" xmlns="http://www.w3.org/2000/svg" style="background:#fff5f5;border-radius:8px">
+        <!-- aorta -->
+        <path d="M130,30 Q110,10 90,30 Q70,50 80,80 Q90,100 130,90" fill="#e74c3c" stroke="#922b21" stroke-width="2"/>
+        <!-- pulmonary artery -->
+        <path d="M160,30 Q180,10 200,30 Q220,50 210,80 Q200,100 170,90" fill="#5dade2" stroke="#2e86c1" stroke-width="2"/>
+        <!-- left superior vena cava -->
+        <rect x="60" y="50" width="22" height="50" rx="11" fill="#5dade2" stroke="#2e86c1" stroke-width="1.5"/>
+        <!-- right vena cava -->
+        <rect x="238" y="50" width="22" height="50" rx="11" fill="#5dade2" stroke="#2e86c1" stroke-width="1.5"/>
+        <!-- heart body -->
+        <path d="M80,100 Q60,90 55,115 Q50,145 80,170 Q110,195 160,230 Q210,195 240,170 Q270,145 265,115 Q260,90 240,100 Q230,80 200,90 Q180,75 160,90 Q140,75 120,90 Q90,80 80,100 Z"
+              fill="#e74c3c" stroke="#922b21" stroke-width="2"/>
+        <!-- septum line -->
+        <line x1="160" y1="88" x2="160" y2="210" stroke="#922b21" stroke-width="1.5" stroke-dasharray="4,3"/>
+        <!-- right atrium -->
+        <ellipse cx="210" cy="130" rx="38" ry="28" fill="#f1948a" stroke="#922b21" stroke-width="1"/>
+        <!-- left atrium -->
+        <ellipse cx="110" cy="130" rx="38" ry="28" fill="#f1948a" stroke="#922b21" stroke-width="1"/>
+        <!-- tricuspid valve line -->
+        <line x1="172" y1="155" x2="248" y2="155" stroke="#7b241c" stroke-width="2" stroke-linecap="round"/>
+        <!-- bicuspid valve line -->
+        <line x1="72" y1="155" x2="148" y2="155" stroke="#7b241c" stroke-width="2" stroke-linecap="round"/>
+        <!-- right ventricle -->
+        <path d="M172,158 Q240,162 234,210 Q210,235 160,238 L160,158 Z" fill="#e74c3c" stroke="#922b21" stroke-width="1"/>
+        <!-- left ventricle -->
+        <path d="M148,158 Q80,162 86,210 Q110,235 160,238 L160,158 Z" fill="#c0392b" stroke="#922b21" stroke-width="1"/>
+        <!-- SA node dot -->
+        <circle cx="250" cy="108" r="5" fill="#f39c12" stroke="#d68910" stroke-width="1.5"/>
+        <text x="236" y="103" font-size="7" fill="#d68910" font-family="sans-serif">SA node</text>
+        <!-- labels guidance text -->
+        <text x="8" y="295" font-size="8" fill="#999" font-family="sans-serif">Blue = deoxygenated  /  Red = oxygenated  /  Dashed = septum</text>
+      </svg>`;
+  }
+};
+
+/* ══════════════════════════════════════════════════════
+   APP STATE
+   ══════════════════════════════════════════════════════ */
+let currentTopic = null;
+let answered = {};
+let scores = {};
+
+/* ══════════════════════════════════════════════════════
+   API KEY MANAGEMENT
+   ══════════════════════════════════════════════════════ */
+function getApiKey() {
+  return HARDCODED_KEY
+    || window.ANTHROPIC_API_KEY
+    || localStorage.getItem('pe_api_key')
+    || '';
+}
+function saveApiKey() {
+  const k = document.getElementById('api-key-input').value.trim();
+  if (!k) return;
+  localStorage.setItem('pe_api_key', k);
+  document.getElementById('api-banner').style.display = 'none';
+  alert('API key saved. AI marking is now active!');
+}
+(function initKey() {
+  const k = getApiKey();
+  if (k) {
+    document.getElementById('api-banner').style.display = 'none';
+  } else {
+    document.getElementById('api-key-input').value = localStorage.getItem('pe_api_key') || '';
+  }
+})();
+
+/* ══════════════════════════════════════════════════════
+   TAB NAVIGATION
+   ══════════════════════════════════════════════════════ */
+function switchTab(name) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.getElementById('sec-' + name).classList.add('active');
+  const idx = { questions: 0, diagrams: 1, upload: 2 }[name];
+  document.querySelectorAll('.tab')[idx].classList.add('active');
+}
+
+/* ══════════════════════════════════════════════════════
+   TOPIC LOADING
+   ══════════════════════════════════════════════════════ */
+function loadBuiltIn() {
+  const key = document.getElementById('topic-sel').value;
+  if (!key) { alert('Please select a topic first.'); return; }
+  loadTopic(TOPICS[key], key);
+}
+
+function loadTopic(topic) {
+  currentTopic = topic;
+  answered = {};
+  scores = {};
+
+  document.getElementById('topic-badge').textContent = topic.title;
+  document.getElementById('topic-badge').style.display = '';
+  document.getElementById('stats').style.display = 'grid';
+  document.getElementById('pbar').style.display = 'block';
+  document.getElementById('tab-bar').style.display = 'flex';
+  document.getElementById('s-total').textContent = topic.questions.length;
+  updateStats();
+
+  renderQuestions(topic);
+  renderDiagrams(topic);
+  switchTab('questions');
+}
+
+/* ══════════════════════════════════════════════════════
+   PDF HANDLING (text extraction via FileReader)
+   ══════════════════════════════════════════════════════ */
+function handlePDF(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  // For plain-text-layer PDFs we ask the AI to extract questions from the raw text.
+  // Full PDF.js parsing can be added here for production use.
+  const reader = new FileReader();
+  reader.onload = async function(ev) {
+    const raw = ev.target.result;
+    // Try to extract visible text if PDF has text layer (basic approach)
+    const textMatch = raw.match(/BT[\s\S]*?ET/g);
+    let extractedText = '';
+    if (textMatch) {
+      extractedText = textMatch
+        .map(b => b.replace(/BT|ET|\d+(\.\d+)?\s+(Tf|Td|TD|Tm|T\*)|\/\w+\s+\d+\s+Tf|\(|\)/g, ' '))
+        .join(' ').replace(/\s+/g,' ').trim().slice(0, 4000);
+    }
+    if (extractedText.length > 100) {
+      await extractQuestionsFromText(extractedText, file.name);
+    } else {
+      showUploadMsg(file.name, '⚠️ Could not read text from this PDF. Please use a non-scanned PDF or choose a built-in topic.');
+    }
+  };
+  reader.readAsBinaryString(file);
+}
+
+async function extractQuestionsFromText(text, filename) {
+  showUploadMsg(filename, '🤖 Extracting questions from PDF…');
+  const key = getApiKey();
+  if (!key) {
+    showUploadMsg(filename, '🔑 Add your API key above to extract questions from PDFs.');
+    return;
+  }
+  try {
+    const prompt = `You are an IGCSE PE teacher. Extract exam-style questions from this textbook excerpt. Return ONLY valid JSON, no markdown:
+{"title":"topic name","questions":[{"id":1,"text":"question text","marks":2,"model":"ideal mark-scheme answer"}]}
+Invent sensible marks and model answers if the text only gives questions. Extract up to 6 questions.
+
+TEXT:
+${text}`;
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-api-key': key, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
+      body: JSON.stringify({ model: 'claude-sonnet-4-6', max_tokens: 1500, messages: [{ role: 'user', content: prompt }] })
+    });
+    const data = await res.json();
+    const raw = (data.content || []).map(c => c.text || '').join('').replace(/```json|```/g, '').trim();
+    const j = JSON.parse(raw);
+    j.diagrams = [];
+    loadTopic(j);
+  } catch (err) {
+    showUploadMsg(filename, '❌ Could not parse questions from PDF. Try a different file or use a built-in topic.');
+  }
+}
+
+function showUploadMsg(filename, msg) {
+  document.getElementById('sec-upload').innerHTML = `
+    <div class="empty-state">
+      <div class="big-icon">📄</div>
+      <h2>${filename}</h2>
+      <p>${msg}</p>
+      <button class="btn" style="margin-top:1rem" onclick="location.reload()">← Back</button>
+    </div>`;
+}
+
+/* ══════════════════════════════════════════════════════
+   RENDER QUESTIONS
+   ══════════════════════════════════════════════════════ */
+function renderQuestions(topic) {
+  document.getElementById('q-list').innerHTML = topic.questions.map(q => `
+    <div class="q-card" id="qc-${q.id}">
+      <div class="q-header">
+        <div class="q-num">${q.id}</div>
+        <div class="q-text">${q.text}</div>
+        <span class="marks">[${q.marks} mark${q.marks > 1 ? 's' : ''}]</span>
+      </div>
+      <textarea class="answer-box" id="ans-${q.id}" placeholder="Write your answer here…" rows="3"></textarea>
+      <div class="q-footer">
+        <button class="btn primary" id="btn-${q.id}" onclick="getCorrection(${q.id})">Check answer ↗</button>
+        <button class="btn" onclick="showModelAnswer(${q.id})">Model answer</button>
+        <div class="thinking" id="think-${q.id}">
+          <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+          <span style="color:var(--text-muted);font-size:13px">Marking…</span>
+        </div>
+      </div>
+      <div class="feedback-box" id="fb-${q.id}"></div>
+    </div>
+  `).join('');
+}
+
+function showModelAnswer(qid) {
+  const q = currentTopic.questions.find(x => x.id === qid);
+  const fb = document.getElementById('fb-' + qid);
+  fb.className = 'feedback-box show correct';
+  fb.innerHTML = `<div class="feedback-header">📖 Model answer</div><div>${q.model}</div>`;
+}
+
+/* ══════════════════════════════════════════════════════
+   AI MARKING
+   ══════════════════════════════════════════════════════ */
+async function getCorrection(qid) {
+  const ans = document.getElementById('ans-' + qid).value.trim();
+  if (!ans) { alert('Write something first!'); return; }
+  const q = currentTopic.questions.find(x => x.id === qid);
+  const btn = document.getElementById('btn-' + qid);
+  const think = document.getElementById('think-' + qid);
+  const fb = document.getElementById('fb-' + qid);
+  const key = getApiKey();
+
+  btn.disabled = true;
+  think.classList.add('show');
+  fb.classList.remove('show');
+
+  if (!key) {
+    think.classList.remove('show');
+    btn.disabled = false;
+    fb.className = 'feedback-box show partial';
+    fb.innerHTML = `<div class="feedback-header">🔑 No API key</div><div>Add your Anthropic API key at the top of the page to enable AI marking. You can still view the model answer using the button above.</div>`;
+    return;
+  }
+
+  try {
+    const prompt = `You are an IGCSE PE examiner. Mark this student answer strictly according to the mark scheme.
+
+Question: "${q.text}" [${q.marks} marks]
+
+Mark scheme / model answer:
+${q.model}
+
+Student answer:
+"${ans}"
+
+Respond with JSON only — no markdown, no extra text:
+{"score":X,"max":${q.marks},"level":"correct|partial|incorrect","feedback":"2-4 sentence examiner comment. Acknowledge what was good, clearly state what was missing or imprecise. Use second person (you/your). Be encouraging but honest."}`;
+
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': key,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 400,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+
+    const data = await res.json();
+    if (data.error) throw new Error(data.error.message);
+    const raw = (data.content || []).map(c => c.text || '').join('').replace(/```json|```/g, '').trim();
+    const j = JSON.parse(raw);
+
+    answered[qid] = true;
+    scores[qid] = { s: j.score, m: j.max };
+
+    const icons = { correct: '✅', partial: '⚠️', incorrect: '❌' };
+    const labels = { correct: 'Well done!', partial: 'Partially correct', incorrect: 'Needs more work' };
+    fb.className = 'feedback-box show ' + j.level;
+    fb.innerHTML = `
+      <div class="feedback-header">
+        ${icons[j.level]} ${labels[j.level]}
+        <span class="score-pill">${j.score}/${j.max} marks</span>
+      </div>
+      <div>${j.feedback}</div>`;
+    updateStats();
+  } catch (err) {
+    fb.className = 'feedback-box show partial';
+    fb.innerHTML = `<div class="feedback-header">⚠️ Error</div><div>${err.message || 'Could not connect to the AI. Check your API key and internet connection.'}</div>`;
+  }
+
+  btn.disabled = false;
+  think.classList.remove('show');
+}
+
+/* ══════════════════════════════════════════════════════
+   STATS
+   ══════════════════════════════════════════════════════ */
+function updateStats() {
+  if (!currentTopic) return;
+  const done = Object.keys(answered).length;
+  const total = currentTopic.questions.length;
+  document.getElementById('s-done').textContent = done;
+  if (done > 0) {
+    const avg = Object.values(scores).reduce((a, x) => a + x.s / x.m, 0) / done * 100;
+    document.getElementById('s-score').textContent = Math.round(avg) + '%';
+  }
+  document.getElementById('pfill').style.width = (total ? done / total * 100 : 0) + '%';
+}
+
+/* ══════════════════════════════════════════════════════
+   DIAGRAM GAMES
+   ══════════════════════════════════════════════════════ */
+function renderDiagrams(topic) {
+  const gl = document.getElementById('game-list');
+  if (!topic.diagrams || topic.diagrams.length === 0) {
+    gl.innerHTML = `<div class="empty-state"><div class="big-icon">🧩</div><h2>No diagram games</h2><p>This topic doesn't have diagram games yet.</p></div>`;
+    return;
+  }
+  gl.innerHTML = topic.diagrams.map(d => buildGame(d)).join('');
+  topic.diagrams.forEach(d => initGame(d));
+}
+
+function buildGame(d) {
+  const shuffled = [...d.labels].sort(() => Math.random() - .5);
+  const svgHtml = DIAGRAM_SVG[d.svgFn] ? DIAGRAM_SVG[d.svgFn]() : '<p style="padding:1rem;color:#999">SVG not found</p>';
+  return `
+    <div class="game-area" id="game-${d.id}">
+      <div class="game-title">🧩 ${d.title}</div>
+      <div class="game-subtitle">Drag a label chip onto a drop zone — or click a zone to cycle through options.</div>
+      <div class="diagram-wrap" id="wrap-${d.id}" style="height:320px">
+        <div id="svg-wrap-${d.id}">${svgHtml}</div>
+        ${d.positions.map((p, i) => `
+          <div class="drop-zone" id="dz-${d.id}-${i}"
+               style="left:${p.x};top:${p.y};width:${p.w};height:${p.h}"
+               onclick="cycleDrop('${d.id}',${i})"
+               title="Click to cycle labels">${i + 1}</div>
+        `).join('')}
+      </div>
+      <div class="labels-pool" id="pool-${d.id}">
+        ${shuffled.map(l => `
+          <div class="label-chip" id="chip-${d.id}-${chipId(l)}"
+               draggable="true"
+               ondragstart="startDrag(event,'${d.id}','${l}')">${l}</div>
+        `).join('')}
+      </div>
+      <div class="game-footer">
+        <button class="btn primary" onclick="checkGame('${d.id}')">Check labels ↗</button>
+        <button class="btn" onclick="resetGame('${d.id}')">Reset</button>
+        <span class="result-msg" id="res-${d.id}"></span>
+      </div>
+    </div>`;
+}
+
+function chipId(label) { return label.replace(/[^a-zA-Z0-9]/g, '_'); }
+
+function initGame(d) {
+  d.positions.forEach((_, i) => {
+    const dz = document.getElementById('dz-' + d.id + '-' + i);
+    dz.addEventListener('dragover', e => e.preventDefault());
+    dz.addEventListener('drop', e => { e.preventDefault(); dropLabel(d.id, i, e.dataTransfer.getData('label')); });
+  });
+}
+
+function startDrag(e, gid, label) {
+  e.dataTransfer.setData('label', label);
+}
+
+function dropLabel(gid, idx, label) {
+  const d = findGame(gid);
+  const dz = document.getElementById('dz-' + gid + '-' + idx);
+  const old = dz.dataset.filled;
+  if (old) document.getElementById('chip-' + gid + '-' + chipId(old)).classList.remove('used');
+  document.getElementById('chip-' + gid + '-' + chipId(label)).classList.add('used');
+  dz.dataset.filled = label;
+  dz.textContent = label;
+  dz.className = 'drop-zone filled';
+}
+
+function cycleDrop(gid, idx) {
+  const d = findGame(gid);
+  const dz = document.getElementById('dz-' + gid + '-' + idx);
+  const used = d.positions.map((_, i) => i !== idx ? document.getElementById('dz-' + gid + '-' + i).dataset.filled : '').filter(Boolean);
+  const available = d.labels.filter(l => !used.includes(l));
+  const cur = available.indexOf(dz.dataset.filled || '');
+  const next = available[(cur + 1) % available.length];
+  const old = dz.dataset.filled;
+  if (old) document.getElementById('chip-' + gid + '-' + chipId(old)).classList.remove('used');
+  document.getElementById('chip-' + gid + '-' + chipId(next)).classList.add('used');
+  dz.dataset.filled = next;
+  dz.textContent = next;
+  dz.className = 'drop-zone filled';
+}
+
+function checkGame(gid) {
+  const d = findGame(gid);
+  let correct = 0;
+  d.positions.forEach((p, i) => {
+    const dz = document.getElementById('dz-' + gid + '-' + i);
+    if (dz.dataset.filled === p.ans) { dz.className = 'drop-zone filled'; correct++; }
+    else { dz.className = 'drop-zone wrong'; }
+  });
+  const res = document.getElementById('res-' + gid);
+  res.classList.add('show');
+  if (correct === d.positions.length) {
+    res.className = 'result-msg show win';
+    res.textContent = `✓ Perfect — all ${correct} labels correct!`;
+  } else {
+    res.className = 'result-msg show fail';
+    res.textContent = `${correct}/${d.positions.length} correct — red zones need fixing.`;
+  }
+}
+
+function resetGame(gid) {
+  const d = findGame(gid);
+  d.positions.forEach((_, i) => {
+    const dz = document.getElementById('dz-' + gid + '-' + i);
+    dz.dataset.filled = '';
+    dz.textContent = i + 1;
+    dz.className = 'drop-zone';
+  });
+  d.labels.forEach(l => document.getElementById('chip-' + gid + '-' + chipId(l)).classList.remove('used'));
+  const res = document.getElementById('res-' + gid);
+  res.className = 'result-msg';
+}
+
+function findGame(gid) {
+  for (const k of Object.keys(TOPICS)) {
+    if (TOPICS[k].diagrams) {
+      const found = TOPICS[k].diagrams.find(d => d.id === gid);
+      if (found) return found;
+    }
+  }
+}
+
+/* ══════════════════════════════════════════════════════
+   DRAG-AND-DROP ON UPLOAD ZONE
+   ══════════════════════════════════════════════════════ */
+const dropArea = document.getElementById('drop-area');
+if (dropArea) {
+  dropArea.addEventListener('dragover', e => { e.preventDefault(); dropArea.style.borderColor = '#1a6b3c'; });
+  dropArea.addEventListener('dragleave', () => { dropArea.style.borderColor = ''; });
+  dropArea.addEventListener('drop', e => {
+    e.preventDefault();
+    dropArea.style.borderColor = '';
+    const f = e.dataTransfer.files[0];
+    if (f && f.type === 'application/pdf') handlePDF({ target: { files: [f] } });
+  });
+}
+</script>
+</body>
+</html>
