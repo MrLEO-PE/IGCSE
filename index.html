@@ -272,6 +272,7 @@ textarea.answer-box:focus{outline:none;border-color:var(--green)}
   <div class="logo">PE</div>
   <h1>IGCSE PE Workbook</h1>
   <span class="badge" id="topic-badge" style="display:none"></span>
+  <button class="badge" id="key-settings-btn" onclick="toggleApiBanner()" style="cursor:pointer;font-family:inherit">🔑 API key</button>
 </div>
 
 <div class="api-banner" id="api-banner">
@@ -2028,6 +2029,18 @@ function saveApiKey(){
   localStorage.setItem('pe_groq_key',k);
   document.getElementById('api-banner').style.display='none';
   alert('✓ API key saved. AI marking is now active!');
+}
+function toggleApiBanner(){
+  const banner=document.getElementById('api-banner');
+  const willShow = banner.style.display==='none';
+  banner.style.display = willShow ? '' : 'none';
+  if(willShow){
+    const cur=getApiKey();
+    const input=document.getElementById('api-key-input');
+    if(cur) input.value=cur;
+    banner.scrollIntoView({behavior:'smooth',block:'nearest'});
+    input.focus();
+  }
 }
 (function initKey(){
   if(getApiKey()) document.getElementById('api-banner').style.display='none';
