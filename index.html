@@ -1972,7 +1972,7 @@ function friendlyFetchError(err){
   return raw || 'Could not connect. Check your API key and internet connection.';
 }
 
-/* Shared AI-marking caller (Groq, llama-3.3-70b-versatile) with automatic
+/* Shared AI-marking caller (Groq, openai/gpt-oss-120b) with automatic
    retry for transient rate-limit/server errors (429/503). Retries up to 2
    times with backoff before giving up, updating statusSpan's text so the
    student sees what's happening instead of a dead wait. Returns the parsed
@@ -1989,7 +1989,7 @@ async function callGroqMarking(prompt, maxTokens, statusSpan){
         method:'POST',
         headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},
         body:JSON.stringify({
-          model:'llama-3.3-70b-versatile',
+          model:'openai/gpt-oss-120b',
           messages:[
             {role:'system',content:MARK_JSON_SYSTEM},
             {role:'user',content:prompt}
