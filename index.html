@@ -275,21 +275,21 @@ textarea.answer-box:focus{outline:none;border-color:var(--green)}
 </div>
 
 <div class="api-banner" id="api-banner">
-  <strong>⚙️ Add your free Gemini API key to enable AI marking</strong>
-  <p style="font-size:12px;margin:.2rem 0 .4rem">Get a free key at <strong>aistudio.google.com/apikey</strong> — no credit card needed. Stored in your browser only — never sent anywhere except Google.</p>
+  <strong>⚙️ Add your free Groq API key to enable AI marking</strong>
+  <p style="font-size:12px;margin:.2rem 0 .4rem">Get a free key at <strong>console.groq.com/keys</strong> — no credit card needed. Stored in your browser only — never sent anywhere except Groq.</p>
   <div class="tip-toggle" onclick="toggleKeyGuide()" id="key-guide-toggle">📖 How do I get a key? (2 minutes)</div>
   <div class="tip-box" id="key-guide-box">
     <ol style="margin:0 0 .6rem 1.1rem;padding:0;line-height:1.8">
-      <li>Tap the button below — it opens Google AI Studio in a new tab.</li>
-      <li>Sign in with your Google account (school or personal Gmail is fine).</li>
-      <li>Click <strong>"Create API key"</strong> (sometimes labelled "Get API key").</li>
-      <li>Copy the long code that starts with <strong>AIza...</strong></li>
+      <li>Tap the button below — it opens the Groq console in a new tab.</li>
+      <li>Sign in or sign up (email, or a Google/GitHub account works too).</li>
+      <li>Click <strong>"Create API Key"</strong>, give it any name, then click Submit.</li>
+      <li>Copy the long code that starts with <strong>gsk_...</strong></li>
       <li>Come back to this tab, paste it into the box above, then tap <strong>Save</strong>.</li>
     </ol>
-    <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener" class="btn primary" style="text-decoration:none;display:inline-block">Get my free key ↗</a>
+    <a href="https://console.groq.com/keys" target="_blank" rel="noopener" class="btn primary" style="text-decoration:none;display:inline-block">Get my free key ↗</a>
     <p style="font-size:11px;margin-top:.5rem;opacity:.85">This key is free and just for you — please don't share it with classmates, and don't post it anywhere public.</p>
   </div>
-  <input type="password" id="api-key-input" placeholder="AIza...">
+  <input type="password" id="api-key-input" placeholder="gsk_...">
   <button class="save-key" onclick="saveApiKey()">Save</button>
 </div>
 
@@ -394,20 +394,11 @@ textarea.answer-box:focus{outline:none;border-color:var(--green)}
    ═══════════════════════════════════════════════════════════ */
 const HARDCODED_KEY = '';
 
-/* Shared structured-output schema for AI marking — forces Gemini to always
-   return complete, valid JSON in this exact shape (fixes truncated/malformed
-   JSON responses instead of relying on the model to format it correctly). */
-const GEMINI_MARK_SCHEMA = {
-  type:'OBJECT',
-  properties:{
-    score:{type:'INTEGER'},
-    max:{type:'INTEGER'},
-    level:{type:'STRING', enum:['correct','partial','incorrect']},
-    feedback:{type:'STRING'}
-  },
-  required:['score','max','level','feedback'],
-  propertyOrdering:['score','max','level','feedback']
-};
+/* Shared system instruction for AI marking — used with Groq's JSON mode
+   (response_format: json_object) to keep output valid, complete JSON in
+   this exact shape instead of relying on the model to format it correctly
+   in free text alone. */
+const MARK_JSON_SYSTEM = 'You are a JSON API. Respond with ONLY a single valid JSON object of the exact shape {"score":<integer>,"max":<integer>,"level":"correct"|"partial"|"incorrect","feedback":"<string>"} — no markdown, no code fences, no extra text before or after the JSON.';
 
 /* ── Storage keys — must be declared before any function uses them ── */
 const LS_KEY = 'igcse_pe_progress';
@@ -1963,7 +1954,7 @@ const DIAGRAMS = {
 let currentTopic = null;
 let answered = {}, scores = {};
 
-function getApiKey(){return HARDCODED_KEY||window.GEMINI_API_KEY||localStorage.getItem('pe_gemini_key')||'';}
+function getApiKey(){return HARDCODED_KEY||window.GROQ_API_KEY||localStorage.getItem('pe_groq_key')||'';}
 
 function friendlyFetchError(err){
   const raw = (err && err.message) || String(err);
@@ -1975,32 +1966,42 @@ function friendlyFetchError(err){
     if(navigator.onLine===false){
       return 'No internet connection detected. Check your WiFi/data and try again.';
     }
-    return 'Could not reach the Gemini server. This is usually caused by your school WiFi/firewall blocking Google\'s AI API, or an ad-blocker/privacy extension blocking the request — try a different network, or disable ad-blockers for this page, then try again.';
+    return 'Could not reach the Groq server. This is usually caused by your school WiFi/firewall blocking Groq\'s API, or an ad-blocker/privacy extension blocking the request — try a different network, or disable ad-blockers for this page, then try again.';
   }
   return raw || 'Could not connect. Check your API key and internet connection.';
 }
 
-/* Shared AI-marking caller with automatic retry for transient server-busy
-   errors (429/503/"high demand"). Retries up to 2 times with backoff before
-   giving up, updating statusSpan's text so the student sees what's happening
-   instead of a dead wait. Returns the parsed {score,max,level,feedback}
-   object, or throws on final failure (network or non-retryable). */
-async function callGeminiMarking(prompt, maxTokens, statusSpan){
+/* Shared AI-marking caller (Groq, llama-3.3-70b-versatile) with automatic
+   retry for transient rate-limit/server errors (429/503). Retries up to 2
+   times with backoff before giving up, updating statusSpan's text so the
+   student sees what's happening instead of a dead wait. Returns the parsed
+   {score,max,level,feedback} object, or throws on final failure (network
+   or non-retryable). */
+async function callGroqMarking(prompt, maxTokens, statusSpan){
   const key = getApiKey();
   const maxAttempts = 3;
   const delays = [2000, 4000];
   let lastErr;
   for(let attempt=0; attempt<maxAttempts; attempt++){
     try{
-      const res = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent',{
+      const res = await fetch('https://api.groq.com/openai/v1/chat/completions',{
         method:'POST',
-        headers:{'Content-Type':'application/json','x-goog-api-key':key},
-        body:JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{maxOutputTokens:maxTokens,temperature:0.3,responseMimeType:'application/json',responseSchema:GEMINI_MARK_SCHEMA}})
+        headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},
+        body:JSON.stringify({
+          model:'llama-3.3-70b-versatile',
+          messages:[
+            {role:'system',content:MARK_JSON_SYSTEM},
+            {role:'user',content:prompt}
+          ],
+          max_tokens:maxTokens,
+          temperature:0.3,
+          response_format:{type:'json_object'}
+        })
       });
       const data = await res.json();
       if(data.error){
         const msg = data.error.message || '';
-        const retryable = res.status===429 || res.status===503 || /high demand|overloaded|unavailable|RESOURCE_EXHAUSTED/i.test(msg);
+        const retryable = res.status===429 || res.status===503 || /rate.?limit|overloaded|unavailable/i.test(msg);
         if(retryable && attempt<maxAttempts-1){
           if(statusSpan) statusSpan.textContent = `Server busy — retrying (${attempt+1}/${maxAttempts-1})…`;
           await new Promise(r=>setTimeout(r, delays[attempt]));
@@ -2008,7 +2009,7 @@ async function callGeminiMarking(prompt, maxTokens, statusSpan){
         }
         throw new Error(msg || 'Request failed');
       }
-      const raw = ((data.candidates&&data.candidates[0]&&data.candidates[0].content&&data.candidates[0].content.parts||[]).map(c=>c.text||'').join('')).replace(/```json|```/g,'').trim();
+      const raw = ((data.choices&&data.choices[0]&&data.choices[0].message&&data.choices[0].message.content)||'').replace(/```json|```/g,'').trim();
       return JSON.parse(raw);
     }catch(err){
       lastErr = err;
@@ -2024,13 +2025,13 @@ async function callGeminiMarking(prompt, maxTokens, statusSpan){
 function saveApiKey(){
   const k=document.getElementById('api-key-input').value.trim();
   if(!k)return;
-  localStorage.setItem('pe_gemini_key',k);
+  localStorage.setItem('pe_groq_key',k);
   document.getElementById('api-banner').style.display='none';
   alert('✓ API key saved. AI marking is now active!');
 }
 (function initKey(){
   if(getApiKey()) document.getElementById('api-banner').style.display='none';
-  else {const s=localStorage.getItem('pe_gemini_key');if(s)document.getElementById('api-key-input').value=s;}
+  else {const s=localStorage.getItem('pe_groq_key');if(s)document.getElementById('api-key-input').value=s;}
 })();
 
 /* ═══════════════════════════════════════════════════════════
@@ -2344,7 +2345,7 @@ Question (${q.marks} marks): "${q.text}"
 Mark scheme: ${q.model}
 Student answer: "${ans}"
 Return ONLY valid JSON: {"score":X,"max":${q.marks},"level":"correct|partial|incorrect","feedback":"2-3 sentences, encouraging but honest, address student as 'you'"}`;
-    const j=await callGeminiMarking(prompt, 500, think.querySelector('span'));
+    const j=await callGroqMarking(prompt, 500, think.querySelector('span'));
     quizScore+=j.score;
     quizResults.push({q,ans,score:j.score,max:j.max,feedback:j.feedback,level:j.level});
     document.getElementById('quiz-score-display').textContent=quizScore+' pts';
@@ -2844,7 +2845,7 @@ Question (${q.marks} marks): "${q.text}"
 Mark scheme: ${q.model}
 Student answer: "${ans}"
 Return ONLY JSON: {"score":X,"max":${q.marks},"level":"correct|partial|incorrect","feedback":"2-3 sentences, direct and honest"}`;
-    const j=await callGeminiMarking(prompt, 500, think.querySelector('span'));
+    const j=await callGroqMarking(prompt, 500, think.querySelector('span'));
     answered[qid]=true; scores[qid]={s:j.score,m:j.max};
     // Update SR schedule with original IDs
     if(q._chid && q._origId) updateSR(q._chid, q._origId, j.score, j.max);
@@ -2883,7 +2884,7 @@ async function getCorrection(qid){
   if(!key){
     think.classList.remove('show');btn.disabled=false;
     fb.className='feedback-box show partial';
-    fb.innerHTML='<div class="feedback-header">🔑 No API key</div><div>Add your free Gemini API key at the top of the page to enable AI marking. You can still view the model answer using the button above.</div>';
+    fb.innerHTML='<div class="feedback-header">🔑 No API key</div><div>Add your free Groq API key at the top of the page to enable AI marking. You can still view the model answer using the button above.</div>';
     return;
   }
   try{
@@ -2900,7 +2901,7 @@ Student's answer:
 Award marks fairly. Return ONLY valid JSON — no markdown, no extra text:
 {"score":X,"max":${q.marks},"level":"correct|partial|incorrect","feedback":"2-4 sentences. Acknowledge positives first, then clearly state what key points were missing or imprecise. Address the student directly (use 'you'). Be encouraging but honest."}`;
 
-    const j=await callGeminiMarking(prompt, 600, think.querySelector('span'));
+    const j=await callGroqMarking(prompt, 600, think.querySelector('span'));
     answered[qid]=true;scores[qid]={s:j.score,m:j.max};
     updateSR(currentTopic.id, qid, j.score, j.max);
     const icons={correct:'✅',partial:'⚠️',incorrect:'❌'};
