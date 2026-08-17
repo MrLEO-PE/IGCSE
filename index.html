@@ -394,6 +394,21 @@ textarea.answer-box:focus{outline:none;border-color:var(--green)}
    ═══════════════════════════════════════════════════════════ */
 const HARDCODED_KEY = '';
 
+/* Shared structured-output schema for AI marking — forces Gemini to always
+   return complete, valid JSON in this exact shape (fixes truncated/malformed
+   JSON responses instead of relying on the model to format it correctly). */
+const GEMINI_MARK_SCHEMA = {
+  type:'OBJECT',
+  properties:{
+    score:{type:'INTEGER'},
+    max:{type:'INTEGER'},
+    level:{type:'STRING', enum:['correct','partial','incorrect']},
+    feedback:{type:'STRING'}
+  },
+  required:['score','max','level','feedback'],
+  propertyOrdering:['score','max','level','feedback']
+};
+
 /* ── Storage keys — must be declared before any function uses them ── */
 const LS_KEY = 'igcse_pe_progress';
 const SR_KEY = 'igcse_pe_sr';
@@ -2290,7 +2305,7 @@ Return ONLY valid JSON: {"score":X,"max":${q.marks},"level":"correct|partial|inc
     const res=await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent',{
       method:'POST',
       headers:{'Content-Type':'application/json','x-goog-api-key':key},
-      body:JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{maxOutputTokens:300,temperature:0.3}})
+      body:JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{maxOutputTokens:500,temperature:0.3,responseMimeType:'application/json',responseSchema:GEMINI_MARK_SCHEMA}})
     });
     const data=await res.json();
     if(data.error)throw new Error(data.error.message);
@@ -2798,7 +2813,7 @@ Return ONLY JSON: {"score":X,"max":${q.marks},"level":"correct|partial|incorrect
     const res=await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent',{
       method:'POST',
       headers:{'Content-Type':'application/json','x-goog-api-key':key},
-      body:JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{maxOutputTokens:300,temperature:0.3}})
+      body:JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{maxOutputTokens:500,temperature:0.3,responseMimeType:'application/json',responseSchema:GEMINI_MARK_SCHEMA}})
     });
     const data=await res.json();
     if(data.error) throw new Error(data.error.message);
@@ -2862,7 +2877,7 @@ Award marks fairly. Return ONLY valid JSON — no markdown, no extra text:
     const res=await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent',{
       method:'POST',
       headers:{'Content-Type':'application/json','x-goog-api-key':key},
-      body:JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{maxOutputTokens:400,temperature:0.3}})
+      body:JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{maxOutputTokens:600,temperature:0.3,responseMimeType:'application/json',responseSchema:GEMINI_MARK_SCHEMA}})
     });
     const data=await res.json();
     if(data.error)throw new Error(data.error.message);
