@@ -203,6 +203,13 @@ textarea.answer-box:focus{outline:none;border-color:var(--green)}
 .callout-image-wrap svg{width:100%;display:block;border-radius:8px}
 .callout-markers{position:absolute;inset:0;pointer-events:none}
 .callout-marker{position:absolute;width:18px;height:18px;margin:-9px 0 0 -9px;border-radius:50%;background:var(--green);color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 2px #fff,0 1px 3px rgba(0,0,0,.4);z-index:5}
+/* Colorblind-safe redundancy: shape differs by role, not just colour */
+.callout-marker.shape-square{border-radius:4px}
+.callout-marker.shape-triangle{border-radius:3px;clip-path:polygon(50% 6%,4% 94%,96% 94%);padding-top:4px}
+.callout-marker.shape-diamond{border-radius:3px;clip-path:polygon(50% 0%,100% 50%,50% 100%,0% 50%)}
+.drop-zone.callout-slot.shape-square{border-radius:6px}
+.drop-zone.callout-slot.shape-triangle{clip-path:none;border-left:3px solid var(--tm)}
+.drop-zone.callout-slot.shape-diamond{border-left:3px dashed var(--tm)}
 .callout-lines{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:1}
 .callout-lines line{stroke:var(--tm);stroke-width:2;stroke-dasharray:4,3;opacity:.7}
 @media(max-width:480px){
@@ -651,22 +658,22 @@ const TOPICS = [
     {id:'lever1',title:'Label the lever system — bicep curl',svgFn:'leverSVG',calloutStyle:true,
      labels:['Fulcrum (elbow joint)','Effort (biceps)','Load (forearm+dumbbell)'],
      positions:[
-       {x:'47.8%',y:'76.7%',w:'8%',h:'4%',ans:'Fulcrum (elbow joint)'},
+       {x:'47.8%',y:'76.7%',w:'8%',h:'4%',ans:'Fulcrum (elbow joint)',shape:'triangle'},
        {x:'58.4%',y:'50.2%',w:'8%',h:'4%',ans:'Effort (biceps)'},
-       {x:'71.3%',y:'39.3%',w:'8%',h:'4%',ans:'Load (forearm+dumbbell)'},
+       {x:'71.3%',y:'39.3%',w:'8%',h:'4%',ans:'Load (forearm+dumbbell)',shape:'square'},
      ]},
     {id:'levers3',title:'Label the fulcrum, effort and load in all three classes of lever',svgFn:'threeLeversSVG',calloutStyle:true,
      labels:['Fulcrum (1st class — neck)','Effort (1st class — neck)','Load (1st class — neck)','Fulcrum (2nd class — ankle)','Effort (2nd class — ankle)','Load (2nd class — ankle)','Fulcrum (3rd class — elbow)','Effort (3rd class — elbow)','Load (3rd class — elbow)'],
      positions:[
-       {x:'45.6%',y:'79.9%',w:'8%',h:'4%',ans:'Fulcrum (1st class — neck)'},
+       {x:'45.6%',y:'79.9%',w:'8%',h:'4%',ans:'Fulcrum (1st class — neck)',shape:'triangle'},
        {x:'40.6%',y:'57.7%',w:'8%',h:'4%',ans:'Effort (1st class — neck)'},
-       {x:'55.8%',y:'70.7%',w:'8%',h:'4%',ans:'Load (1st class — neck)'},
-       {x:'74.4%',y:'30.9%',w:'8%',h:'4%',ans:'Fulcrum (2nd class — ankle)'},
-       {x:'89.2%',y:'16.8%',w:'8%',h:'4%',ans:'Load (2nd class — ankle)'},
+       {x:'55.8%',y:'70.7%',w:'8%',h:'4%',ans:'Load (1st class — neck)',shape:'square'},
+       {x:'74.4%',y:'30.9%',w:'8%',h:'4%',ans:'Fulcrum (2nd class — ankle)',shape:'triangle'},
+       {x:'89.2%',y:'16.8%',w:'8%',h:'4%',ans:'Load (2nd class — ankle)',shape:'square'},
        {x:'93.6%',y:'23.8%',w:'8%',h:'4%',ans:'Effort (2nd class — ankle)'},
-       {x:'10.9%',y:'30.8%',w:'8%',h:'4%',ans:'Fulcrum (3rd class — elbow)'},
+       {x:'10.9%',y:'30.8%',w:'8%',h:'4%',ans:'Fulcrum (3rd class — elbow)',shape:'triangle'},
        {x:'13.9%',y:'19.7%',w:'8%',h:'4%',ans:'Effort (3rd class — elbow)'},
-       {x:'17.6%',y:'15.2%',w:'8%',h:'4%',ans:'Load (3rd class — elbow)'},
+       {x:'17.6%',y:'15.2%',w:'8%',h:'4%',ans:'Load (3rd class — elbow)',shape:'square'},
      ]},
   ]
 },
@@ -2614,6 +2621,14 @@ function buildCalloutGame(d){
   const chipHint = isTouchDevice
     ? '① Tap a label  ② Tap a numbered circle on the diagram'
     : '① Click a label  ② Click a numbered circle on the diagram';
+  const usesShapes = d.positions.some(p=>p.shape);
+  const shapeLegend = usesShapes ? `
+    <div style="display:flex;gap:14px;align-items:center;font-size:11px;color:var(--tm);margin:-4px 0 10px;flex-wrap:wrap">
+      <span style="opacity:.8">Marker shapes:</span>
+      <span style="display:flex;align-items:center;gap:4px"><span style="width:12px;height:12px;border-radius:50%;background:var(--green);display:inline-block"></span>Effort</span>
+      <span style="display:flex;align-items:center;gap:4px"><span style="width:12px;height:12px;border-radius:3px;background:var(--green);clip-path:polygon(50% 6%,4% 94%,96% 94%);display:inline-block"></span>Fulcrum</span>
+      <span style="display:flex;align-items:center;gap:4px"><span style="width:12px;height:12px;border-radius:3px;background:var(--green);display:inline-block"></span>Load</span>
+    </div>` : '';
 
   const theoryPanel = d.theory ? `
     <div style="background:var(--s2);border:.5px solid var(--bd);border-radius:10px;padding:.85rem 1rem;margin-bottom:1rem;font-size:12px;line-height:1.7;color:var(--ts)">
@@ -2627,7 +2642,7 @@ function buildCalloutGame(d){
   const items = d.positions.map((p,i)=>{
     const cx = parseFloat(p.x)+parseFloat(p.w)/2;
     const cy = parseFloat(p.y)+parseFloat(p.h)/2;
-    return {idx:i, ans:p.ans, cx, cy, slotY:cy};
+    return {idx:i, ans:p.ans, cx, cy, slotY:cy, shape:p.shape};
   });
   const leftItems  = items.filter(p=>p.cx<50).sort((a,b)=>a.cy-b.cy);
   const rightItems = items.filter(p=>p.cx>=50).sort((a,b)=>a.cy-b.cy);
@@ -2647,9 +2662,9 @@ function buildCalloutGame(d){
   spaceOutColumn(leftItems, 7, 93);
   spaceOutColumn(rightItems, 7, 93);
 
-  const renderSlot = p => `<div class="drop-zone callout-slot" id="dz-${d.id}-${p.idx}" style="top:${p.slotY}%" onclick="dzClick('${d.id}',${p.idx})" title="Click to place selected label">${p.idx+1}</div>`;
+  const renderSlot = p => `<div class="drop-zone callout-slot ${p.shape?'shape-'+p.shape:''}" id="dz-${d.id}-${p.idx}" style="top:${p.slotY}%" onclick="dzClick('${d.id}',${p.idx})" title="Click to place selected label">${p.idx+1}</div>`;
 
-  const markers = items.map(p=>`<div class="callout-marker" style="left:${p.cx}%;top:${p.cy}%">${p.idx+1}</div>`).join('');
+  const markers = items.map(p=>`<div class="callout-marker ${p.shape?'shape-'+p.shape:''}" style="left:${p.cx}%;top:${p.cy}%">${p.idx+1}</div>`).join('');
 
   const lines = items.map(p=>{
     const startX = p.cx<50 ? LCOL : LCOL+IMGCOL;
@@ -2661,6 +2676,7 @@ function buildCalloutGame(d){
     <div class="game-title">🧩 ${d.title}</div>
     ${theoryPanel}
     <div class="game-sub">${chipHint}</div>
+    ${shapeLegend}
     <div class="callout-row" id="wrap-${d.id}">
       <div class="callout-col callout-left">${leftItems.map(renderSlot).join('')}</div>
       <div class="callout-image-wrap">
@@ -2780,10 +2796,22 @@ function dzClick(gid,idx){
   }
 }
 
+/* Collects the layout-critical classes (callout-slot positioning, and any
+   shape-* marker class used for colorblind-safe redundancy) that must
+   survive a full className reassignment in dropLabel/checkGame/resetGame/
+   etc. — otherwise placing an answer or checking the game would silently
+   strip the element's positioning and shape indicator. */
+function preserveClasses(dz){
+  let out = '';
+  if(dz.classList.contains('callout-slot')) out += ' callout-slot';
+  dz.classList.forEach(c=>{ if(c.indexOf('shape-')===0) out += ' '+c; });
+  return out;
+}
+
 function dropLabel(gid,idx,label){
   const d=findGame(gid);
   const dz=document.getElementById('dz-'+gid+'-'+idx);
-  const cs=dz.classList.contains('callout-slot');
+  const cs=preserveClasses(dz);
   const old=dz.dataset.filled;
   if(old){ const el=document.getElementById('chip-'+gid+'-'+cid(old)); if(el) el.classList.remove('used'); }
   const el=document.getElementById('chip-'+gid+'-'+cid(label)); if(el) el.classList.add('used');
@@ -2791,25 +2819,25 @@ function dropLabel(gid,idx,label){
   // Use textContent to avoid innerHTML parsing issues, display truncated if needed
   const display=chipDisplay({l:label});
   dz.innerHTML=`<span style="display:block;width:100%;text-align:center;line-height:1.25;font-size:9.5px;word-break:break-word;overflow:hidden">${display}</span>`;
-  dz.className='drop-zone filled'+(cs?' callout-slot':'');
+  dz.className='drop-zone filled'+cs;
 }
 
 function removeFromZone(gid,idx){
   const dz=document.getElementById('dz-'+gid+'-'+idx);
-  const cs=dz.classList.contains('callout-slot');
+  const cs=preserveClasses(dz);
   const filled=dz.dataset.filled;
   if(!filled) return;
   const el=document.getElementById('chip-'+gid+'-'+cid(filled));
   if(el) el.classList.remove('used');
   dz.dataset.filled='';
   dz.innerHTML=`<span style="font-size:11px;opacity:.5">${idx+1}</span>`;
-  dz.className='drop-zone'+(cs?' callout-slot':'');
+  dz.className='drop-zone'+cs;
 }
 
 function cycleDrop(gid,idx){
   const d=findGame(gid);
   const dz=document.getElementById('dz-'+gid+'-'+idx);
-  const cs=dz.classList.contains('callout-slot');
+  const cs=preserveClasses(dz);
   const used=d.positions.map((_,i)=>i!==idx?document.getElementById('dz-'+gid+'-'+i).dataset.filled:'').filter(Boolean);
   const avail=d.labels.map(labelText).filter(l=>!used.includes(l));
   if(!avail.length) return;
@@ -2818,20 +2846,20 @@ function cycleDrop(gid,idx){
   const old=dz.dataset.filled;
   if(old) { const el=document.getElementById('chip-'+gid+'-'+cid(old)); if(el) el.classList.remove('used'); }
   const el=document.getElementById('chip-'+gid+'-'+cid(next)); if(el) el.classList.add('used');
-  dz.dataset.filled=next;dz.textContent=next;dz.className='drop-zone filled'+(cs?' callout-slot':'');
+  dz.dataset.filled=next;dz.textContent=next;dz.className='drop-zone filled'+cs;
 }
 
 function checkGame(gid){
   const d=findGame(gid);let correct=0;
   d.positions.forEach((p,i)=>{
     const dz=document.getElementById('dz-'+gid+'-'+i);
-    const cs=dz.classList.contains('callout-slot');
+    const cs=preserveClasses(dz);
     const filled=dz.dataset.filled||'';
     if(filled===p.ans){
-      dz.className='drop-zone filled'+(cs?' callout-slot':'');
+      dz.className='drop-zone filled'+cs;
       correct++;
     } else {
-      dz.className='drop-zone wrong-reveal'+(cs?' callout-slot':'');
+      dz.className='drop-zone wrong-reveal'+cs;
       const correctDisp=chipDisplay({l:p.ans});
       const filledDisp=filled?chipDisplay({l:filled}):'';
       dz.title=filledDisp ? `Your answer: ${filledDisp} — Correct: ${correctDisp}` : `Correct: ${correctDisp}`;
@@ -2850,7 +2878,7 @@ function resetGame(gid){
   if(selectedChip && selectedChip.gid===gid){ selectedChip.el.classList.remove('selected'); selectedChip=null; }
   d.positions.forEach((_,i)=>{
     const dz=document.getElementById('dz-'+gid+'-'+i);
-    if(dz){ const cs=dz.classList.contains('callout-slot'); dz.dataset.filled=''; dz.innerHTML=`<span style="font-size:11px;opacity:.5">${i+1}</span>`; dz.className='drop-zone'+(cs?' callout-slot':''); }
+    if(dz){ const cs=preserveClasses(dz); dz.dataset.filled=''; dz.innerHTML=`<span style="font-size:11px;opacity:.5">${i+1}</span>`; dz.className='drop-zone'+cs; }
   });
   d.labels.forEach(l=>{ const el=document.getElementById('chip-'+gid+'-'+cid(labelText(l))); if(el) el.classList.remove('used'); });
   const res=document.getElementById('res-'+gid);
