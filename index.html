@@ -883,18 +883,20 @@ const TOPICS = [
   ],
   diagrams:[
     {id:'injury1',title:'Match each injury type to its description and treatment',svgFn:'injurySVG',
-     labels:['Blister','Bruise','Sprain (ligament)','Strain (muscle)','Fracture','RICE method','Rest','Ice','Compression','Elevation'],
+     labels:['Blister','Bruise','Cut/Graze','Fracture','Strain (muscle)','Sprain (ligament)','Winding','Rest','Ice','Compression','Elevation','RICE method'],
      positions:[
-       {x:'2%', y:'4%', w:'28%',h:'11%',ans:'Blister'},
-       {x:'36%',y:'4%', w:'28%',h:'11%',ans:'Bruise'},
-       {x:'70%',y:'4%', w:'28%',h:'11%',ans:'Fracture'},
-       {x:'2%', y:'44%',w:'28%',h:'11%',ans:'Strain (muscle)'},
-       {x:'70%',y:'44%',w:'28%',h:'11%',ans:'Sprain (ligament)'},
-       {x:'2%', y:'70%',w:'18%',h:'11%',ans:'Rest'},
-       {x:'28%',y:'70%',w:'18%',h:'11%',ans:'Ice'},
-       {x:'54%',y:'70%',w:'18%',h:'11%',ans:'Compression'},
-       {x:'78%',y:'70%',w:'18%',h:'11%',ans:'Elevation'},
-       {x:'36%',y:'84%',w:'28%',h:'11%',ans:'RICE method'},
+       {x:'1.579%',y:'7.480%', w:'18.421%',h:'7.480%',ans:'Blister'},
+       {x:'1.579%',y:'15.610%',w:'18.421%',h:'7.480%',ans:'Bruise'},
+       {x:'1.579%',y:'23.740%',w:'18.421%',h:'7.480%',ans:'Cut/Graze'},
+       {x:'1.579%',y:'31.870%',w:'18.421%',h:'7.480%',ans:'Fracture'},
+       {x:'1.579%',y:'40.000%',w:'18.421%',h:'7.480%',ans:'Strain (muscle)'},
+       {x:'1.579%',y:'48.130%',w:'18.421%',h:'7.480%',ans:'Sprain (ligament)'},
+       {x:'1.579%',y:'56.260%',w:'18.421%',h:'7.480%',ans:'Winding'},
+       {x:'1.579%', y:'76.098%',w:'23.421%',h:'4.228%',ans:'Rest'},
+       {x:'26.053%',y:'76.098%',w:'23.421%',h:'4.228%',ans:'Ice'},
+       {x:'50.526%',y:'76.098%',w:'23.421%',h:'4.228%',ans:'Compression'},
+       {x:'75.000%',y:'76.098%',w:'23.421%',h:'4.228%',ans:'Elevation'},
+       {x:'23.684%',y:'89.431%',w:'52.632%',h:'4.553%',ans:'RICE method'},
      ]},
   ]
 },
@@ -1355,11 +1357,8 @@ const DIAGRAMS = {
       <!-- Tier 1 — Elite (peak) -->
       <polygon points="127,109 253,109 190,47 190,47" fill="url(#gTier1)" stroke="#7c3aed" stroke-width="1.5" filter="url(#pshadow)"/>
 
-      <!-- Tier labels inside pyramid -->
-      <text x="190" y="84"  text-anchor="middle" font-size="11" fill="#e9d5ff" font-weight="700">ELITE</text>
-      <text x="190" y="150" text-anchor="middle" font-size="11" fill="#e9d5ff" font-weight="700">PERFORMANCE</text>
-      <text x="190" y="218" text-anchor="middle" font-size="11" fill="#ede9fe" font-weight="700">PARTICIPATION</text>
-      <text x="190" y="282" text-anchor="middle" font-size="11" fill="#4c1d95" font-weight="700">FOUNDATION</text>
+      <!-- Tier labels intentionally omitted — revealed only once the student
+           places the correct label in the drop-zone box for that tier -->
 
       <!-- Right-side annotation lines + drop zones -->
       <!-- Elite -->
@@ -1426,98 +1425,111 @@ const DIAGRAMS = {
     </svg>`;
   },
   injurySVG(){
-    return `<svg viewBox="0 0 380 320" xmlns="http://www.w3.org/2000/svg" style="background:#111827;font-family:system-ui,sans-serif;border-radius:10px">
-      <defs><marker id="rAr" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#94a3b8"/></marker></defs>
+    return `<svg viewBox="0 0 380 615" xmlns="http://www.w3.org/2000/svg" style="background:#111827;font-family:system-ui,sans-serif;border-radius:10px">
+      <defs>
+        <filter id="ish" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="1.5" stdDeviation="2" flood-color="#00000050"/></filter>
+        <linearGradient id="giAmber" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#3d2e04"/><stop offset="100%" stop-color="#1c1400"/></linearGradient>
+        <linearGradient id="giIndigo" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#2f2a5c"/><stop offset="100%" stop-color="#1e1a40"/></linearGradient>
+        <linearGradient id="giRed"    x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#3a1414"/><stop offset="100%" stop-color="#1c0a0a"/></linearGradient>
+        <linearGradient id="giTeal"   x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#0e3a42"/><stop offset="100%" stop-color="#042a30"/></linearGradient>
+        <linearGradient id="giGreen"  x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#0d4a26"/><stop offset="100%" stop-color="#052e16"/></linearGradient>
+        <linearGradient id="giPurple" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#3d2570"/><stop offset="100%" stop-color="#2d1b4e"/></linearGradient>
+        <linearGradient id="giBlue"   x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#2a4d78"/><stop offset="100%" stop-color="#1e3a5f"/></linearGradient>
+      </defs>
       <text x="190" y="16" text-anchor="middle" font-size="10" fill="#64748b" font-weight="700" letter-spacing=".5">INJURIES &amp; RICE METHOD</text>
 
-      <!-- INJURY TYPES TABLE -->
+      <!-- ══════════ SECTION 1: COMMON MINOR INJURIES (7 rows) ══════════ -->
       <rect x="6" y="24" width="368" height="18" rx="4" fill="#1e293b"/>
       <text x="190" y="36" text-anchor="middle" font-size="8.5" fill="#94a3b8" font-weight="700">COMMON MINOR INJURIES</text>
 
       <!-- Row 1: Blister -->
-      <rect x="6"   y="44" width="120" height="44" rx="6" fill="#1c1400" stroke="#ca8a04" stroke-width="1.2"/>
-      <text x="66" y="60" text-anchor="middle" font-size="8.5" fill="#fbbf24" font-weight="700">BLISTER</text>
-      <text x="66" y="72" text-anchor="middle" font-size="7"   fill="#fde68a">Fluid under skin</text>
-      <text x="66" y="83" text-anchor="middle" font-size="7"   fill="#fde68a">Cause: friction</text>
+      <rect x="6"  y="46" width="70" height="46" rx="6" fill="url(#giAmber)" stroke="#ca8a04" stroke-width="1.2" filter="url(#ish)"/>
+      <rect x="80" y="46" width="294" height="46" rx="6" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+      <text x="227" y="64" text-anchor="middle" font-size="7.2" fill="#cbd5e1">Fluid-filled pocket under the top layer of skin,</text>
+      <text x="227" y="76" text-anchor="middle" font-size="7.2" fill="#cbd5e1">caused by repeated friction or rubbing (e.g. footwear).</text>
 
-      <!-- Row 1: Bruise -->
-      <rect x="132" y="44" width="120" height="44" rx="6" fill="#1e1a40" stroke="#6366f1" stroke-width="1.2"/>
-      <text x="192" y="60" text-anchor="middle" font-size="8.5" fill="#a5b4fc" font-weight="700">BRUISE</text>
-      <text x="192" y="72" text-anchor="middle" font-size="7"   fill="#c7d2fe">Blood under skin</text>
-      <text x="192" y="83" text-anchor="middle" font-size="7"   fill="#c7d2fe">Cause: impact</text>
+      <!-- Row 2: Bruise -->
+      <rect x="6"  y="96" width="70" height="46" rx="6" fill="url(#giIndigo)" stroke="#6366f1" stroke-width="1.2" filter="url(#ish)"/>
+      <rect x="80" y="96" width="294" height="46" rx="6" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+      <text x="227" y="114" text-anchor="middle" font-size="7.2" fill="#cbd5e1">Bleeding under the skin from a direct blow or impact —</text>
+      <text x="227" y="126" text-anchor="middle" font-size="7.2" fill="#cbd5e1">skin surface stays intact; the area discolours.</text>
 
-      <!-- Row 1: Cut/Graze -->
-      <rect x="258" y="44" width="116" height="44" rx="6" fill="#1c0a0a" stroke="#ef4444" stroke-width="1.2"/>
-      <text x="316" y="60" text-anchor="middle" font-size="8.5" fill="#f87171" font-weight="700">CUT / GRAZE</text>
-      <text x="316" y="72" text-anchor="middle" font-size="7"   fill="#fca5a5">Broken skin</text>
-      <text x="316" y="83" text-anchor="middle" font-size="7"   fill="#fca5a5">Cause: sharp/rough</text>
+      <!-- Row 3: Cut/Graze -->
+      <rect x="6"  y="146" width="70" height="46" rx="6" fill="url(#giRed)" stroke="#ef4444" stroke-width="1.2" filter="url(#ish)"/>
+      <rect x="80" y="146" width="294" height="46" rx="6" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+      <text x="227" y="164" text-anchor="middle" font-size="7.2" fill="#cbd5e1">A break in the skin's surface from a sharp or rough object;</text>
+      <text x="227" y="176" text-anchor="middle" font-size="7.2" fill="#cbd5e1">ranges from a shallow scrape to a deeper wound.</text>
 
-      <!-- Row 2: Strain -->
-      <rect x="6"   y="96" width="120" height="44" rx="6" fill="#052e16" stroke="#22c55e" stroke-width="1.2"/>
-      <text x="66" y="112" text-anchor="middle" font-size="8.5" fill="#4ade80" font-weight="700">STRAIN</text>
-      <text x="66" y="124" text-anchor="middle" font-size="7"   fill="#86efac">Overstretched</text>
-      <text x="66" y="135" text-anchor="middle" font-size="7"   fill="#86efac">MUSCLE</text>
+      <!-- Row 4: Fracture -->
+      <rect x="6"  y="196" width="70" height="46" rx="6" fill="url(#giTeal)" stroke="#06b6d4" stroke-width="1.2" filter="url(#ish)"/>
+      <rect x="80" y="196" width="294" height="46" rx="6" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+      <text x="227" y="214" text-anchor="middle" font-size="7.2" fill="#cbd5e1">A partial or complete break in a bone, usually caused</text>
+      <text x="227" y="226" text-anchor="middle" font-size="7.2" fill="#cbd5e1">by a severe impact or excessive force.</text>
 
-      <!-- Row 2: Sprain -->
-      <rect x="132" y="96" width="120" height="44" rx="6" fill="#2d1b4e" stroke="#a855f7" stroke-width="1.2"/>
-      <text x="192" y="112" text-anchor="middle" font-size="8.5" fill="#c4b5fd" font-weight="700">SPRAIN</text>
-      <text x="192" y="124" text-anchor="middle" font-size="7"   fill="#e9d5ff">Overstretched</text>
-      <text x="192" y="135" text-anchor="middle" font-size="7"   fill="#e9d5ff">LIGAMENT</text>
+      <!-- Row 5: Strain -->
+      <rect x="6"  y="246" width="70" height="46" rx="6" fill="url(#giGreen)" stroke="#22c55e" stroke-width="1.2" filter="url(#ish)"/>
+      <rect x="80" y="246" width="294" height="46" rx="6" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+      <text x="227" y="264" text-anchor="middle" font-size="7.2" fill="#cbd5e1">Overstretching or tearing of a MUSCLE (or its tendon),</text>
+      <text x="227" y="276" text-anchor="middle" font-size="7.2" fill="#cbd5e1">caused by sudden or excessive force during movement.</text>
 
-      <!-- Row 2: Winding -->
-      <rect x="258" y="96" width="116" height="44" rx="6" fill="#1e3a5f" stroke="#3b82f6" stroke-width="1.2"/>
-      <text x="316" y="112" text-anchor="middle" font-size="8.5" fill="#93c5fd" font-weight="700">WINDING</text>
-      <text x="316" y="124" text-anchor="middle" font-size="7"   fill="#bfdbfe">Diaphragm spasm</text>
-      <text x="316" y="135" text-anchor="middle" font-size="7"   fill="#bfdbfe">Cause: blow to abdomen</text>
+      <!-- Row 6: Sprain -->
+      <rect x="6"  y="296" width="70" height="46" rx="6" fill="url(#giPurple)" stroke="#a855f7" stroke-width="1.2" filter="url(#ish)"/>
+      <rect x="80" y="296" width="294" height="46" rx="6" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+      <text x="227" y="314" text-anchor="middle" font-size="7.2" fill="#cbd5e1">Overstretching or tearing of a LIGAMENT at a joint,</text>
+      <text x="227" y="326" text-anchor="middle" font-size="7.2" fill="#cbd5e1">usually from a sudden twist — often ankle or wrist.</text>
 
-      <!-- RICE METHOD -->
-      <line x1="6" y1="148" x2="374" y2="148" stroke="#1e293b" stroke-width="1.5"/>
-      <rect x="6" y="152" width="368" height="18" rx="4" fill="#1e293b"/>
-      <text x="190" y="164" text-anchor="middle" font-size="9" fill="#94a3b8" font-weight="700">R.I.C.E — TREATMENT METHOD</text>
+      <!-- Row 7: Winding -->
+      <rect x="6"  y="346" width="70" height="46" rx="6" fill="url(#giBlue)" stroke="#3b82f6" stroke-width="1.2" filter="url(#ish)"/>
+      <rect x="80" y="346" width="294" height="46" rx="6" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+      <text x="227" y="364" text-anchor="middle" font-size="7.2" fill="#cbd5e1">Temporary loss of breath from a blow to the abdomen</text>
+      <text x="227" y="376" text-anchor="middle" font-size="7.2" fill="#cbd5e1">that causes the diaphragm to spasm.</text>
 
-      <!-- R -->
-      <rect x="6"   y="174" width="86" height="60" rx="8" fill="#1c1400" stroke="#f59e0b" stroke-width="2"/>
-      <text x="49" y="194" text-anchor="middle" font-size="18" fill="#fbbf24" font-weight="900">R</text>
-      <text x="49" y="210" text-anchor="middle" font-size="8"  fill="#fde68a" font-weight="700">REST</text>
-      <text x="49" y="222" text-anchor="middle" font-size="7"  fill="#fbbf24">Stop activity</text>
-      <text x="49" y="232" text-anchor="middle" font-size="7"  fill="#fbbf24">protect area</text>
+      <!-- ══════════ SECTION 2: TREATMENT METHOD — R.I.C.E (3 rows × 4 cols) ══════════ -->
+      <rect x="6" y="398" width="368" height="18" rx="4" fill="#1e293b"/>
+      <text x="190" y="410" text-anchor="middle" font-size="8.5" fill="#94a3b8" font-weight="700">TREATMENT METHOD</text>
 
-      <!-- I -->
-      <rect x="98"  y="174" width="86" height="60" rx="8" fill="#1e3a5f" stroke="#3b82f6" stroke-width="2"/>
-      <text x="141" y="194" text-anchor="middle" font-size="18" fill="#60a5fa" font-weight="900">I</text>
-      <text x="141" y="210" text-anchor="middle" font-size="8"  fill="#bfdbfe" font-weight="700">ICE</text>
-      <text x="141" y="222" text-anchor="middle" font-size="7"  fill="#93c5fd">15–20 min</text>
-      <text x="141" y="232" text-anchor="middle" font-size="7"  fill="#93c5fd">every 2–3 hrs</text>
+      <!-- Row A: letters (given) -->
+      <rect x="6"   y="422" width="89" height="42" rx="6" fill="url(#giAmber)"  stroke="#f59e0b" stroke-width="2" filter="url(#ish)"/>
+      <rect x="99"  y="422" width="89" height="42" rx="6" fill="url(#giBlue)"   stroke="#3b82f6" stroke-width="2" filter="url(#ish)"/>
+      <rect x="192" y="422" width="89" height="42" rx="6" fill="url(#giPurple)" stroke="#a855f7" stroke-width="2" filter="url(#ish)"/>
+      <rect x="285" y="422" width="89" height="42" rx="6" fill="url(#giGreen)"  stroke="#22c55e" stroke-width="2" filter="url(#ish)"/>
+      <text x="50"  y="452" text-anchor="middle" font-size="20" fill="#fbbf24" font-weight="900">R</text>
+      <text x="143" y="452" text-anchor="middle" font-size="20" fill="#60a5fa" font-weight="900">I</text>
+      <text x="236" y="452" text-anchor="middle" font-size="20" fill="#c4b5fd" font-weight="900">C</text>
+      <text x="329" y="452" text-anchor="middle" font-size="20" fill="#4ade80" font-weight="900">E</text>
 
-      <!-- C -->
-      <rect x="190" y="174" width="86" height="60" rx="8" fill="#2d1b4e" stroke="#a855f7" stroke-width="2"/>
-      <text x="233" y="194" text-anchor="middle" font-size="18" fill="#c4b5fd" font-weight="900">C</text>
-      <text x="233" y="210" text-anchor="middle" font-size="8"  fill="#e9d5ff" font-weight="700">COMPRESSION</text>
-      <text x="233" y="222" text-anchor="middle" font-size="7"  fill="#c4b5fd">Elastic bandage</text>
-      <text x="233" y="232" text-anchor="middle" font-size="7"  fill="#c4b5fd">reduce swelling</text>
+      <!-- Row B: meaning words (blank — tested) -->
+      <rect x="6"   y="468" width="89" height="26" rx="6" fill="url(#giAmber)"  stroke="#f59e0b" stroke-width="1.2" filter="url(#ish)"/>
+      <rect x="99"  y="468" width="89" height="26" rx="6" fill="url(#giBlue)"   stroke="#3b82f6" stroke-width="1.2" filter="url(#ish)"/>
+      <rect x="192" y="468" width="89" height="26" rx="6" fill="url(#giPurple)" stroke="#a855f7" stroke-width="1.2" filter="url(#ish)"/>
+      <rect x="285" y="468" width="89" height="26" rx="6" fill="url(#giGreen)"  stroke="#22c55e" stroke-width="1.2" filter="url(#ish)"/>
 
-      <!-- E -->
-      <rect x="282" y="174" width="92" height="60" rx="8" fill="#052e16" stroke="#22c55e" stroke-width="2"/>
-      <text x="328" y="194" text-anchor="middle" font-size="18" fill="#4ade80" font-weight="900">E</text>
-      <text x="328" y="210" text-anchor="middle" font-size="8"  fill="#86efac" font-weight="700">ELEVATION</text>
-      <text x="328" y="222" text-anchor="middle" font-size="7"  fill="#4ade80">Raise above</text>
-      <text x="328" y="232" text-anchor="middle" font-size="7"  fill="#4ade80">heart level</text>
+      <!-- Row C: what to do (given, precise) -->
+      <rect x="6"   y="498" width="89" height="48" rx="6" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+      <rect x="99"  y="498" width="89" height="48" rx="6" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+      <rect x="192" y="498" width="89" height="48" rx="6" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+      <rect x="285" y="498" width="89" height="48" rx="6" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+      <text x="50"  y="517" text-anchor="middle" font-size="6.8" fill="#cbd5e1">Stop the activity</text>
+      <text x="50"  y="528" text-anchor="middle" font-size="6.8" fill="#cbd5e1">at once; protect</text>
+      <text x="50"  y="539" text-anchor="middle" font-size="6.8" fill="#cbd5e1">the injured area</text>
+      <text x="143" y="517" text-anchor="middle" font-size="6.8" fill="#cbd5e1">Apply an ice pack</text>
+      <text x="143" y="528" text-anchor="middle" font-size="6.8" fill="#cbd5e1">15–20 min, every</text>
+      <text x="143" y="539" text-anchor="middle" font-size="6.8" fill="#cbd5e1">2–3 hours</text>
+      <text x="236" y="517" text-anchor="middle" font-size="6.8" fill="#cbd5e1">Wrap firmly with</text>
+      <text x="236" y="528" text-anchor="middle" font-size="6.8" fill="#cbd5e1">an elastic bandage</text>
+      <text x="236" y="539" text-anchor="middle" font-size="6.8" fill="#cbd5e1">to limit swelling</text>
+      <text x="329" y="517" text-anchor="middle" font-size="6.8" fill="#cbd5e1">Raise the injured</text>
+      <text x="329" y="528" text-anchor="middle" font-size="6.8" fill="#cbd5e1">area above the</text>
+      <text x="329" y="539" text-anchor="middle" font-size="6.8" fill="#cbd5e1">level of the heart</text>
 
-      <!-- CALLOUT DOTS for drop zones -->
-      <circle cx="66"  cy="50" r="4" fill="#ca8a04"/>   <!-- Blister -->
-      <circle cx="192" cy="50" r="4" fill="#6366f1"/>   <!-- Bruise -->
-      <circle cx="316" cy="50" r="4" fill="#ef4444"/>   <!-- Cut/Graze -->
-      <circle cx="66"  cy="102" r="4" fill="#22c55e"/>  <!-- Strain -->
-      <circle cx="192" cy="102" r="4" fill="#a855f7"/>  <!-- Sprain -->
-      <circle cx="49"  cy="200" r="4" fill="#f59e0b"/>  <!-- RICE-R -->
-      <circle cx="141" cy="200" r="4" fill="#3b82f6"/>  <!-- RICE-I -->
-      <circle cx="233" cy="200" r="4" fill="#a855f7"/>  <!-- RICE-C -->
-      <circle cx="328" cy="200" r="4" fill="#22c55e"/>  <!-- RICE-E -->
+      <!-- RICE method umbrella zone (empty — the acronym name itself is tested here) -->
+      <rect x="90" y="550" width="200" height="28" rx="8" fill="#0f172a" stroke="#475569" stroke-width="1.2" stroke-dasharray="3,2"/>
+      <text x="190" y="568" text-anchor="middle" font-size="7.5" fill="#475569" font-style="italic">What is this treatment method called?</text>
 
       <!-- Footer -->
-      <rect x="6" y="242" width="368" height="24" rx="6" fill="#1e293b" stroke="#334155" stroke-width="1"/>
-      <text x="190" y="252" text-anchor="middle" font-size="7.5" fill="#64748b">Strain = MUSCLE injured · Sprain = LIGAMENT injured — examiners test this distinction</text>
-      <text x="190" y="262" text-anchor="middle" font-size="7.5" fill="#475569">Seek medical help if: severe pain · loss of movement · suspected fracture</text>
+      <rect x="6" y="586" width="368" height="24" rx="6" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+      <text x="190" y="596" text-anchor="middle" font-size="7.5" fill="#64748b">Strain = MUSCLE injured · Sprain = LIGAMENT injured — examiners test this distinction</text>
+      <text x="190" y="606" text-anchor="middle" font-size="7.5" fill="#475569">Seek medical help if: severe pain · loss of movement · suspected fracture</text>
     </svg>`;
   },
 };
