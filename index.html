@@ -538,6 +538,15 @@ async function doSignUp(){
   try{
     const { data, error } = await sb.auth.signUp({ email, password });
     if(error) throw error;
+    if(!data.session){
+      // Supabase created the account but didn't log us in — this happens
+      // when "Confirm email" is still enabled for this project. Without an
+      // active session the very next request (writing the profile row)
+      // would fail with a confusing row-level-security error, so catch it
+      // here with a clear explanation instead.
+      acctError('su-error','Account created, but email confirmation is still required — ask your teacher to check the app setup (Confirm email should be off).');
+      return;
+    }
     const uid = data.user.id;
     const { error: profErr } = await sb.from('profiles').insert({ id: uid, name, class_code: classCode });
     if(profErr) throw profErr;
