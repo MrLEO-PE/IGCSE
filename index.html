@@ -477,13 +477,37 @@ textarea.answer-box:focus{outline:none;border-color:var(--green)}
     <div class="q-card" style="text-align:center">
       <div style="position:relative;width:84px;height:84px;margin:0 auto 1rem">
         <img id="acct-avatar-img" src="" style="width:84px;height:84px;border-radius:50%;object-fit:cover;background:var(--s2);border:2px solid var(--bd)">
-        <label for="acct-avatar-input" style="position:absolute;bottom:0;right:0;background:var(--green);width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:13px;border:2px solid var(--s1)">📷</label>
-        <input type="file" id="acct-avatar-input" accept="image/*" style="display:none" onchange="uploadAvatar(this)">
+        <button onclick="openAvatarMenu()" style="position:absolute;bottom:0;right:0;background:var(--green);width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:13px;border:2px solid var(--s1);padding:0">📷</button>
+        <input type="file" id="acct-avatar-input" accept="image/*" style="display:none" onchange="uploadAvatar(this.files[0])">
       </div>
       <div id="acct-name" style="font-size:16px;font-weight:700"></div>
       <div id="acct-class" style="font-size:12px;color:var(--tm);margin-bottom:1rem"></div>
       <div id="acct-avatar-status" style="font-size:11px;color:var(--tm);margin-bottom:1rem"></div>
       <button class="btn full" onclick="doSignOut()">Sign out</button>
+    </div>
+  </div>
+</div>
+
+<!-- Avatar source choice menu -->
+<div id="avatar-menu-overlay" style="display:none;position:fixed;inset:0;background:#000000a0;z-index:100;align-items:center;justify-content:center" onclick="if(event.target===this) closeAvatarMenu()">
+  <div style="background:var(--s1);border-radius:14px;padding:1.25rem;width:280px;max-width:90vw">
+    <div style="font-size:14px;font-weight:600;margin-bottom:.9rem;text-align:center">Update profile picture</div>
+    <button class="btn full" style="margin-bottom:8px" onclick="closeAvatarMenu();document.getElementById('acct-avatar-input').click()">📁 Choose a file</button>
+    <button class="btn primary full" style="margin-bottom:8px" onclick="openCameraCapture()">📷 Take a photo</button>
+    <button class="btn full" onclick="closeAvatarMenu()">Cancel</button>
+  </div>
+</div>
+
+<!-- Live camera capture modal -->
+<div id="camera-modal-overlay" style="display:none;position:fixed;inset:0;background:#000000d0;z-index:100;align-items:center;justify-content:center">
+  <div style="background:var(--s1);border-radius:14px;padding:1rem;width:340px;max-width:92vw;text-align:center">
+    <div style="font-size:14px;font-weight:600;margin-bottom:.75rem">Take a photo</div>
+    <div id="camera-error" style="display:none;color:#e74c3c;font-size:12px;margin-bottom:10px"></div>
+    <video id="camera-video" autoplay playsinline style="width:100%;border-radius:10px;background:#000;display:none"></video>
+    <canvas id="camera-canvas" style="display:none"></canvas>
+    <div style="display:flex;gap:8px;margin-top:.9rem">
+      <button class="btn full" onclick="closeCameraModal()">Cancel</button>
+      <button class="btn primary full" id="camera-capture-btn" style="display:none" onclick="capturePhoto()">Capture</button>
     </div>
   </div>
 </div>
@@ -621,8 +645,60 @@ function renderAccountSection(){
   document.getElementById('acct-avatar-img').src = currentProfile.avatar_url || 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 84 84"%3E%3Crect width="84" height="84" fill="%23334155"/%3E%3Ctext x="42" y="52" font-size="34" text-anchor="middle" fill="%2394a3b8"%3E%F0%9F%91%A4%3C/text%3E%3C/svg%3E';
 }
 
-async function uploadAvatar(input){
-  const file = input.files[0];
+function openAvatarMenu(){
+  document.getElementById('avatar-menu-overlay').style.display = 'flex';
+}
+function closeAvatarMenu(){
+  document.getElementById('avatar-menu-overlay').style.display = 'none';
+}
+
+let cameraStream = null;
+
+async function openCameraCapture(){
+  closeAvatarMenu();
+  const overlay = document.getElementById('camera-modal-overlay');
+  const video = document.getElementById('camera-video');
+  const errBox = document.getElementById('camera-error');
+  const captureBtn = document.getElementById('camera-capture-btn');
+  errBox.style.display = 'none';
+  video.style.display = 'none';
+  captureBtn.style.display = 'none';
+  overlay.style.display = 'flex';
+  try{
+    // This is the actual browser permission prompt — the student sees
+    // "Allow [site] to use your camera?" right here, at the moment they
+    // asked to take a photo, not before.
+    cameraStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
+    video.srcObject = cameraStream;
+    video.style.display = 'block';
+    captureBtn.style.display = 'block';
+  }catch(err){
+    errBox.textContent = err.name === 'NotAllowedError'
+      ? 'Camera permission was denied. Please allow camera access, or choose a file instead.'
+      : 'Could not access the camera on this device.';
+    errBox.style.display = 'block';
+  }
+}
+
+function closeCameraModal(){
+  if(cameraStream){ cameraStream.getTracks().forEach(t=>t.stop()); cameraStream = null; }
+  document.getElementById('camera-modal-overlay').style.display = 'none';
+}
+
+function capturePhoto(){
+  const video = document.getElementById('camera-video');
+  const canvas = document.getElementById('camera-canvas');
+  canvas.width = video.videoWidth;
+  canvas.height = video.videoHeight;
+  canvas.getContext('2d').drawImage(video, 0, 0);
+  canvas.toBlob(blob=>{
+    closeCameraModal();
+    const file = new File([blob], 'camera.jpg', { type: 'image/jpeg' });
+    uploadAvatar(file);
+  }, 'image/jpeg', 0.9);
+}
+
+async function uploadAvatar(file){
   if(!file || !currentUser) return;
   const status = document.getElementById('acct-avatar-status');
   status.textContent = 'Uploading…';
