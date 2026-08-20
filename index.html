@@ -853,7 +853,12 @@ async function renderLeaderboard(){
       .order('pct', { ascending: false })
       .limit(50);
     if(error) throw error;
-    const rows = (data||[]).filter(r=>r.profiles && r.profiles.class_code===currentProfile.class_code);
+    // Compared with trim + lowercase so accounts created with slightly
+    // different capitalization or stray whitespace in the class code
+    // (e.g. "10A-PE" vs "10a-pe " ) still correctly see each other —
+    // this fixes existing accounts too, no database change needed.
+    const myClass = (currentProfile.class_code||'').trim().toLowerCase();
+    const rows = (data||[]).filter(r=>r.profiles && (r.profiles.class_code||'').trim().toLowerCase()===myClass);
     if(!rows.length){
       list.innerHTML = '<div class="q-card" style="text-align:center;padding:1.5rem;color:var(--tm)">No scores yet for this chapter/length in your class — be the first!</div>';
       return;
@@ -2332,7 +2337,44 @@ let quizChapterFilter='all', quizQuestionCount=10;
     o.value=t.id; o.textContent=t.title;
     sel.appendChild(o);
   });
+  sel.setAttribute('onchange','updateQuizCountOptions()');
+  updateQuizCountOptions();
 })();
+
+/* How many questions a given chapter filter can actually supply — same
+   pool-building rule startQuiz() uses, extracted so both agree on the
+   same number rather than risking them drifting apart. */
+function getQuizPoolSize(filter){
+  let n=0;
+  TOPICS.forEach(t=>{ if(filter==='all'||filter===t.id) n+=t.questions.length; });
+  return n;
+}
+
+/* Disables any "Number of questions" option the selected chapter can't
+   actually deliver, so a student can never pick a count larger than what
+   exists — this is what previously let a quiz silently serve FEWER
+   questions than requested (e.g. asking for 10 on a 9-question chapter),
+   which also broke the leaderboard sync since the actual count no longer
+   matched any of the 5/10/15/20 buckets it looks up by. */
+function updateQuizCountOptions(){
+  const filterSel=document.getElementById('quiz-filter');
+  const countSel=document.getElementById('quiz-count');
+  if(!filterSel||!countSel) return;
+  const poolSize=getQuizPoolSize(filterSel.value);
+  let selectedStillValid=false;
+  Array.from(countSel.options).forEach(opt=>{
+    const need=parseInt(opt.value);
+    const ok=need<=poolSize;
+    opt.disabled=!ok;
+    opt.textContent = ok ? `${need} questions` : `${need} questions (only ${poolSize} available)`;
+    if(ok && opt.selected) selectedStillValid=true;
+  });
+  if(!selectedStillValid){
+    // fall back to the largest option this chapter can actually support
+    const usable=Array.from(countSel.options).filter(o=>!o.disabled);
+    if(usable.length) usable[usable.length-1].selected=true;
+  }
+}
 
 function startQuiz(){
   const count=parseInt(document.getElementById('quiz-count').value);
