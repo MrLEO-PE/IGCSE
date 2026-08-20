@@ -288,6 +288,7 @@ textarea.answer-box:focus{outline:none;border-color:var(--green)}
   .btn.primary:hover{background:var(--green)}
 }
 </style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 </head>
 <body>
 <div class="app">
@@ -297,6 +298,7 @@ textarea.answer-box:focus{outline:none;border-color:var(--green)}
   <h1>IGCSE PE Workbook</h1>
   <span class="badge" id="topic-badge" style="display:none"></span>
   <button class="badge" id="key-settings-btn" onclick="toggleApiBanner()" style="cursor:pointer;font-family:inherit">🔑 API key</button>
+  <button class="badge" id="topbar-account-btn" onclick="switchTab('account')" style="cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:6px">👤 Sign in</button>
 </div>
 
 <div class="api-banner" id="api-banner">
@@ -336,6 +338,7 @@ textarea.answer-box:focus{outline:none;border-color:var(--green)}
   <button class="tab" onclick="switchTab('diagrams')">🧩 Diagrams</button>
   <button class="tab" onclick="switchTab('flashcards')">🃏 Flashcards</button>
   <button class="tab" onclick="switchTab('quiz')">🎲 Quiz</button>
+  <button class="tab" onclick="switchTab('leaderboard')">🏆 Leaderboard</button>
 </div>
 
 <div class="section" id="sec-flashcards">
@@ -411,6 +414,80 @@ textarea.answer-box:focus{outline:none;border-color:var(--green)}
 <div class="section" id="sec-questions"><div id="q-list"></div></div>
 <div class="section" id="sec-diagrams"><div id="game-list"></div></div>
 
+<div class="section" id="sec-leaderboard">
+  <div id="lb-signed-out" style="display:none">
+    <div class="q-card" style="text-align:center;padding:2rem 1rem">
+      <div style="font-size:2rem;margin-bottom:.5rem">🏆</div>
+      <div style="font-size:15px;font-weight:600;margin-bottom:.5rem">Sign in to see the leaderboard</div>
+      <p style="font-size:13px;color:var(--ts);margin-bottom:1rem">Create a free account to compete with your class and track your best scores.</p>
+      <button class="btn primary" onclick="switchTab('account')">Go to Account ↗</button>
+    </div>
+  </div>
+  <div id="lb-signed-in" style="display:none">
+    <div class="q-card" style="margin-bottom:1rem">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div>
+          <label style="font-size:12px;color:var(--tm);display:block;margin-bottom:4px">Chapter</label>
+          <select id="lb-filter" class="topic-select" style="margin:0" onchange="renderLeaderboard()">
+            <option value="all">All chapters (random)</option>
+          </select>
+        </div>
+        <div>
+          <label style="font-size:12px;color:var(--tm);display:block;margin-bottom:4px">Number of questions</label>
+          <select id="lb-count" class="topic-select" style="margin:0" onchange="renderLeaderboard()">
+            <option value="5">5 questions</option>
+            <option value="10" selected>10 questions</option>
+            <option value="15">15 questions</option>
+            <option value="20">20 questions</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div id="lb-list"></div>
+  </div>
+</div>
+
+<div class="section" id="sec-account">
+  <div id="acct-loading" style="text-align:center;padding:2rem;color:var(--tm)">Loading…</div>
+
+  <div id="acct-signed-out" style="display:none;max-width:380px;margin:0 auto">
+    <div class="q-card">
+      <div id="acct-mode-signin">
+        <div style="font-size:15px;font-weight:600;margin-bottom:1rem">👤 Sign in</div>
+        <input type="email" id="si-email" placeholder="Email" class="answer-box" style="margin-bottom:8px" autocomplete="email">
+        <input type="password" id="si-password" placeholder="Password" class="answer-box" style="margin-bottom:8px" autocomplete="current-password">
+        <div id="si-error" style="color:#e74c3c;font-size:12px;margin-bottom:8px;display:none"></div>
+        <button class="btn primary full" onclick="doSignIn()">Sign in ↗</button>
+        <p style="font-size:12px;color:var(--tm);margin-top:1rem;text-align:center">No account yet? <a href="#" onclick="acctShowMode('signup');return false" style="color:var(--green)">Create one</a></p>
+      </div>
+      <div id="acct-mode-signup" style="display:none">
+        <div style="font-size:15px;font-weight:600;margin-bottom:1rem">👤 Create account</div>
+        <input type="text" id="su-name" placeholder="Your name" class="answer-box" style="margin-bottom:8px" autocomplete="name">
+        <input type="text" id="su-class" placeholder="Class code (from your teacher)" class="answer-box" style="margin-bottom:8px">
+        <input type="email" id="su-email" placeholder="Email" class="answer-box" style="margin-bottom:8px" autocomplete="email">
+        <input type="password" id="su-password" placeholder="Password (min 6 characters)" class="answer-box" style="margin-bottom:8px" autocomplete="new-password">
+        <div id="su-error" style="color:#e74c3c;font-size:12px;margin-bottom:8px;display:none"></div>
+        <button class="btn primary full" onclick="doSignUp()">Create account ↗</button>
+        <p style="font-size:12px;color:var(--tm);margin-top:1rem;text-align:center">Already have an account? <a href="#" onclick="acctShowMode('signin');return false" style="color:var(--green)">Sign in</a></p>
+      </div>
+    </div>
+  </div>
+
+  <div id="acct-signed-in" style="display:none;max-width:380px;margin:0 auto">
+    <div class="q-card" style="text-align:center">
+      <div style="position:relative;width:84px;height:84px;margin:0 auto 1rem">
+        <img id="acct-avatar-img" src="" style="width:84px;height:84px;border-radius:50%;object-fit:cover;background:var(--s2);border:2px solid var(--bd)">
+        <label for="acct-avatar-input" style="position:absolute;bottom:0;right:0;background:var(--green);width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:13px;border:2px solid var(--s1)">📷</label>
+        <input type="file" id="acct-avatar-input" accept="image/*" style="display:none" onchange="uploadAvatar(this)">
+      </div>
+      <div id="acct-name" style="font-size:16px;font-weight:700"></div>
+      <div id="acct-class" style="font-size:12px;color:var(--tm);margin-bottom:1rem"></div>
+      <div id="acct-avatar-status" style="font-size:11px;color:var(--tm);margin-bottom:1rem"></div>
+      <button class="btn full" onclick="doSignOut()">Sign out</button>
+    </div>
+  </div>
+</div>
+
 </div><!-- /app -->
 
 <script>
@@ -428,6 +505,220 @@ const MARK_JSON_SYSTEM = 'You are a JSON API. Respond with ONLY a single valid J
 /* ── Storage keys — must be declared before any function uses them ── */
 const LS_KEY = 'igcse_pe_progress';
 const SR_KEY = 'igcse_pe_sr';
+
+/* ═══════════════════════════════════════════════════════════
+   ACCOUNTS & LEADERBOARD (Supabase)
+   ═══════════════════════════════════════════════════════════ */
+const SUPABASE_URL = 'https://kdtiofzujbeiwxkvyncu.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_MwPkTklgH8tA2lNiHVdQMA_cl1RIyxN';
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+let currentUser = null;    // Supabase auth user object, or null if signed out
+let currentProfile = null; // {id,name,class_code,avatar_url}, or null
+
+function acctShowMode(mode){
+  document.getElementById('acct-mode-signin').style.display = mode==='signin' ? 'block' : 'none';
+  document.getElementById('acct-mode-signup').style.display = mode==='signup' ? 'block' : 'none';
+}
+
+function acctError(fieldId, msg){
+  const el = document.getElementById(fieldId);
+  el.textContent = msg;
+  el.style.display = msg ? 'block' : 'none';
+}
+
+async function doSignUp(){
+  const name = document.getElementById('su-name').value.trim();
+  const classCode = document.getElementById('su-class').value.trim();
+  const email = document.getElementById('su-email').value.trim();
+  const password = document.getElementById('su-password').value;
+  acctError('su-error','');
+  if(!name || !classCode || !email || !password){ acctError('su-error','Please fill in every field.'); return; }
+  if(password.length < 6){ acctError('su-error','Password must be at least 6 characters.'); return; }
+  try{
+    const { data, error } = await sb.auth.signUp({ email, password });
+    if(error) throw error;
+    const uid = data.user.id;
+    const { error: profErr } = await sb.from('profiles').insert({ id: uid, name, class_code: classCode });
+    if(profErr) throw profErr;
+    await refreshAuthState();
+  }catch(err){
+    acctError('su-error', err.message || 'Could not create account.');
+  }
+}
+
+async function doSignIn(){
+  const email = document.getElementById('si-email').value.trim();
+  const password = document.getElementById('si-password').value;
+  acctError('si-error','');
+  if(!email || !password){ acctError('si-error','Please fill in both fields.'); return; }
+  try{
+    const { error } = await sb.auth.signInWithPassword({ email, password });
+    if(error) throw error;
+    await refreshAuthState();
+  }catch(err){
+    acctError('si-error', err.message || 'Could not sign in.');
+  }
+}
+
+async function doSignOut(){
+  await sb.auth.signOut();
+  currentUser = null; currentProfile = null;
+  renderAccountSection();
+  renderTopbarAccount();
+  renderLeaderboard();
+}
+
+async function refreshAuthState(){
+  const { data: { session } } = await sb.auth.getSession();
+  currentUser = session ? session.user : null;
+  currentProfile = null;
+  if(currentUser){
+    const { data, error } = await sb.from('profiles').select('*').eq('id', currentUser.id).maybeSingle();
+    if(!error) currentProfile = data;
+  }
+  renderAccountSection();
+  renderTopbarAccount();
+  renderLeaderboard();
+}
+
+function renderTopbarAccount(){
+  const btn = document.getElementById('topbar-account-btn');
+  if(!btn) return;
+  if(!currentUser || !currentProfile){
+    btn.innerHTML = '👤 Sign in';
+    return;
+  }
+  const avatar = currentProfile.avatar_url
+    ? `<img src="${currentProfile.avatar_url}" style="width:18px;height:18px;border-radius:50%;object-fit:cover">`
+    : '👤';
+  const firstName = currentProfile.name.split(' ')[0];
+  btn.innerHTML = `${avatar} ${firstName}`;
+}
+
+function renderAccountSection(){
+  const loading = document.getElementById('acct-loading');
+  const out = document.getElementById('acct-signed-out');
+  const inn = document.getElementById('acct-signed-in');
+  if(!loading) return; // section not yet in DOM
+  loading.style.display = 'none';
+  if(!currentUser || !currentProfile){
+    out.style.display = 'block'; inn.style.display = 'none';
+    return;
+  }
+  out.style.display = 'none'; inn.style.display = 'block';
+  document.getElementById('acct-name').textContent = currentProfile.name;
+  document.getElementById('acct-class').textContent = 'Class: ' + currentProfile.class_code;
+  document.getElementById('acct-avatar-img').src = currentProfile.avatar_url || 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 84 84"%3E%3Crect width="84" height="84" fill="%23334155"/%3E%3Ctext x="42" y="52" font-size="34" text-anchor="middle" fill="%2394a3b8"%3E%F0%9F%91%A4%3C/text%3E%3C/svg%3E';
+}
+
+async function uploadAvatar(input){
+  const file = input.files[0];
+  if(!file || !currentUser) return;
+  const status = document.getElementById('acct-avatar-status');
+  status.textContent = 'Uploading…';
+  try{
+    const ext = file.name.split('.').pop();
+    const path = `${currentUser.id}/avatar.${ext}`;
+    const { error: upErr } = await sb.storage.from('avatars').upload(path, file, { upsert: true });
+    if(upErr) throw upErr;
+    const { data: pub } = sb.storage.from('avatars').getPublicUrl(path);
+    const url = pub.publicUrl + '?t=' + Date.now(); // cache-bust so the new photo shows immediately
+    const { error: updErr } = await sb.from('profiles').update({ avatar_url: url }).eq('id', currentUser.id);
+    if(updErr) throw updErr;
+    currentProfile.avatar_url = url;
+    document.getElementById('acct-avatar-img').src = url;
+    status.textContent = 'Photo updated ✓';
+    renderTopbarAccount();
+  }catch(err){
+    status.textContent = 'Upload failed: ' + (err.message || 'unknown error');
+  }
+}
+
+/* Save (or update, if better) the current quiz result to the leaderboard.
+   One row per (user, chapter_filter, question_count) — only overwritten
+   when the new score beats the existing best, so this is always safe to
+   call after every quiz regardless of the result. */
+async function syncQuizScore(chapterFilter, questionCount, score, maxScore){
+  if(!currentUser) return; // not signed in — nothing to sync, quiz still works locally
+  const pct = maxScore>0 ? Math.round(score/maxScore*100) : 0;
+  try{
+    const { data: existing } = await sb.from('quiz_scores')
+      .select('score,max_score')
+      .eq('user_id', currentUser.id)
+      .eq('chapter_filter', chapterFilter)
+      .eq('question_count', questionCount)
+      .maybeSingle();
+    const existingPct = existing ? Math.round(existing.score/existing.max_score*100) : -1;
+    if(pct <= existingPct) return; // not a new best — leave the leaderboard row as-is
+    await sb.from('quiz_scores').upsert({
+      user_id: currentUser.id,
+      chapter_filter: chapterFilter,
+      question_count: questionCount,
+      score, max_score: maxScore, pct,
+      achieved_at: new Date().toISOString()
+    }, { onConflict: 'user_id,chapter_filter,question_count' });
+  }catch(err){
+    console.warn('Leaderboard sync failed (quiz result is still shown locally):', err.message);
+  }
+}
+
+async function renderLeaderboard(){
+  const out = document.getElementById('lb-signed-out');
+  const inn = document.getElementById('lb-signed-in');
+  if(!out) return; // section not yet in DOM
+  if(!currentUser || !currentProfile){
+    out.style.display = 'block'; inn.style.display = 'none';
+    return;
+  }
+  out.style.display = 'none'; inn.style.display = 'block';
+
+  const filterSel = document.getElementById('lb-filter');
+  if(filterSel.options.length <= 1){
+    TOPICS.forEach(t=>{
+      const o=document.createElement('option');
+      o.value=t.id; o.textContent=t.title;
+      filterSel.appendChild(o);
+    });
+  }
+  const chapterFilter = filterSel.value;
+  const questionCount = parseInt(document.getElementById('lb-count').value);
+  const list = document.getElementById('lb-list');
+  list.innerHTML = '<div style="text-align:center;padding:1.5rem;color:var(--tm)">Loading leaderboard…</div>';
+
+  try{
+    const { data, error } = await sb.from('quiz_scores')
+      .select('score,max_score,pct,achieved_at,profiles(name,class_code,avatar_url)')
+      .eq('chapter_filter', chapterFilter)
+      .eq('question_count', questionCount)
+      .order('pct', { ascending: false })
+      .limit(50);
+    if(error) throw error;
+    const rows = (data||[]).filter(r=>r.profiles && r.profiles.class_code===currentProfile.class_code);
+    if(!rows.length){
+      list.innerHTML = '<div class="q-card" style="text-align:center;padding:1.5rem;color:var(--tm)">No scores yet for this chapter/length in your class — be the first!</div>';
+      return;
+    }
+    const medals=['🥇','🥈','🥉'];
+    list.innerHTML = rows.map((r,i)=>{
+      const avatarImg = r.profiles.avatar_url
+        ? `<img src="${r.profiles.avatar_url}" style="width:32px;height:32px;border-radius:50%;object-fit:cover;background:var(--s2)">`
+        : `<div style="width:32px;height:32px;border-radius:50%;background:var(--s2);display:flex;align-items:center;justify-content:center;font-size:15px">👤</div>`;
+      return `
+      <div class="q-card" style="display:flex;align-items:center;gap:12px;padding:.75rem 1rem;margin-bottom:8px">
+        <div style="width:28px;text-align:center;font-size:14px;font-weight:700;color:var(--tm)">${medals[i]||('#'+(i+1))}</div>
+        ${avatarImg}
+        <div style="flex:1;font-size:13px;font-weight:600">${r.profiles.name}</div>
+        <div style="font-size:13px;font-weight:700;color:var(--green)">${r.pct}%</div>
+      </div>`;
+    }).join('');
+  }catch(err){
+    list.innerHTML = `<div class="q-card" style="text-align:center;padding:1.5rem;color:var(--tm)">Couldn't load the leaderboard right now.</div>`;
+  }
+}
+
+sb.auth.onAuthStateChange((_event, _session) => { refreshAuthState(); });
+refreshAuthState();
 
 /* ═══════════════════════════════════════════════════════════
    FULL TOPIC DATA  (direct from Collins Cambridge textbook)
@@ -1643,17 +1934,28 @@ function toggleApiBanner(){
    TAB NAVIGATION
    ═══════════════════════════════════════════════════════════ */
 function switchTab(name){
+  // Any tab switch (including via the top-right account button, which is
+  // reachable even before a chapter is picked) means we're leaving the
+  // startup screen — without this, sections like Account/Leaderboard were
+  // correctly made visible but stayed hidden behind/below the still-shown
+  // startup screen, which looked like "nothing happens" when clicked.
+  const ss = document.getElementById('startup-screen');
+  if(ss && ss.style.display !== 'none') ss.style.display = 'none';
+  document.getElementById('tab-bar').style.display = 'flex';
+
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
   const sec = document.getElementById('sec-'+name);
   if(sec) sec.classList.add('active');
-  const idx={topics:0,questions:1,diagrams:2,flashcards:3,quiz:4}[name];
+  const idx={topics:0,questions:1,diagrams:2,flashcards:3,quiz:4,leaderboard:5,account:6}[name];
   if(idx!==undefined){
     const tabs=document.querySelectorAll('.tab');
     if(tabs[idx]) tabs[idx].classList.add('active');
   }
   if(name==='flashcards') renderFlashcards();
   if(name==='topics') renderTopicGrid('topic-grid', false);
+  if(name==='leaderboard') renderLeaderboard();
+  if(name==='account') renderAccountSection();
 }
 
 /* ═══════════════════════════════════════════════════════════
@@ -1861,6 +2163,7 @@ function printChapter(){
    QUIZ MODE
    ═══════════════════════════════════════════════════════════ */
 let quizQuestions=[], quizIdx=0, quizTotal=0, quizScore=0, quizResults=[];
+let quizChapterFilter='all', quizQuestionCount=10;
 
 (function initQuizFilter(){
   const sel=document.getElementById('quiz-filter');
@@ -1875,6 +2178,7 @@ let quizQuestions=[], quizIdx=0, quizTotal=0, quizScore=0, quizResults=[];
 function startQuiz(){
   const count=parseInt(document.getElementById('quiz-count').value);
   const filter=document.getElementById('quiz-filter').value;
+  quizChapterFilter=filter; quizQuestionCount=count;
   // Build pool
   let pool=[];
   TOPICS.forEach(t=>{
@@ -1992,6 +2296,7 @@ function endQuiz(){
       </div>
       <div style="color:var(--tm)">${r.q.chapterTitle}</div>
     </div>`).join('');
+  if(quizResults.length>0) syncQuizScore(quizChapterFilter, quizResults.length, quizScore, maxTotal);
 }
 
 function resetQuiz(){
