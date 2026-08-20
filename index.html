@@ -701,11 +701,17 @@ function capturePhoto(){
 /* Face-detection gate for avatar photos — runs entirely in the browser via
    MediaPipe (Google's on-device ML library, loaded lazily from CDN). This
    is a soft check: it only confirms a face-shaped pattern is present, not
-   who it belongs to or whether the image is otherwise appropriate — see
-   the "Upload anyway" override below for legitimate photos it might miss
-   (side profiles, head coverings, etc). If the model itself fails to load
-   (e.g. student is offline), the check fails OPEN — it never blocks a
-   legitimate upload just because the face-detection library didn't load. */
+   who it belongs to or whether the image is otherwise appropriate. No-face
+   is a HARD block (no override) — an earlier version had an "upload
+   anyway" bypass, removed because it let anyone click straight past the
+   check, defeating its purpose. Trade-off worth knowing: a legitimate
+   photo that the detector misses (side profile, head covering, poor
+   lighting) has no in-app workaround — that student would need a
+   different photo or manual help. If the model itself fails to load
+   (e.g. student is offline), the check fails OPEN rather than blocking a
+   legitimate upload over a broken dependency — but this is shown to the
+   student rather than silently swallowed, so it's never ambiguous
+   whether the check actually ran. */
 let faceDetectorPromise = null;
 function getFaceDetector(){
   if(!faceDetectorPromise){
@@ -741,8 +747,6 @@ async function fileHasFace(file){
   }
 }
 
-let pendingAvatarFile = null;
-
 async function uploadAvatar(file){
   if(!file || !currentUser) return;
   const status = document.getElementById('acct-avatar-status');
@@ -750,14 +754,19 @@ async function uploadAvatar(file){
   try{
     const hasFace = await fileHasFace(file);
     if(!hasFace){
-      pendingAvatarFile = file;
-      status.innerHTML = `No face detected in this photo. <button class="btn" style="font-size:11px;padding:.3rem .6rem;margin-left:4px" onclick="doUploadAvatar(pendingAvatarFile)">Upload anyway</button>`;
+      // Hard block — no override. A bypass button here would let anyone
+      // click straight past the check, defeating its purpose.
+      status.textContent = 'No face detected in this photo — please choose a clear photo of your face.';
       return;
     }
   }catch(err){
-    console.warn('Face check unavailable, allowing upload:', err.message);
-    // fails open — never block a legitimate upload just because the
-    // face-detection model itself couldn't load (e.g. offline)
+    // The face-detection model itself failed to load (e.g. offline, or the
+    // CDN/WASM couldn't be reached) — this is different from "no face
+    // found," so it fails open rather than blocking a legitimate upload.
+    // But a SILENT fallback here would be its own trust problem, so this
+    // stays visible rather than only logging to the console.
+    console.warn('Face check unavailable, allowing upload without it:', err.message);
+    status.textContent = 'Uploading (face check unavailable right now)…';
   }
   await doUploadAvatar(file);
 }
