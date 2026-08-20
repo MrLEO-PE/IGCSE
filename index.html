@@ -2316,16 +2316,23 @@ function revealQuizModel(){
 }
 
 async function checkQuizAnswer(){
-  const ans=document.getElementById('quiz-ans').value.trim();
+  const ansBox=document.getElementById('quiz-ans');
+  // Guard: once a question has been checked, the box and button are
+  // disabled below and never re-enabled until the NEXT question renders
+  // a fresh DOM — so this blocks re-submitting an edited/copied answer
+  // on the same question, which previously let a student see the model
+  // answer, paste it in, and re-score the same question for extra marks.
+  if(ansBox.disabled) return;
+  const ans=ansBox.value.trim();
   if(!ans){alert('Write something first!');return;}
   const q=quizQuestions[quizIdx];
   const btn=document.getElementById('quiz-check-btn');
   const think=document.getElementById('quiz-think');
   const fb=document.getElementById('quiz-fb');
   const key=getApiKey();
-  btn.disabled=true; think.style.display='flex';
+  btn.disabled=true; ansBox.disabled=true; think.style.display='flex';
   if(!key){
-    think.style.display='none'; btn.disabled=false;
+    think.style.display='none';
     fb.innerHTML=`<div class="feedback-box show partial"><div class="feedback-header">🔑 No API key</div><div>Add your API key to enable AI marking. The model answer is shown below.</div></div>`;
     document.getElementById('quiz-mr').style.display='block';
     revealQuizModel();
@@ -2353,7 +2360,8 @@ Return ONLY valid JSON: {"score":X,"max":${q.marks},"level":"correct|partial|inc
     revealQuizModel();
     quizResults.push({q,ans,score:0,max:q.marks,feedback:'Error'});
   }
-  btn.disabled=false; think.style.display='none';
+  think.style.display='none';
+  // btn and ansBox stay disabled — this question is locked in until "Next question"
   document.getElementById('quiz-next-btn').style.display='block';
 }
 
