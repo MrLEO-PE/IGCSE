@@ -698,8 +698,71 @@ function capturePhoto(){
   }, 'image/jpeg', 0.9);
 }
 
+/* Face-detection gate for avatar photos — runs entirely in the browser via
+   MediaPipe (Google's on-device ML library, loaded lazily from CDN). This
+   is a soft check: it only confirms a face-shaped pattern is present, not
+   who it belongs to or whether the image is otherwise appropriate — see
+   the "Upload anyway" override below for legitimate photos it might miss
+   (side profiles, head coverings, etc). If the model itself fails to load
+   (e.g. student is offline), the check fails OPEN — it never blocks a
+   legitimate upload just because the face-detection library didn't load. */
+let faceDetectorPromise = null;
+function getFaceDetector(){
+  if(!faceDetectorPromise){
+    faceDetectorPromise = (async () => {
+      const { FaceDetector, FilesetResolver } = await import('https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.0');
+      const vision = await FilesetResolver.forVisionTasks('https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.0/wasm');
+      return await FaceDetector.createFromOptions(vision, {
+        baseOptions: {
+          modelAssetPath: 'https://storage.googleapis.com/mediapipe-models/face_detector/blaze_face_short_range/float16/1/blaze_face_short_range.tflite',
+          delegate: 'GPU'
+        },
+        runningMode: 'IMAGE'
+      });
+    })();
+  }
+  return faceDetectorPromise;
+}
+
+async function fileHasFace(file){
+  const objectUrl = URL.createObjectURL(file);
+  try{
+    const img = await new Promise((resolve,reject)=>{
+      const el = new Image();
+      el.onload = ()=>resolve(el);
+      el.onerror = ()=>reject(new Error('Could not read image'));
+      el.src = objectUrl;
+    });
+    const detector = await getFaceDetector();
+    const result = detector.detect(img);
+    return !!(result.detections && result.detections.length > 0);
+  }finally{
+    URL.revokeObjectURL(objectUrl);
+  }
+}
+
+let pendingAvatarFile = null;
+
 async function uploadAvatar(file){
   if(!file || !currentUser) return;
+  const status = document.getElementById('acct-avatar-status');
+  status.textContent = 'Checking photo…';
+  try{
+    const hasFace = await fileHasFace(file);
+    if(!hasFace){
+      pendingAvatarFile = file;
+      status.innerHTML = `No face detected in this photo. <button class="btn" style="font-size:11px;padding:.3rem .6rem;margin-left:4px" onclick="doUploadAvatar(pendingAvatarFile)">Upload anyway</button>`;
+      return;
+    }
+  }catch(err){
+    console.warn('Face check unavailable, allowing upload:', err.message);
+    // fails open — never block a legitimate upload just because the
+    // face-detection model itself couldn't load (e.g. offline)
+  }
+  await doUploadAvatar(file);
+}
+
+async function doUploadAvatar(file){
   const status = document.getElementById('acct-avatar-status');
   status.textContent = 'Uploading…';
   try{
