@@ -289,6 +289,36 @@ textarea.answer-box:focus{outline:none;border-color:var(--green)}
   .btn:hover{background:var(--s2)}
   .btn.primary:hover{background:var(--green)}
 }
+
+/* ── TUTORIAL MODAL ───────────────────────────────────────── */
+.tut-overlay{display:none;position:fixed;inset:0;background:#000000b0;z-index:200;align-items:center;justify-content:center;padding:12px}
+.tut-overlay.open{display:flex}
+.tut-card{background:var(--s1);border:.5px solid var(--bds);border-radius:14px;width:680px;max-width:100%;max-height:100%;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 12px 40px rgba(0,0,0,.35)}
+.tut-head{display:flex;align-items:center;gap:10px;padding:.75rem 1rem;border-bottom:.5px solid var(--bd)}
+.tut-head strong{flex:1;font-size:14px}
+.tut-count{font-size:12px;color:var(--tm);font-variant-numeric:tabular-nums}
+.tut-close{background:none;border:none;color:var(--ts);font-size:18px;cursor:pointer;padding:2px 6px;line-height:1}
+.tut-body{overflow-y:auto;padding:1rem}
+.tut-img{display:block;width:100%;max-height:48vh;object-fit:contain;background:var(--s0);border:.5px solid var(--bd);border-radius:10px;margin-bottom:.9rem}
+.tut-title{font-size:16px;font-weight:700;margin-bottom:.35rem;display:flex;gap:8px;align-items:baseline}
+.tut-title .tut-n{flex-shrink:0;width:24px;height:24px;border-radius:50%;background:var(--green);color:#fff;font-size:12px;display:inline-flex;align-items:center;justify-content:center}
+.tut-text{font-size:13px;color:var(--ts);line-height:1.7}
+.tut-text ul{margin:.4rem 0 0 1.1rem}
+.tut-text strong{color:var(--tp)}
+.tut-hl{color:#f59e0b;font-weight:600}
+.tut-foot{display:flex;align-items:center;gap:8px;padding:.75rem 1rem;border-top:.5px solid var(--bd);flex-wrap:wrap}
+.tut-dots{display:flex;gap:5px;flex:1;justify-content:center;flex-wrap:wrap}
+.tut-dot{width:8px;height:8px;border-radius:50%;background:var(--bds);border:none;padding:0;cursor:pointer}
+.tut-dot.on{background:var(--green);transform:scale(1.25)}
+@media(max-width:480px){
+  .tb-lbl{display:none}
+  .top-bar{gap:8px}
+  .tut-overlay{padding:0}
+  .tut-card{border-radius:0;height:100%}
+  .tut-img{max-height:40vh}
+  .tut-foot .btn{min-height:40px;padding:8px 12px}
+  .tut-dots{order:-1;flex-basis:100%;margin-bottom:4px}
+}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 </head>
@@ -299,6 +329,7 @@ textarea.answer-box:focus{outline:none;border-color:var(--green)}
   <div class="logo">PE</div>
   <h1>IGCSE PE Workbook</h1>
   <span class="badge" id="topic-badge" style="display:none"></span>
+  <button class="badge" id="tutorial-btn" onclick="openTutorial()" style="cursor:pointer;font-family:inherit" title="How to use the app">📖<span class="tb-lbl"> Tutorial</span></button>
   <button class="badge" id="key-settings-btn" onclick="toggleApiBanner()" style="cursor:pointer;font-family:inherit">🔑 API key</button>
   <button class="badge" id="topbar-account-btn" onclick="switchTab('account')" style="cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:6px">👤 Sign in</button>
 </div>
@@ -488,6 +519,28 @@ textarea.answer-box:focus{outline:none;border-color:var(--green)}
     <div style="display:flex;gap:8px;margin-top:.9rem">
       <button class="btn full" onclick="closeCameraModal()">Cancel</button>
       <button class="btn primary full" id="camera-capture-btn" style="display:none" onclick="capturePhoto()">Capture</button>
+    </div>
+  </div>
+</div>
+
+<!-- Tutorial walkthrough -->
+<div class="tut-overlay" id="tut-overlay" onclick="if(event.target===this) closeTutorial()">
+  <div class="tut-card" role="dialog" aria-modal="true" aria-labelledby="tut-title">
+    <div class="tut-head">
+      <strong>📖 How to use the IGCSE PE Workbook</strong>
+      <span class="tut-count" id="tut-count"></span>
+      <button class="tut-close" onclick="closeTutorial()" aria-label="Close tutorial">✕</button>
+    </div>
+    <div class="tut-body" id="tut-body">
+      <img class="tut-img" id="tut-img" alt="">
+      <div class="tut-title" id="tut-title"></div>
+      <div class="tut-text" id="tut-text"></div>
+    </div>
+    <div class="tut-foot">
+      <button class="btn" id="tut-prev" onclick="tutGo(tutStep-1)">← Back</button>
+      <div class="tut-dots" id="tut-dots"></div>
+      <button class="btn" id="tut-try" onclick="tutTry()">Take me there</button>
+      <button class="btn primary" id="tut-next" onclick="tutGo(tutStep+1)">Next →</button>
     </div>
   </div>
 </div>
@@ -3582,6 +3635,115 @@ function resetGame(gid){
 function findGame(gid){
   for(const t of TOPICS){if(t.diagrams){const f=t.diagrams.find(d=>d.id===gid);if(f)return f;}}
 }
+
+/* ═══════════════════════════════════════════════════════════
+   TUTORIAL — step-by-step walkthrough (screenshots in /tutorial)
+   ═══════════════════════════════════════════════════════════ */
+// Questions and Diagrams need a chapter loaded first — fall back to chapter 1.
+function tutEnsureTopic(){ if(!currentTopic) loadTopic(TOPICS[0].id); }
+
+const TUTORIAL_STEPS = [
+  { img:'01-create-account', title:'Create your account',
+    text:`Tap <strong>👤 Sign in</strong> (top right), then <strong>Create one</strong>. Enter:
+      <ul><li>your <strong>name</strong> (this is what your class will see on the leaderboard)</li>
+      <li>the <strong>class code</strong> your teacher gives you. Type it exactly as given, because it decides which class leaderboard you join</li>
+      <li>your <strong>email</strong> and a <strong>password</strong> (at least 6 characters)</li></ul>
+      Next time, just sign in with the same email and password.`,
+    go:()=>switchTab('account') },
+  { img:'02-profile-photo', title:'Add a profile picture',
+    text:`Once you're signed in, your first name shows in the top-right corner. On the Account page, tap the <span class="tut-hl">📷 button</span> on your avatar to <strong>choose a file</strong> or <strong>take a photo</strong>.
+      The photo must clearly show your face. It appears next to your name on the leaderboard.`,
+    go:()=>switchTab('account') },
+  { img:'03-api-key', title:'Turn on AI marking (free key)',
+    text:`Tap <span class="tut-hl">🔑 API key</span>, then <strong>📖 How do I get a key?</strong>.
+      <ul><li>Open <strong>console.groq.com/keys</strong> and sign up (free, no credit card needed)</li>
+      <li>Click <strong>Create API Key</strong> and copy the code that starts with <strong>gsk_</strong></li>
+      <li>Paste it in the box and tap <strong>Save</strong></li></ul>
+      The key is stored only in your browser. Without a key you can still read the model answers, but your answers won't be marked.`,
+    go:()=>{ const b=document.getElementById('api-banner'); if(b.style.display==='none') toggleApiBanner(); else b.scrollIntoView({behavior:'smooth',block:'nearest'}); } },
+  { img:'04-chapters', title:'Pick a chapter',
+    text:`The home screen lists every chapter of the Collins Cambridge book, with the number of <strong>questions</strong> and <strong>diagrams</strong> in each.
+      The bar at the top shows your <strong>overall progress</strong>, and each chapter card shows how many of its questions you've answered.
+      You can switch chapter at any time from the <strong>📚 Chapters</strong> tab.`,
+    go:()=>switchTab('topics') },
+  { img:'05-answer-question', title:'Answer questions and get marked',
+    text:`In <strong>📋 Questions</strong>, write your answer in the box. Stuck? Open the <span class="tut-hl">💡 Examiner tip</span>.
+      Tap <span class="tut-hl">Check answer ↗</span> and the AI examiner gives you a <strong>score</strong> and feedback: green means correct, amber partly correct, red needs more work.
+      Your answers are saved automatically, and the counters at the top track how many questions you've answered and your average score.`,
+    go:()=>{ tutEnsureTopic(); switchTab('questions'); } },
+  { img:'06-model-answer', title:'Compare with the model answer',
+    text:`Tap <span class="tut-hl">Model answer</span> to see the full mark-scheme answer. If you've already written something, it stays <strong>blurred</strong> until you click it, so try the question yourself before you look.
+      Use <strong>🖨 Print worksheet</strong> for a paper copy of the chapter, or <strong>🗑 Clear saved</strong> to start the chapter again.
+      Questions marked <strong>⭐ Extension</strong> go beyond the core syllabus. They are there for extra practice and never come up in the quiz.`,
+    go:()=>{ tutEnsureTopic(); switchTab('questions'); } },
+  { img:'07-spaced-review', title:'Review your weak spots',
+    text:`Any question you score <strong>under 80%</strong> on comes back later for review (spaced repetition). When some are due, an amber banner appears.
+      Tap <span class="tut-hl">Review</span> to practise just those questions. Score well and each question comes back less often.`,
+    go:()=>switchTab('topics') },
+  { img:'08-diagrams', title:'Label the diagrams',
+    text:`In <strong>🧩 Diagrams</strong>, <strong>tap a label</strong> (it turns <span class="tut-hl">green</span>), then <strong>tap the numbered spot</strong> where it belongs. On a computer you can also drag and drop labels.
+      Hover over a label (or tap it on a phone) to see its definition in the blue box. Tap <span class="tut-hl">Check labels ↗</span> to see which ones you got right, or <strong>Reset</strong> to try again.`,
+    go:()=>{ tutEnsureTopic(); switchTab('diagrams'); } },
+  { img:'09-flashcards', title:'Revise key terms with flashcards',
+    text:`In <strong>🃏 Flashcards</strong>, tap a card to <strong>flip it</strong> and see the definition.
+      Filter the cards by chapter, <strong>🔀 Shuffle</strong> them to test yourself, and use <strong>↺ Reset all</strong> to turn them all face down again. The counter shows how many cards you've revealed.`,
+    go:()=>switchTab('flashcards') },
+  { img:'10-quiz', title:'Take a practice exam',
+    text:`Open <strong>🎲 Quiz</strong>, choose a chapter (or <strong>All chapters</strong>) and tap <strong>Start practice exam</strong>. You get <strong>10 random questions</strong> from the core syllabus.
+      Write your answer and tap <span class="tut-hl">Check answer ↗</span>. Once it's marked, the answer is <strong>locked</strong>, so you can't change it after seeing the model answer.
+      Then tap <strong>Next question →</strong>. Your <span class="tut-hl">running total</span> is shown at the top right.`,
+    go:()=>switchTab('quiz') },
+  { img:'11-quiz-results', title:'Submit and see your results',
+    text:`After the 10th question (or when you tap <strong>End quiz</strong>), you see your <strong>total marks and percentage</strong>, with a score for every question.
+      If you're signed in, your result is <strong>sent to the leaderboard automatically</strong>. Only your <strong>best</strong> score counts. Tap <strong>Try again</strong> to get a new set of questions.`,
+    go:()=>switchTab('quiz') },
+  { img:'12-leaderboard', title:'Climb the leaderboard',
+    text:`<strong>🏆 Leaderboard</strong> ranks everyone with <strong>your class code</strong> by their best quiz percentage. Use the menu to switch between <strong>All chapters</strong> and a single chapter.
+      That's it. Pick a chapter and start revising! You can open this tutorial again at any time with <strong>📖 Tutorial</strong>.`,
+    go:()=>switchTab('leaderboard') },
+];
+
+let tutStep = 0;
+function openTutorial(){
+  document.getElementById('tut-dots').innerHTML = TUTORIAL_STEPS.map((_,i)=>
+    `<button class="tut-dot" onclick="tutGo(${i})" aria-label="Step ${i+1}"></button>`).join('');
+  document.getElementById('tut-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  tutGo(0);
+}
+function closeTutorial(){
+  document.getElementById('tut-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+function tutGo(i){
+  if(i >= TUTORIAL_STEPS.length){ closeTutorial(); return; }
+  if(i < 0) return;
+  tutStep = i;
+  const s = TUTORIAL_STEPS[i], last = i === TUTORIAL_STEPS.length-1;
+  const img = document.getElementById('tut-img');
+  img.src = `tutorial/${s.img}.webp`;
+  img.alt = `Screenshot: ${s.title}`;
+  document.getElementById('tut-title').innerHTML = `<span class="tut-n">${i+1}</span><span id="tut-title-t">${s.title}</span>`;
+  document.getElementById('tut-text').innerHTML = s.text;
+  document.getElementById('tut-count').textContent = `${i+1} / ${TUTORIAL_STEPS.length}`;
+  document.getElementById('tut-prev').disabled = i === 0;
+  document.getElementById('tut-next').textContent = last ? 'Finish ✓' : 'Next →';
+  document.querySelectorAll('.tut-dot').forEach((d,j)=>d.classList.toggle('on', j===i));
+  document.getElementById('tut-body').scrollTop = 0;
+  // Preload the next screenshot so paging feels instant
+  if(!last) new Image().src = `tutorial/${TUTORIAL_STEPS[i+1].img}.webp`;
+}
+function tutTry(){
+  const s = TUTORIAL_STEPS[tutStep];
+  closeTutorial();
+  if(s.go) s.go();
+}
+document.addEventListener('keydown', e=>{
+  if(!document.getElementById('tut-overlay').classList.contains('open')) return;
+  if(e.key==='Escape') closeTutorial();
+  else if(e.key==='ArrowRight') tutGo(tutStep+1);
+  else if(e.key==='ArrowLeft') tutGo(tutStep-1);
+});
 </script>
 </body>
 </html>
