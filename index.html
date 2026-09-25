@@ -290,6 +290,32 @@ textarea.answer-box:focus{outline:none;border-color:var(--green)}
   .btn.primary:hover{background:var(--green)}
 }
 
+/* ── SYLLABUS CHECKLIST + TEACHER DASHBOARD ───────────────── */
+.syl-summary,.tch-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:.9rem}
+.tch-stats{margin-bottom:0}
+.syl-sec{font-size:13px;font-weight:700;margin-bottom:.25rem}
+.syl-row{display:flex;align-items:center;gap:10px;padding:.55rem 0;border-top:.5px solid var(--bd)}
+.syl-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.syl-name{flex:1;min-width:0;font-size:13px;font-weight:500}
+.syl-meta{font-size:11px;color:var(--tm);font-weight:400}
+.syl-bar{width:90px;flex-shrink:0}
+.syl-btn{padding:5px 12px;font-size:12px;flex-shrink:0}
+.tch-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.tch-grid .q-card{margin-bottom:1rem}
+.tch-line{display:flex;align-items:center;gap:10px;padding:.5rem 0;border-top:.5px solid var(--bd);font-size:13px}
+.tch-wrap{overflow-x:auto}
+.tch-table{width:100%;border-collapse:collapse;font-size:13px}
+.tch-table th{text-align:left;font-size:11px;color:var(--tm);font-weight:600;padding:.4rem .5rem;border-bottom:.5px solid var(--bd);white-space:nowrap}
+.tch-table td{padding:.55rem .5rem;border-bottom:.5px solid var(--bd)}
+.tch-table tr.click{cursor:pointer}
+.tch-table tr.click:hover td{background:var(--s1)}
+@media(max-width:600px){
+  .syl-bar{display:none}
+  .syl-summary,.tch-stats{grid-template-columns:repeat(2,1fr)}
+  .tch-grid{grid-template-columns:1fr;gap:0}
+  .syl-btn{min-height:36px;padding:6px 10px}
+}
+
 /* ── TUTORIAL MODAL ───────────────────────────────────────── */
 .tut-overlay{display:none;position:fixed;inset:0;background:#000000b0;z-index:200;align-items:center;justify-content:center;padding:12px}
 .tut-overlay.open{display:flex}
@@ -311,6 +337,8 @@ textarea.answer-box:focus{outline:none;border-color:var(--green)}
 .tut-dot{width:8px;height:8px;border-radius:50%;background:var(--bds);border:none;padding:0;cursor:pointer}
 .tut-dot.on{background:var(--green);transform:scale(1.25)}
 @media(max-width:480px){
+  .tabs .tab{flex:1 1 22%}
+  #topic-badge{max-width:26vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .tb-lbl{display:none}
   .top-bar{gap:8px}
   .tut-overlay{padding:0}
@@ -366,12 +394,14 @@ textarea.answer-box:focus{outline:none;border-color:var(--green)}
 </div>
 
 <div class="tabs" id="tab-bar" style="display:none">
-  <button class="tab" onclick="switchTab('topics')">📚 Chapters</button>
-  <button class="tab active" onclick="switchTab('questions')">📋 Questions</button>
-  <button class="tab" onclick="switchTab('diagrams')">🧩 Diagrams</button>
-  <button class="tab" onclick="switchTab('flashcards')">🃏 Flashcards</button>
-  <button class="tab" onclick="switchTab('quiz')">🎲 Quiz</button>
-  <button class="tab" onclick="switchTab('leaderboard')">🏆 Leaderboard</button>
+  <button class="tab" data-tab="topics" onclick="switchTab('topics')">📚 Chapters</button>
+  <button class="tab active" data-tab="questions" onclick="switchTab('questions')">📋 Questions</button>
+  <button class="tab" data-tab="diagrams" onclick="switchTab('diagrams')">🧩 Diagrams</button>
+  <button class="tab" data-tab="flashcards" onclick="switchTab('flashcards')">🃏 Flashcards</button>
+  <button class="tab" data-tab="quiz" onclick="switchTab('quiz')">🎲 Quiz</button>
+  <button class="tab" data-tab="syllabus" onclick="switchTab('syllabus')">✅ Syllabus</button>
+  <button class="tab" data-tab="leaderboard" onclick="switchTab('leaderboard')">🏆 Leaderboard</button>
+  <button class="tab" data-tab="teacher" id="teacher-tab" onclick="switchTab('teacher')" style="display:none">👩‍🏫 Class</button>
 </div>
 
 <div class="section" id="sec-flashcards">
@@ -436,6 +466,9 @@ textarea.answer-box:focus{outline:none;border-color:var(--green)}
 
 <div class="section" id="sec-questions"><div id="q-list"></div></div>
 <div class="section" id="sec-diagrams"><div id="game-list"></div></div>
+
+<div class="section" id="sec-syllabus"><div id="syl-root"></div></div>
+<div class="section" id="sec-teacher"><div id="tch-root"></div></div>
 
 <div class="section" id="sec-leaderboard">
   <div id="lb-signed-out" style="display:none">
@@ -572,6 +605,7 @@ const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 let currentUser = null;    // Supabase auth user object, or null if signed out
 let currentProfile = null; // {id,name,class_code,avatar_url}, or null
+let isTeacher = false;     // true when the user has a row in the `teachers` table
 
 function acctShowMode(mode){
   document.getElementById('acct-mode-signin').style.display = mode==='signin' ? 'block' : 'none';
@@ -629,23 +663,31 @@ async function doSignIn(){
 
 async function doSignOut(){
   await sb.auth.signOut();
-  currentUser = null; currentProfile = null;
+  currentUser = null; currentProfile = null; isTeacher = false;
   renderAccountSection();
   renderTopbarAccount();
   renderLeaderboard();
+  renderTeacherTab();
 }
 
 async function refreshAuthState(){
   const { data: { session } } = await sb.auth.getSession();
   currentUser = session ? session.user : null;
   currentProfile = null;
+  isTeacher = false;
   if(currentUser){
     const { data, error } = await sb.from('profiles').select('*').eq('id', currentUser.id).maybeSingle();
     if(!error) currentProfile = data;
+    // Teachers are added by hand in Supabase (see supabase/setup.sql) — a
+    // missing table or row simply means "not a teacher".
+    const t = await sb.from('teachers').select('user_id').eq('user_id', currentUser.id).maybeSingle();
+    isTeacher = !t.error && !!t.data;
+    flushAttemptQueue();
   }
   renderAccountSection();
   renderTopbarAccount();
   renderLeaderboard();
+  renderTeacherTab();
 }
 
 function renderTopbarAccount(){
@@ -2396,15 +2438,14 @@ function switchTab(name){
   document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
   const sec = document.getElementById('sec-'+name);
   if(sec) sec.classList.add('active');
-  const idx={topics:0,questions:1,diagrams:2,flashcards:3,quiz:4,leaderboard:5,account:6}[name];
-  if(idx!==undefined){
-    const tabs=document.querySelectorAll('.tab');
-    if(tabs[idx]) tabs[idx].classList.add('active');
-  }
+  const tab = document.querySelector(`.tab[data-tab="${name}"]`);
+  if(tab) tab.classList.add('active');
   if(name==='flashcards') renderFlashcards();
   if(name==='topics') renderTopicGrid('topic-grid', false);
   if(name==='leaderboard') renderLeaderboard();
   if(name==='account') renderAccountSection();
+  if(name==='syllabus') renderSyllabus();
+  if(name==='teacher') renderTeacherDashboard();
 }
 
 /* ═══════════════════════════════════════════════════════════
@@ -2727,6 +2768,7 @@ Return ONLY valid JSON: {"score":X,"max":${q.marks},"level":"correct|partial|inc
     const j=await callGroqMarking(prompt, 500, think.querySelector('span'));
     quizScore+=j.score;
     quizResults.push({q,ans,score:j.score,max:j.max,feedback:j.feedback,level:j.level});
+    recordAttempt(q.chapterId, q.id, j.score, j.max, 'quiz');
     document.getElementById('quiz-score-display').textContent=quizScore+' pts';
     const icons={correct:'✅',partial:'⚠️',incorrect:'❌'};
     const labels={correct:'Well done!',partial:'Partially correct',incorrect:'Needs more work'};
@@ -3121,12 +3163,24 @@ function renderSRBanner(){
 function startSRSession(){
   const due = getDueReviews();
   if(!due.length) return;
-
-  // Build a virtual topic from due questions
-  const srTopic = {
+  startVirtualSession(due, {
     id: '__sr__',
-    title: `📅 Spaced Review — ${due.length} question${due.length>1?'s':''}`,
-    questions: due.map((d,i)=>({
+    badge: '📅 Spaced Review',
+    heading: '📅 Spaced Review session',
+    intro: `These ${due.length} questions are due for review based on your previous scores. Answer each one to update your progress.`,
+    source: 'review'
+  });
+}
+
+// Renders an ad-hoc set of questions (from any chapters) in the Questions tab.
+// items: [{topic, question, lastScore?}] — used by spaced review and by the
+// syllabus checklist's "Practise" buttons.
+function startVirtualSession(items, opts){
+  const srTopic = {
+    id: opts.id,
+    source: opts.source,
+    title: opts.badge,
+    questions: items.map((d,i)=>({
       ...d.question,
       id: i+1,
       _origId: d.question.id,
@@ -3145,7 +3199,7 @@ function startSRSession(){
   if(ss) ss.style.display = 'none';
   document.getElementById('tab-bar').style.display = 'flex';
 
-  document.getElementById('topic-badge').textContent = '📅 Spaced Review';
+  document.getElementById('topic-badge').textContent = opts.badge;
   document.getElementById('topic-badge').style.display = '';
   document.getElementById('s-total').textContent = srTopic.questions.length;
   document.getElementById('stats').style.display = 'grid';
@@ -3156,13 +3210,13 @@ function startSRSession(){
   const ql = document.getElementById('q-list');
   ql.innerHTML = `
     <div class="q-card" style="background:var(--amber-l);border-color:#fcd34d">
-      <strong>📅 Spaced Review session</strong>
-      <p style="font-size:13px;margin-top:.3rem;color:var(--ts)">These ${srTopic.questions.length} questions are due for review based on your previous scores. Answer each one to update your progress.</p>
+      <strong>${opts.heading}</strong>
+      <p style="font-size:13px;margin-top:.3rem;color:var(--ts)">${opts.intro}</p>
     </div>` +
   srTopic.questions.map(q=>`
     <div class="q-card review-card" id="qc-${q.id}">
       <div style="font-size:11px;color:var(--tm);margin-bottom:.4rem">
-        📚 ${q._chTitle} · Last score: ${Math.round(q._lastScore*100)}%
+        📚 ${q._chTitle}${q._lastScore!=null ? ` · Last score: ${Math.round(q._lastScore*100)}%` : ' · Not answered yet'}
       </div>
       <div class="q-header">
         <div class="q-num" style="background:#e74c3c">${q.id}</div>
@@ -3230,7 +3284,10 @@ Return ONLY JSON: {"score":X,"max":${q.marks},"level":"correct|partial|incorrect
     const j=await callGroqMarking(prompt, 500, think.querySelector('span'));
     answered[qid]=true; scores[qid]={s:j.score,m:j.max};
     // Update SR schedule with original IDs
-    if(q._chid && q._origId) updateSR(q._chid, q._origId, j.score, j.max);
+    if(q._chid && q._origId){
+      updateSR(q._chid, q._origId, j.score, j.max);
+      recordAttempt(q._chid, q._origId, j.score, j.max, currentTopic.source || 'review');
+    }
     const icons={correct:'✅',partial:'⚠️',incorrect:'❌'};
     const labels={correct:'Well done!',partial:'Partially correct',incorrect:'Needs more work'};
     const nextMsg = j.score/j.max >= 0.8
@@ -3294,6 +3351,7 @@ Award marks fairly. Return ONLY valid JSON — no markdown, no extra text:
     const j=await callGroqMarking(prompt, maxTokens, think.querySelector('span'));
     answered[qid]=true;scores[qid]={s:j.score,m:j.max};
     updateSR(currentTopic.id, qid, j.score, j.max);
+    recordAttempt(currentTopic.id, qid, j.score, j.max, 'practice');
     const icons={correct:'✅',partial:'⚠️',incorrect:'❌'};
     const labels={correct:'Well done!',partial:'Partially correct',incorrect:'Needs more work'};
     fb.className='feedback-box show '+j.level;
@@ -3675,6 +3733,437 @@ function findGame(gid){
 }
 
 /* ═══════════════════════════════════════════════════════════
+   ATTEMPT TRACKING — every AI-marked answer (practice, review, quiz)
+   ═══════════════════════════════════════════════════════════ */
+const ATTEMPTS_KEY = 'igcse_pe_attempts';           // {"ch1:3":{s,m,t}} latest result per question, this browser
+const ATTEMPT_QUEUE_KEY = 'igcse_pe_attempt_queue'; // rows waiting to be saved to Supabase
+
+function lsGet(k, fallback){ try{ const v = JSON.parse(localStorage.getItem(k)); return v ?? fallback; }catch(e){ return fallback; } }
+function lsSet(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} }
+function esc(s){ return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+function recordAttempt(chid, qid, score, max, source){
+  if(!chid || !qid || !(max > 0)) return;
+  const s = Math.max(0, Math.min(Number(score) || 0, max)); // the AI occasionally over- or under-shoots
+  const local = lsGet(ATTEMPTS_KEY, {});
+  local[`${chid}:${qid}`] = { s, m: max, t: Date.now() };
+  lsSet(ATTEMPTS_KEY, local);
+  // Only queue while signed in, tagged with the user — answers typed on a
+  // shared computer before someone signs in must never be credited to them.
+  if(!currentUser) return;
+  const queue = lsGet(ATTEMPT_QUEUE_KEY, []);
+  queue.push({ _k: Date.now() + '-' + Math.random(), user_id: currentUser.id, chapter_id: chid,
+    question_id: qid, score: s, max_score: max, source, created_at: new Date().toISOString() });
+  lsSet(ATTEMPT_QUEUE_KEY, queue.slice(-500));
+  flushAttemptQueue();
+}
+
+// Sends queued attempts for the signed-in user. Failures (offline, table not
+// created yet) leave them queued for the next try.
+let attemptFlushBusy = false;
+async function flushAttemptQueue(){
+  if(attemptFlushBusy || !currentUser) return;
+  const mine = lsGet(ATTEMPT_QUEUE_KEY, []).filter(r => r.user_id === currentUser.id);
+  if(!mine.length) return;
+  attemptFlushBusy = true;
+  try{
+    const { error } = await sb.from('question_attempts').insert(mine.map(({ _k, ...row }) => row));
+    if(!error){
+      const sent = new Set(mine.map(r => r._k));
+      lsSet(ATTEMPT_QUEUE_KEY, lsGet(ATTEMPT_QUEUE_KEY, []).filter(r => !sent.has(r._k)));
+    }
+  }catch(e){ /* stays queued */ }
+  attemptFlushBusy = false;
+}
+
+// Latest result per question as {"ch1:3": {s, m, t}}. The older per-chapter
+// progress store has no timestamps, so timestamped attempts win over it.
+function localResults(){
+  const out = {};
+  const prog = lsGet(LS_KEY, {});
+  for(const [ch, d] of Object.entries(prog))
+    for(const [qid, sc] of Object.entries((d && d.scores) || {}))
+      if(sc && sc.m > 0) out[`${ch}:${qid}`] = { s: sc.s, m: sc.m, t: 0 };
+  return mergeResults(out, lsGet(ATTEMPTS_KEY, {}));
+}
+function resultsFromRows(rows){
+  const out = {};
+  rows.forEach(r => {
+    const k = `${r.chapter_id}:${r.question_id}`, t = Date.parse(r.created_at);
+    if(!out[k] || t > out[k].t) out[k] = { s: r.score, m: r.max_score, t };
+  });
+  return out;
+}
+function mergeResults(a, b){
+  const out = { ...a };
+  for(const [k, r] of Object.entries(b)) if(!out[k] || r.t >= out[k].t) out[k] = r;
+  return out;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   SYLLABUS CHECKLIST — Cambridge IGCSE PE 0413, exams 2025–2028
+   (subject content is identical in both syllabus versions).
+   Each point lists the core questions that assess it.
+   ═══════════════════════════════════════════════════════════ */
+const SYLLABUS = [
+ {section:'1 Anatomy and physiology', topics:[
+  ['Functions of the skeleton',            {ch1:[1]}],
+  ['Bones and their classification',       {ch1:[2]}],
+  ['Joint types',                          {ch1:[10]}],
+  ['Synovial joint structure',             {ch1:[3]}],
+  ['Movement at joints',                   {ch1:[4,5]}],
+  ['Muscles and tendons',                  {ch1:[6,14]}],
+  ['Antagonistic muscle action',           {ch1:[7,8,16,17]}],
+  ['Muscle fibre types',                   {ch1:[9]}],
+  ['Pathway of air',                       {ch2:[1,2]}],
+  ['Gaseous exchange at the alveoli',      {ch2:[5,9]}],
+  ['Mechanics of breathing',               {ch2:[3,6]}],
+  ['Breathing volumes and minute ventilation', {ch2:[4,7,8,16]}],
+  ['Components of blood',                  {ch3:[1,2]}],
+  ['Haemoglobin',                          {ch3:[21]}],
+  ['Blood vessels',                        {ch3:[3,4]}],
+  ['Heart structure and function',         {ch3:[5,6,10,11]}],
+  ['Cardiac output',                       {ch3:[7,8]}],
+  ['Aerobic and anaerobic respiration',    {ch4:[1,2,3]}],
+  ['Recovery (EPOC)',                      {ch4:[4,9,10]}],
+  ['Short-term effects of exercise',       {ch4:[5,6]}],
+  ['Long-term effects of exercise',        {ch4:[7,8], ch3:[9,15]}],
+  ['Principles of force',                  {ch5:[1,2,3,4,5]}],
+  ['Applications of force',                {ch5:[9,21,22]}],
+  ['Levers',                               {ch5:[6,7,11,12]}],
+ ]},
+ {section:'2 Health, fitness and training', topics:[
+  ['Health, well-being and fitness',       {ch6:[1]}],
+  ['Diet and energy sources',              {ch6:[5,6,7,9,14,18]}],
+  ['Components of fitness',                {ch6:[2,3]}],
+  ['Fitness tests and reasons for testing',{ch6:[8,17]}],
+  ['VO2 max',                              {ch6:[4]}],
+  ['Principles of training and overload',  {ch7:[1,2,7]}],
+  ['Methods of training',                  {ch7:[3,4,9,11,12,17]}],
+  ['High-altitude training',               {ch7:[8]}],
+  ['Warm up and cool down',                {ch7:[5,6]}],
+ ]},
+ {section:'3 Skill acquisition and psychology', topics:[
+  ['Skill and ability',                    {ch8:[1,6,10]}],
+  ['Skilled performance',                  {ch8:[7]}],
+  ['Skill classification',                 {ch8:[8]}],
+  ['Information processing and memory',    {ch8:[9,16]}],
+  ['Stages of learning',                   {ch8:[5]}],
+  ['Feedback',                             {ch8:[3], ch9:[10]}],
+  ['Guidance',                             {ch8:[4]}],
+  ['Goal setting',                         {ch9:[1,2]}],
+  ['Motivation',                           {ch9:[3]}],
+  ['Arousal',                              {ch9:[4]}],
+  ['Anxiety',                              {ch9:[5,6]}],
+  ['Relaxation techniques',                {ch9:[7,12,13,19]}],
+  ['Personality types',                    {ch9:[8]}],
+ ]},
+ {section:'4 Social, cultural and ethical influences', topics:[
+  ['Leisure and recreation',               {ch10:[1]}],
+  ['Growth in leisure activities',         {ch10:[16]}],
+  ['Sports development pyramid',           {ch10:[3]}],
+  ['Sponsorship',                          {ch10:[6]}],
+  ['Media',                                {ch10:[4]}],
+  ['Global events',                        {ch10:[7]}],
+  ['Professional and amateur performers',  {ch10:[8]}],
+  ['Technology in sport',                  {ch10:[9]}],
+  ['Access and participation',             {ch10:[2,11,12,17]}],
+  ['Performance-enhancing drugs',          {ch10:[5], ch11:[9,16]}],
+  ['Disadvantages of PEDs',                {ch11:[17]}],
+  ['Blood doping',                         {ch11:[1,18]}],
+  ['Sportsmanship and gamesmanship',       {ch11:[8]}],
+  ['Risk and risk assessment',             {ch11:[2,6,11,12,19]}],
+  ['Injuries',                             {ch11:[3,4,5,20]}],
+ ]},
+];
+
+const SYL_LEVELS = {
+  good: { label:'Secure',        color:'var(--green)' },
+  mid:  { label:'Getting there', color:'var(--amber)' },
+  low:  { label:'Needs work',    color:'var(--red)' },
+  none: { label:'Not started',   color:'var(--tm)' },
+};
+
+// Secure = 80%+ average on the latest attempts AND at least half the point's questions answered.
+function topicStatus(map, results){
+  let n = 0, done = 0, sum = 0;
+  for(const [ch, ids] of Object.entries(map)) ids.forEach(id => {
+    n++;
+    const r = results[`${ch}:${id}`];
+    if(r){ done++; sum += r.s / r.m; }
+  });
+  const pct = done ? Math.round(sum / done * 100) : null;
+  const level = pct == null ? 'none' : pct < 50 ? 'low' : (pct >= 80 && done >= Math.ceil(n / 2)) ? 'good' : 'mid';
+  return { n, done, pct, level };
+}
+
+function syllabusHTML(results, { practise = true } = {}){
+  const counts = { good:0, mid:0, low:0, none:0 };
+  const sections = SYLLABUS.map((sec, si) => {
+    const rows = sec.topics.map(([name, map], ti) => {
+      const st = topicStatus(map, results);
+      counts[st.level]++;
+      const L = SYL_LEVELS[st.level];
+      return `<div class="syl-row">
+        <span class="syl-dot" style="background:${st.level === 'none' ? 'var(--bds)' : L.color}" title="${L.label}"></span>
+        <div class="syl-name">${name}<div class="syl-meta">${L.label} · ${st.done}/${st.n} answered${st.pct != null ? ` · ${st.pct}%` : ''}</div></div>
+        <div class="syl-bar"><div class="progress-bar" style="margin:0"><div class="progress-fill" style="width:${st.pct || 0}%;background:${L.color}"></div></div></div>
+        ${practise ? `<button class="btn syl-btn" onclick="practiseSyllabusTopic(${si},${ti})">Practise</button>` : ''}
+      </div>`;
+    }).join('');
+    return `<div class="q-card"><div class="syl-sec">${sec.section}</div>${rows}</div>`;
+  }).join('');
+  const summary = `<div class="syl-summary">${['good','mid','low','none'].map(l =>
+    `<div class="stat"><div class="stat-n" style="color:${SYL_LEVELS[l].color}">${counts[l]}</div><div class="stat-l">${SYL_LEVELS[l].label}</div></div>`).join('')}</div>`;
+  return { summary, sections, counts };
+}
+
+let sylResults = {};
+async function renderSyllabus(){
+  const root = document.getElementById('syl-root');
+  if(!root) return;
+  const draw = () => {
+    const h = syllabusHTML(sylResults);
+    const total = Object.values(h.counts).reduce((a, b) => a + b, 0);
+    root.innerHTML = `
+      <div class="q-card">
+        <div style="font-size:15px;font-weight:600;margin-bottom:.25rem">✅ Syllabus checklist</div>
+        <p style="font-size:13px;color:var(--ts);margin-bottom:.9rem">All ${total} points of the Cambridge IGCSE PE syllabus (0413, exams 2025–2028), coloured by your latest marked answers. A point turns <strong style="color:var(--green)">green</strong> when you average 80%+ on at least half of its questions.</p>
+        ${h.summary}
+        <button class="btn primary" onclick="practiseWeakest()">🎯 Practise my weakest points</button>
+      </div>` + h.sections;
+  };
+  sylResults = localResults();
+  draw();
+  // Signed in: also include answers from this student's other devices.
+  if(currentUser){
+    try{
+      const { data, error } = await sb.from('question_attempts')
+        .select('chapter_id,question_id,score,max_score,created_at')
+        .eq('user_id', currentUser.id).order('created_at', { ascending: false }).limit(1000);
+      if(!error && data && data.length){ sylResults = mergeResults(sylResults, resultsFromRows(data)); draw(); }
+    }catch(e){}
+  }
+}
+
+function syllabusItems(map, results){
+  const items = [];
+  for(const [ch, ids] of Object.entries(map)){
+    const topic = TOPICS.find(t => t.id === ch);
+    ids.forEach(id => {
+      const question = topic && topic.questions.find(q => q.id === id);
+      if(!question) return;
+      const r = results[`${ch}:${id}`];
+      items.push({ topic, question, lastScore: r ? r.s / r.m : null });
+    });
+  }
+  return items;
+}
+
+// Unanswered first, then lowest score.
+const byNeed = (a, b) => (a.lastScore ?? -1) - (b.lastScore ?? -1);
+
+function practiseSyllabusTopic(si, ti){
+  const [name, map] = SYLLABUS[si].topics[ti];
+  const items = syllabusItems(map, sylResults).sort(byNeed);
+  startVirtualSession(items, {
+    id: '__syl__', source: 'practice',
+    badge: '✅ ' + name,
+    heading: '✅ ' + name,
+    intro: `All ${items.length} question${items.length > 1 ? 's' : ''} for this syllabus point, starting with the ones you haven't answered or scored lowest on.`
+  });
+}
+
+function practiseWeakest(){
+  const all = SYLLABUS.flatMap(sec => sec.topics.flatMap(([, map]) => syllabusItems(map, sylResults)));
+  const weak = all.filter(i => i.lastScore != null && i.lastScore < 0.8).sort(byNeed);
+  const fresh = all.filter(i => i.lastScore == null).sort(() => Math.random() - .5);
+  const items = [...weak, ...fresh].slice(0, 10);
+  if(!items.length){ alert('Everything you have answered is at 80% or above — great work!'); return; }
+  startVirtualSession(items, {
+    id: '__syl__', source: 'practice',
+    badge: '🎯 Weakest points',
+    heading: '🎯 Your weakest syllabus points',
+    intro: `${weak.length ? 'Questions you scored under 80% on come first' : 'You have no low scores yet, so these are questions you haven\'t tried'}. Answer them to turn more of your checklist green.`
+  });
+}
+
+/* ═══════════════════════════════════════════════════════════
+   TEACHER DASHBOARD — visible only to accounts in the `teachers` table
+   ═══════════════════════════════════════════════════════════ */
+function renderTeacherTab(){
+  const t = document.getElementById('teacher-tab');
+  if(t) t.style.display = isTeacher ? '' : 'none';
+}
+
+const classKey = c => (c || '').trim().toLowerCase(); // same matching rule as the leaderboard
+let tch = { classes: null, cls: null, students: [], results: {}, stats: {} };
+
+async function fetchAttempts(userIds){
+  const rows = [];
+  for(let i = 0; i < userIds.length; i += 100){
+    const ids = userIds.slice(i, i + 100);
+    for(let from = 0; ; from += 1000){
+      const { data, error } = await sb.from('question_attempts')
+        .select('user_id,chapter_id,question_id,score,max_score,created_at')
+        .in('user_id', ids).order('created_at', { ascending: true }).range(from, from + 999);
+      if(error) throw error;
+      rows.push(...data);
+      if(data.length < 1000) break;
+    }
+  }
+  return rows;
+}
+
+function relDays(t){
+  if(!t) return 'never';
+  const d = Math.floor((Date.now() - t) / 864e5);
+  return d <= 0 ? 'today' : d === 1 ? 'yesterday' : `${d} days ago`;
+}
+
+async function renderTeacherDashboard(forceReload){
+  const root = document.getElementById('tch-root');
+  if(!root) return;
+  if(!isTeacher){
+    root.innerHTML = '<div class="q-card" style="text-align:center;padding:1.5rem;color:var(--tm)">This page is only available to teacher accounts.</div>';
+    return;
+  }
+  root.innerHTML = '<div style="text-align:center;padding:1.5rem;color:var(--tm)">Loading class data…</div>';
+  try{
+    if(!tch.classes || forceReload){
+      const { data, error } = await sb.from('profiles').select('id,name,class_code');
+      if(error) throw error;
+      const classes = {};
+      data.forEach(p => {
+        const k = classKey(p.class_code);
+        if(!k || p.id === currentUser.id) return;
+        (classes[k] ||= { label: p.class_code.trim(), students: [] }).students.push(p);
+      });
+      tch.classes = classes;
+    }
+    const keys = Object.keys(tch.classes).sort();
+    if(!keys.length){
+      root.innerHTML = '<div class="q-card" style="text-align:center;padding:1.5rem;color:var(--tm)">No students have signed up yet. Give your class their class code so they can create accounts.</div>';
+      return;
+    }
+    if(!tch.cls || !tch.classes[tch.cls]) tch.cls = keys[0];
+    const students = tch.classes[tch.cls].students.slice().sort((a, b) => a.name.localeCompare(b.name));
+    const rows = await fetchAttempts(students.map(s => s.id));
+
+    // Latest result per student per question
+    const byUser = {};
+    rows.forEach(r => (byUser[r.user_id] ||= []).push(r));
+    const weekAgo = Date.now() - 7 * 864e5;
+    tch.students = students.map(s => {
+      const mine = byUser[s.id] || [];
+      const results = resultsFromRows(mine);
+      const vals = Object.values(results);
+      const avg = vals.length ? Math.round(vals.reduce((a, r) => a + r.s / r.m, 0) / vals.length * 100) : null;
+      const last = mine.length ? Date.parse(mine[mine.length - 1].created_at) : 0;
+      let weakest = null;
+      SYLLABUS.forEach(sec => sec.topics.forEach(([name, map]) => {
+        const st = topicStatus(map, results);
+        if(st.pct != null && (!weakest || st.pct < weakest.pct)) weakest = { name, pct: st.pct };
+      }));
+      return { ...s, results, answered: vals.length, attempts: mine.length, avg, last, weakest };
+    });
+
+    // Class view of each syllabus point: average over students who have answered it
+    const topicRows = [];
+    SYLLABUS.forEach(sec => sec.topics.forEach(([name, map]) => {
+      const pcts = tch.students.map(s => topicStatus(map, s.results).pct).filter(p => p != null);
+      if(pcts.length) topicRows.push({ name, pct: Math.round(pcts.reduce((a, b) => a + b, 0) / pcts.length), n: pcts.length });
+    }));
+    topicRows.sort((a, b) => a.pct - b.pct);
+
+    // Most-missed questions (latest score per student)
+    const qAgg = {};
+    tch.students.forEach(s => Object.entries(s.results).forEach(([k, r]) => {
+      (qAgg[k] ||= { sum: 0, n: 0 }); qAgg[k].sum += r.s / r.m; qAgg[k].n++;
+    }));
+    const minN = students.length >= 6 ? 2 : 1;
+    const missed = Object.entries(qAgg).filter(([, a]) => a.n >= minN)
+      .map(([k, a]) => {
+        const [ch, id] = k.split(':');
+        const t = TOPICS.find(x => x.id === ch);
+        const q = t && t.questions.find(x => x.id === +id);
+        return q ? { ch, id: +id, label: t.label, text: q.text, pct: Math.round(a.sum / a.n * 100), n: a.n } : null;
+      }).filter(Boolean).sort((a, b) => a.pct - b.pct).slice(0, 6);
+
+    const active = tch.students.filter(s => s.last >= weekAgo).length;
+    const avgs = tch.students.map(s => s.avg).filter(a => a != null);
+    const classAvg = avgs.length ? Math.round(avgs.reduce((a, b) => a + b, 0) / avgs.length) : null;
+    const pctPill = p => `<span class="pill ${p >= 80 ? 'pill-ok' : p >= 50 ? 'pill-warn' : 'pill-miss'}">${p}%</span>`;
+
+    root.innerHTML = `
+      <div class="q-card">
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:.9rem">
+          <div style="font-size:15px;font-weight:600;flex:1">👩‍🏫 Class dashboard</div>
+          <select class="topic-select" style="width:auto;min-width:140px" onchange="tch.cls=this.value;renderTeacherDashboard()">
+            ${keys.map(k => `<option value="${esc(k)}"${k === tch.cls ? ' selected' : ''}>${esc(tch.classes[k].label)} (${tch.classes[k].students.length})</option>`).join('')}
+          </select>
+          <button class="btn" onclick="renderTeacherDashboard(true)">↻ Refresh</button>
+        </div>
+        <div class="tch-stats">
+          <div class="stat"><div class="stat-n">${students.length}</div><div class="stat-l">students</div></div>
+          <div class="stat"><div class="stat-n">${active}</div><div class="stat-l">active this week</div></div>
+          <div class="stat"><div class="stat-n">${classAvg != null ? classAvg + '%' : '—'}</div><div class="stat-l">class average</div></div>
+          <div class="stat"><div class="stat-n">${rows.length}</div><div class="stat-l">answers marked</div></div>
+        </div>
+      </div>
+
+      <div class="tch-grid">
+        <div class="q-card">
+          <div class="syl-sec">📉 Reteach these syllabus points</div>
+          ${topicRows.length ? topicRows.slice(0, 6).map(r => `<div class="tch-line"><span style="flex:1">${r.name}<span class="syl-meta"> · ${r.n} student${r.n > 1 ? 's' : ''}</span></span>${pctPill(r.pct)}</div>`).join('')
+            : '<p class="syl-meta" style="padding:.5rem 0">No marked answers yet.</p>'}
+        </div>
+        <div class="q-card">
+          <div class="syl-sec">❌ Most-missed questions</div>
+          ${missed.length ? missed.map(m => `<div class="tch-line"><span style="flex:1;min-width:0">${esc(m.label)} · Q${m.id}<div class="syl-meta">${esc(m.text.length > 80 ? m.text.slice(0, 80) + '…' : m.text)}</div></span>${pctPill(m.pct)}</div>`).join('')
+            : '<p class="syl-meta" style="padding:.5rem 0">No marked answers yet.</p>'}
+        </div>
+      </div>
+
+      <div class="q-card">
+        <div class="syl-sec" style="margin-bottom:.5rem">🧑‍🎓 Students <span class="syl-meta">— tap a student to see their syllabus checklist</span></div>
+        <div class="tch-wrap"><table class="tch-table">
+          <thead><tr><th>Name</th><th>Answered</th><th>Average</th><th>Last active</th><th>Weakest point</th></tr></thead>
+          <tbody>${tch.students.map((s, i) => `<tr class="click" onclick="showStudentChecklist(${i})">
+            <td style="font-weight:600">${esc(s.name)}</td>
+            <td>${s.answered}</td>
+            <td>${s.avg != null ? pctPill(s.avg) : '<span class="syl-meta">—</span>'}</td>
+            <td class="syl-meta">${relDays(s.last)}</td>
+            <td class="syl-meta">${s.weakest ? `${s.weakest.name} (${s.weakest.pct}%)` : '—'}</td>
+          </tr>`).join('')}</tbody>
+        </table></div>
+      </div>
+      <div id="tch-student"></div>`;
+  }catch(err){
+    const missingTable = /question_attempts|teachers|relation|does not exist|schema cache/i.test(err.message || '');
+    root.innerHTML = `<div class="q-card" style="text-align:center;padding:1.5rem;color:var(--tm)">
+      ${missingTable ? 'The class-tracking tables aren\'t set up in Supabase yet. Run <strong>supabase/setup.sql</strong> in the Supabase SQL editor, then refresh.' : 'Couldn\'t load class data right now. Check your connection and try again.'}
+    </div>`;
+  }
+}
+
+function showStudentChecklist(i){
+  const s = tch.students[i];
+  const box = document.getElementById('tch-student');
+  if(!s || !box) return;
+  const h = syllabusHTML(s.results, { practise: false });
+  box.innerHTML = `
+    <div class="q-card">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:.75rem">
+        <div style="font-size:15px;font-weight:600;flex:1">${esc(s.name)} — syllabus checklist</div>
+        <button class="btn" onclick="document.getElementById('tch-student').innerHTML=''">✕ Close</button>
+      </div>
+      ${h.summary}
+    </div>` + h.sections;
+  box.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+/* ═══════════════════════════════════════════════════════════
    TUTORIAL — step-by-step walkthrough (screenshots in /tutorial)
    ═══════════════════════════════════════════════════════════ */
 // Questions and Diagrams need a chapter loaded first — fall back to chapter 1.
@@ -3718,6 +4207,10 @@ const TUTORIAL_STEPS = [
     text:`Any question you score <strong>under 80%</strong> on comes back later for review (spaced repetition). When some are due, an amber banner appears.
       Tap <span class="tut-hl">Review</span> to practise just those questions. Score well and each question comes back less often.`,
     go:()=>switchTab('topics') },
+  { img:'syllabus-checklist', title:'Track the whole syllabus',
+    text:`The <strong>✅ Syllabus</strong> tab lists every point in the Cambridge IGCSE PE syllabus, coloured by your latest marked answers: <strong style="color:var(--green)">green</strong> = secure, <strong style="color:var(--amber)">amber</strong> = getting there, <strong style="color:var(--red)">red</strong> = needs work, grey = not started.
+      Tap <span class="tut-hl">Practise</span> next to any point to answer just its questions, or <strong>🎯 Practise my weakest points</strong> to revise what needs it most. Sign in so your teacher can see your progress too.`,
+    go:()=>switchTab('syllabus') },
   { img:'08-diagrams', title:'Label the diagrams',
     text:`In <strong>🧩 Diagrams</strong>, <strong>tap a label</strong> (it turns <span class="tut-hl">green</span>), then <strong>tap the numbered spot</strong> where it belongs. On a computer you can also drag and drop labels.
       Hover over a label (or tap it on a phone) to see its definition in the blue box. Tap <span class="tut-hl">Check labels ↗</span> to see which ones you got right, or <strong>Reset</strong> to try again.`,
