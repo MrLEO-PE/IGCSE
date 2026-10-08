@@ -1006,23 +1006,27 @@ const TOPICS = [
   ],
   diagrams:[
     {id:'sk1',title:'Label the major bones of the skeleton',svgFn:'skeletonSVG',calloutStyle:true,
-     labels:['Cranium','Clavicle','Scapula','Sternum','Humerus','Radius','Ulna','Pelvis','Femur','Patella','Tibia','Fibula','Vertebrae','Carpals','Tarsals'],
+     labels:['Cranium','Clavicle','Scapula','Ribs','Humerus','Ulna','Radius','Pelvis','Carpals','Metacarpals','Phalanges (hand)','Femur','Patella','Tibia','Fibula','Talus','Tarsals','Metatarsals','Phalanges (foot)'],
      positions:[
-       {x:'38.9%',y:'2.9%', w:'8%',h:'4%',ans:'Cranium'},
-       {x:'50.3%',y:'17.6%',w:'8%',h:'4%',ans:'Clavicle'},
-       {x:'61.0%',y:'20.5%',w:'8%',h:'4%',ans:'Scapula'},
-       {x:'38.9%',y:'22.6%',w:'8%',h:'4%',ans:'Sternum'},
-       {x:'61.7%',y:'27.6%',w:'8%',h:'4%',ans:'Humerus'},
-       {x:'67.4%',y:'43.0%',w:'8%',h:'4%',ans:'Radius'},
-       {x:'62.4%',y:'43.0%',w:'8%',h:'4%',ans:'Ulna'},
+       {x:'38.9%',y:'2.9%',w:'8%',h:'4%',ans:'Cranium'},
+       {x:'50.3%',y:'17.8%',w:'8%',h:'4%',ans:'Clavicle'},
+       {x:'57.0%',y:'23.0%',w:'8%',h:'4%',ans:'Scapula'},
+       {x:'52.5%',y:'27.5%',w:'8%',h:'4%',ans:'Ribs'},
+       {x:'65.0%',y:'28.5%',w:'8%',h:'4%',ans:'Humerus'},
+       {x:'69.6%',y:'40.0%',w:'8%',h:'4%',ans:'Ulna'},
+       {x:'73.7%',y:'44.5%',w:'8%',h:'4%',ans:'Radius'},
        {x:'50.3%',y:'40.9%',w:'8%',h:'4%',ans:'Pelvis'},
-       {x:'34.6%',y:'57.8%',w:'8%',h:'4%',ans:'Femur'},
-       {x:'35.3%',y:'68.0%',w:'8%',h:'4%',ans:'Patella'},
-       {x:'37.4%',y:'78.9%',w:'8%',h:'4%',ans:'Tibia'},
-       {x:'32.4%',y:'78.9%',w:'8%',h:'4%',ans:'Fibula'},
-       {x:'38.9%',y:'29.7%',w:'8%',h:'4%',ans:'Vertebrae'},
-       {x:'67.4%',y:'48.0%',w:'8%',h:'4%',ans:'Carpals'},
-       {x:'34.6%',y:'91.6%',w:'8%',h:'4%',ans:'Tarsals'},
+       {x:'11.6%',y:'49.2%',w:'8%',h:'4%',ans:'Carpals'},
+       {x:'79.3%',y:'51.4%',w:'8%',h:'4%',ans:'Metacarpals'},
+       {x:'82.0%',y:'56.2%',w:'8%',h:'4%',ans:'Phalanges (hand)'},
+       {x:'32.0%',y:'58.0%',w:'8%',h:'4%',ans:'Femur'},
+       {x:'34.4%',y:'70.0%',w:'8%',h:'4%',ans:'Patella'},
+       {x:'37.4%',y:'76.0%',w:'8%',h:'4%',ans:'Tibia'},
+       {x:'32.4%',y:'83.0%',w:'8%',h:'4%',ans:'Fibula'},
+       {x:'47.1%',y:'89.3%',w:'8%',h:'4%',ans:'Talus'},
+       {x:'37.5%',y:'90.8%',w:'8%',h:'4%',ans:'Tarsals'},
+       {x:'52.5%',y:'93.3%',w:'8%',h:'4%',ans:'Metatarsals'},
+       {x:'25.8%',y:'93.2%',w:'8%',h:'4%',ans:'Phalanges (foot)'},
      ]},
     {id:'syn1',title:'Label the parts of a synovial joint',svgFn:'synovialSVG',calloutStyle:true,
      labels:['Bone','Synovial membrane','Synovial fluid','Joint capsule','Cartilage','Ligament','Tendon','Muscle'],
@@ -1174,20 +1178,18 @@ const TOPICS = [
      model:'<strong>Haemoglobin</strong> is an iron-rich protein found in <strong>red blood cells</strong>. At the <strong>lungs</strong>, oxygen diffuses from the alveoli into the blood and combines with haemoglobin to form <strong>oxyhaemoglobin</strong>, which is carried around the body to the working muscles, where the oxygen is released for aerobic respiration. Haemoglobin also carries some of the <strong>carbon dioxide</strong> produced by the muscles back to the lungs, where it is released and breathed out. The more haemoglobin a performer has, the more oxygen can be carried to the muscles, which improves endurance performance.',tip:'Two directions for two marks: OXYGEN from lungs to muscles (as oxyhaemoglobin) and CARBON DIOXIDE from muscles back to lungs. The syllabus asks for both gases.'},
   ],
   diagrams:[
-    {id:'heart1',title:'Label the chambers, valves and vessels of the heart',svgFn:'heartSVG',calloutStyle:true,
-     labels:['Right atrium','Left atrium','Right ventricle','Left ventricle','Aorta','Pulmonary artery','Pulmonary vein','Vena cava','Tricuspid valve','Bicuspid valve','Septum'],
+    {id:'heart1',title:'Label the chambers and vessels of the heart',svgFn:'heartSVG',calloutStyle:true,
+     labels:['Right atrium','Left atrium','Right ventricle','Left ventricle','Aorta','Pulmonary artery','Pulmonary vein','Vena cava','Septum'],
      positions:[
-       {x:'16.5%',y:'47.5%',w:'13%',h:'5%',ans:'Right atrium'},
-       {x:'53.5%',y:'42.5%',w:'13%',h:'5%',ans:'Left atrium'},
-       {x:'13.5%',y:'61.5%',w:'13%',h:'5%',ans:'Right ventricle'},
+       {x:'15.5%',y:'49.5%',w:'13%',h:'5%',ans:'Right atrium'},
+       {x:'53.5%',y:'41.5%',w:'13%',h:'5%',ans:'Left atrium'},
+       {x:'37.5%',y:'82.5%',w:'13%',h:'5%',ans:'Right ventricle'},
        {x:'76.5%',y:'75.5%',w:'13%',h:'5%',ans:'Left ventricle'},
        {x:'37.5%',y:'14.5%',w:'13%',h:'5%',ans:'Aorta'},
        {x:'66.5%',y:'26.5%',w:'13%',h:'5%',ans:'Pulmonary artery'},
        {x:'76.5%',y:'32.5%',w:'13%',h:'5%',ans:'Pulmonary vein'},
        {x:'16.5%',y:'85.5%',w:'13%',h:'5%',ans:'Vena cava'},
-       {x:'31.5%',y:'55.5%',w:'13%',h:'5%',ans:'Tricuspid valve'},
-       {x:'51.5%',y:'54.5%',w:'13%',h:'5%',ans:'Bicuspid valve'},
-       {x:'48.5%',y:'78.5%',w:'13%',h:'5%',ans:'Septum'},
+       {x:'51.7%',y:'72.0%',w:'13%',h:'5%',ans:'Septum'},
      ]},
     {id:'circ1',title:'Label the double circulation pathway',svgFn:'circulationSVG',calloutStyle:true,
      labels:['Right side of heart','Left side of heart','Lungs (pulmonary circuit)','Body (systemic circuit)','Oxygenated blood','Deoxygenated blood','Pulmonary artery','Pulmonary vein','Aorta','Vena cava'],
@@ -2883,7 +2885,7 @@ function renderTopicGrid(containerId, showSubtitle){
 
     container.innerHTML = header + srBanner + `<div class="topic-grid" style="margin-bottom:1.5rem">${cards}</div>`;
     if(showSubtitle){
-      container.innerHTML += `<p style="font-size:12px;color:var(--tm);text-align:center">AI marking powered by Claude · Add your API key above to activate</p>`;
+      container.innerHTML += `<p style="font-size:12px;color:var(--tm);text-align:center">AI marking powered by Groq · Add your API key above to activate</p>`;
     }
   }catch(e){
     container.innerHTML = '<p>Error loading chapters.</p>';
