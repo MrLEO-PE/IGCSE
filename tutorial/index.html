@@ -7,7 +7,7 @@
 <meta name="description" content="A step-by-step tour of IGCSE PE Workbook, a free revision web app for Cambridge IGCSE Physical Education (0413) with AI marking, diagrams, flashcards, practice exams and syllabus tracking.">
 <meta property="og:type" content="website">
 <meta property="og:title" content="IGCSE PE Workbook – Tutorial">
-<meta property="og:description" content="A free revision web app for Cambridge IGCSE Physical Education, from creating an account to submitting a practice exam.">
+<meta property="og:description" content="A free revision web app for Cambridge IGCSE Physical Education, from joining your class to submitting a practice exam.">
 <meta name="theme-color" content="#1a6b3c">
 <meta name="color-scheme" content="light dark">
 <style>
@@ -122,7 +122,7 @@ footer p+p{margin-top:6px}
       <div class="eyebrow">Web app · Cambridge IGCSE Physical Education (0413)</div>
     </div>
     <h1>IGCSE PE Workbook</h1>
-    <p class="lead">A free revision app for Cambridge IGCSE PE students. They answer exam-style questions and get instant AI marking, label diagrams, revise with flashcards, sit practice exams and track their progress against the whole syllabus. This tutorial walks through every feature, from creating an account to submitting a practice exam.</p>
+    <p class="lead">A free revision app for Cambridge IGCSE PE students. They answer exam-style questions and get instant AI marking, label diagrams, revise with flashcards, sit practice exams and track their progress against the whole syllabus. This tutorial walks through every feature, from joining your class to submitting a practice exam.</p>
     <div class="actions">
       <a class="btn primary" href="https://mrleo-pe.github.io/IGCSE/" target="_blank" rel="noopener">Open the app ↗</a>
       <a class="btn" href="#get-started">See how it works ↓</a>
@@ -134,7 +134,7 @@ footer p+p{margin-top:6px}
       <div class="stat"><b>155</b><span>flashcards</span></div>
       <div class="stat"><b>61</b><span>syllabus points tracked</span></div>
     </div>
-    <p class="built">Built with HTML, CSS and JavaScript · Supabase for accounts, leaderboards and class tracking · AI marking via the Groq API</p>
+    <p class="built">Built with HTML, CSS and JavaScript · Supabase for class logins, leaderboards and class tracking · AI marking via the Groq API</p>
     <nav class="parts" aria-label="Tutorial sections">
       <a href="#get-started">1 · Get started</a>
       <a href="#learn">2 · Learn and practise</a>
@@ -149,28 +149,28 @@ footer p+p{margin-top:6px}
   <section class="part" id="get-started">
     <div class="part-head"><span class="tag">Part 1</span></div>
     <h2>Get started</h2>
-    <p class="part-intro">Three quick set-up steps: an account for the class leaderboard, a profile picture, and a free key that switches on AI marking.</p>
+    <p class="part-intro">Three quick set-up steps: join your class with a PIN (no email needed), add a profile picture, and a free key that switches on AI marking.</p>
 
     <article class="step">
       <div class="step-text">
         <span class="step-n">1</span>
-        <h3>Create your account</h3>
-        <div class="step-body">Tap <strong>👤 Sign in</strong> (top right), then <strong>Create one</strong>. Enter:
-          <ul><li>your <strong>name</strong> (this is what your class will see on the leaderboard)</li>
-          <li>the <strong>class code</strong> your teacher gives you. Type it exactly as given, because it decides which class leaderboard you join</li>
-          <li>your <strong>email</strong> and a <strong>password</strong> (at least 6 characters)</li></ul>
-          Next time, just sign in with the same email and password.</div>
+        <h3>Join your class</h3>
+        <div class="step-body">Tap <strong>👤 Log in</strong> (top right). There is no email and no password:
+          <ul><li>choose your <strong>class</strong> and type the <strong>class code</strong> from your teacher (or scan the class QR code, which fills both in)</li>
+          <li>choose your <strong>name</strong> in the list</li>
+          <li>the first time, create a <strong>4-digit PIN</strong> you will remember and type it twice</li></ul>
+          Next time, just choose your name and type your PIN. Forgot it? Tap <strong>I forgot my PIN</strong> to ask your teacher. Leave <strong>Keep me logged in</strong> ticked on your own device.</div>
       </div>
-      <figure class="shot"><button class="zoom" type="button"><img src="01-create-account.webp" width="1164" height="705" loading="lazy" alt="The Create account form with name, class code, email and password fields; the class code field is highlighted."></button></figure>
+      <figure class="shot"><button class="zoom" type="button"><img src="01-create-account.webp" width="1164" height="978" loading="lazy" alt="The class login: a student picks their name from the class list and creates a 4-digit PIN; the name list and PIN field are highlighted."></button></figure>
     </article>
 
     <article class="step">
       <div class="step-text">
         <span class="step-n">2</span>
         <h3>Add a profile picture</h3>
-        <div class="step-body">Once you're signed in, your first name shows in the top-right corner. On the Account page, tap the <span class="tut-hl">📷 button</span> on your avatar to <strong>choose a file</strong> or <strong>take a photo</strong>. The photo must clearly show your face. It appears next to your name on the leaderboard.</div>
+        <div class="step-body">Once you're logged in, your first name shows in the top-right corner. On the Account page, tap the <span class="tut-hl">📷 button</span> on your avatar to <strong>choose a file</strong> or <strong>take a photo</strong>. The photo must clearly show your face. It appears next to your name on the leaderboard.</div>
       </div>
-      <figure class="shot"><button class="zoom" type="button"><img src="02-profile-photo.webp" width="1164" height="648" loading="lazy" alt="The Account page for a signed-in student, with the camera button on the avatar highlighted."></button></figure>
+      <figure class="shot"><button class="zoom" type="button"><img src="02-profile-photo.webp" width="1164" height="648" loading="lazy" alt="The Account page for a logged-in student, with the camera button on the avatar highlighted."></button></figure>
     </article>
 
     <article class="step">
@@ -232,7 +232,7 @@ footer p+p{margin-top:6px}
       <div class="step-text">
         <span class="step-n">8</span>
         <h3>Track the whole syllabus</h3>
-        <div class="step-body">The <strong>✅ Syllabus</strong> tab lists every point in the Cambridge IGCSE PE syllabus, coloured by your latest marked answers: green = secure, amber = getting there, red = needs work, grey = not started. Tap <span class="tut-hl">Practise</span> next to any point to answer just its questions, or <strong>🎯 Practise my weakest points</strong> to revise what needs it most. Sign in so your teacher can see your progress too.</div>
+        <div class="step-body">The <strong>✅ Syllabus</strong> tab lists every point in the Cambridge IGCSE PE syllabus, coloured by your latest marked answers: green = secure, amber = getting there, red = needs work, grey = not started. Tap <span class="tut-hl">Practise</span> next to any point to answer just its questions, or <strong>🎯 Practise my weakest points</strong> to revise what needs it most. Log in so your teacher can see your progress too.</div>
       </div>
       <figure class="shot"><button class="zoom" type="button"><img src="syllabus-checklist.webp" width="1148" height="1482" loading="lazy" alt="The syllabus checklist: a summary of secure, getting there, needs work and not started points, then each syllabus point with a coloured status and a Practise button."></button></figure>
     </article>
@@ -274,7 +274,7 @@ footer p+p{margin-top:6px}
       <div class="step-text">
         <span class="step-n">12</span>
         <h3>Submit and see your results</h3>
-        <div class="step-body">After the 10th question (or when you tap <strong>End quiz</strong>), you see your <strong>total marks and percentage</strong>, with a score for every question. If you're signed in, your result is <strong>sent to the leaderboard automatically</strong>. Only your <strong>best</strong> score counts. Tap <strong>Try again</strong> to get a new set of questions.</div>
+        <div class="step-body">After the 10th question (or when you tap <strong>End quiz</strong>), you see your <strong>total marks and percentage</strong>, with a score for every question. If you're logged in, your result is <strong>sent to the leaderboard automatically</strong>. Only your <strong>best</strong> score counts. Tap <strong>Try again</strong> to get a new set of questions.</div>
       </div>
       <figure class="shot"><button class="zoom" type="button"><img src="11-quiz-results.webp" width="1164" height="978" loading="lazy" alt="The results screen showing the total marks and percentage, with a score for each question."></button></figure>
     </article>
@@ -297,15 +297,30 @@ footer p+p{margin-top:6px}
       <div class="step-text">
         <span class="step-n" aria-hidden="true">👩‍🏫</span>
         <h3>The class dashboard</h3>
-        <div class="step-body">Teacher accounts get a <strong>👩‍🏫 Class</strong> tab. Pick a class to see:
+        <div class="step-body">After the shared teacher PIN, you get a <strong>👩‍🏫 Class</strong> tab. Pick a class to see:
           <ul><li>how many students were <strong>active this week</strong> and the <strong>class average</strong></li>
           <li>the <strong>syllabus points to reteach</strong>, weakest first</li>
           <li>the <strong>most-missed questions</strong></li>
           <li>every student's average, last activity and weakest point, and their own syllabus checklist in one tap</li></ul>
-          Only accounts the school registers as teachers can open it; students only ever see their own results.</div>
+          Only someone with the teacher PIN can open it; students only ever see their own results.</div>
         <p class="note">The screenshot uses a demo class.</p>
       </div>
       <figure class="shot"><button class="zoom" type="button"><img src="teacher-dashboard.webp" width="1344" height="1709" loading="lazy" alt="The class dashboard for a demo class: summary figures, syllabus points to reteach, most-missed questions and a table of students."></button></figure>
+    </article>
+
+    <article class="step">
+      <div class="step-text">
+        <span class="step-n" aria-hidden="true">🏫</span>
+        <h3>Set up classes in minutes</h3>
+        <div class="step-body">Students never register. In <strong>Classes &amp; students</strong> the teacher:
+          <ul><li>creates a <strong>class</strong> with a class code</li>
+          <li>adds the <strong>student names</strong>: type or paste them, or <strong>import an Excel / CSV file</strong>. English and French column headings are recognised, and a student already in another class is moved, not duplicated</li>
+          <li>prints a <strong>join sheet</strong> with a QR code that opens the app with the class and code already filled in</li>
+          <li><strong>resets a forgotten PIN</strong> with one tap; students can send the request themselves</li></ul>
+          The file is read in the browser: only names and class names are sent. Five wrong PINs lock a name for 10 minutes.</div>
+        <p class="note">The screenshot uses a demo class.</p>
+      </div>
+      <figure class="shot"><button class="zoom" type="button"><img src="teacher-manage.webp" width="1142" height="1955" loading="lazy" alt="Classes and students page: PIN reset requests, the list of classes with join sheet buttons, and a class with its students and an Import from Excel or CSV button."></button></figure>
     </article>
   </section>
 

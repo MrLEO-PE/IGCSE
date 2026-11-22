@@ -316,6 +316,33 @@ textarea.answer-box:focus{outline:none;border-color:var(--green)}
   .syl-btn{min-height:36px;padding:6px 10px}
 }
 
+/* ── LOGIN, TEACHER TOOLS, TOAST, JOIN SHEET ──────────────── */
+.lg-lbl{display:block;font-size:12px;color:var(--tm);margin:0 0 4px}
+.lg-in{width:100%;padding:.6rem .75rem;margin-bottom:10px;border:.5px solid var(--bds);border-radius:var(--r);font:inherit;font-size:14px;background:var(--s1);color:var(--tp)}
+.lg-in:focus{outline:none;border-color:var(--green)}
+.lg-err{display:none;color:#e74c3c;font-size:12px;margin:0 0 8px}
+.lg-note{font-size:12px;color:var(--ts);margin:0 0 10px;line-height:1.6}
+.lg-link{background:none;border:none;padding:0;color:var(--green);font:inherit;font-size:12px;cursor:pointer;text-decoration:underline}
+.lg-check{display:flex;gap:8px;align-items:center;font-size:12px;color:var(--ts);margin:6px 0 10px}
+.tch-nav{display:flex;gap:6px;margin-bottom:1rem}
+.tch-nav button{flex:1;padding:8px;border:.5px solid var(--bds);background:var(--s2);color:var(--ts);border-radius:var(--r);font:inherit;font-size:13px;font-weight:500;cursor:pointer}
+.tch-nav button.on{background:var(--green);color:#fff;border-color:var(--green)}
+.tch-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:.55rem 0;border-top:.5px solid var(--bd);font-size:13px}
+.tch-row .grow{flex:1;min-width:140px}
+.btn.sm{padding:5px 12px;font-size:12px}
+.btn.danger{color:var(--red);border-color:var(--red)}
+#toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);background:#1a1a18;color:#fff;padding:10px 16px;border-radius:10px;font-size:13px;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:300;max-width:90vw;text-align:center}
+#toast.show{opacity:1;transform:translateX(-50%)}
+#sheet-overlay{display:none;position:fixed;inset:0;z-index:250;background:#000000b0;align-items:center;justify-content:center;padding:12px;overflow:auto}
+#sheet-overlay.open{display:flex}
+.sheet{background:#fff;color:#111;border-radius:12px;max-width:560px;width:100%;padding:1.5rem}
+.sheet .btn{background:#f1f1ee;color:#111;border-color:#bbb}.sheet .btn.primary{background:#1a6b3c;color:#fff;border-color:#1a6b3c}
+.sheet-grid{display:flex;gap:18px;align-items:center}
+.sheet-qr svg{width:160px;height:160px;display:block}
+.sheet ol{padding-left:1.2rem;line-height:1.8;font-size:14px}
+@media(max-width:480px){.sheet-grid{flex-direction:column;align-items:flex-start}.tch-nav button{font-size:12px;padding:7px 4px}}
+@media print{body.printing-sheet>*:not(#sheet-overlay){display:none!important}body.printing-sheet #sheet-overlay{display:block;position:static;background:none;padding:0}.sheet{max-width:100%}}
+
 /* ── TUTORIAL MODAL ───────────────────────────────────────── */
 .tut-overlay{display:none;position:fixed;inset:0;background:#000000b0;z-index:200;align-items:center;justify-content:center;padding:12px}
 .tut-overlay.open{display:flex}
@@ -359,7 +386,7 @@ textarea.answer-box:focus{outline:none;border-color:var(--green)}
   <span class="badge" id="topic-badge" style="display:none"></span>
   <button class="badge" id="tutorial-btn" onclick="openTutorial()" style="cursor:pointer;font-family:inherit" title="How to use the app">📖<span class="tb-lbl"> Tutorial</span></button>
   <button class="badge" id="key-settings-btn" onclick="toggleApiBanner()" style="cursor:pointer;font-family:inherit">🔑 API key</button>
-  <button class="badge" id="topbar-account-btn" onclick="switchTab('account')" style="cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:6px">👤 Sign in</button>
+  <button class="badge" id="topbar-account-btn" onclick="switchTab('account')" style="cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:6px">👤 Log in</button>
 </div>
 
 <div class="api-banner" id="api-banner">
@@ -474,9 +501,9 @@ textarea.answer-box:focus{outline:none;border-color:var(--green)}
   <div id="lb-signed-out" style="display:none">
     <div class="q-card" style="text-align:center;padding:2rem 1rem">
       <div style="font-size:2rem;margin-bottom:.5rem">🏆</div>
-      <div style="font-size:15px;font-weight:600;margin-bottom:.5rem">Sign in to see the leaderboard</div>
-      <p style="font-size:13px;color:var(--ts);margin-bottom:1rem">Create a free account to compete with your class and track your best scores.</p>
-      <button class="btn primary" onclick="switchTab('account')">Go to Account ↗</button>
+      <div style="font-size:15px;font-weight:600;margin-bottom:.5rem">Log in to see the leaderboard</div>
+      <p style="font-size:13px;color:var(--ts);margin-bottom:1rem">Log in with your class code to compete with your class and track your best scores.</p>
+      <button class="btn primary" onclick="switchTab('account')">Log in ↗</button>
     </div>
   </div>
   <div id="lb-signed-in" style="display:none">
@@ -495,26 +522,7 @@ textarea.answer-box:focus{outline:none;border-color:var(--green)}
   <div id="acct-loading" style="text-align:center;padding:2rem;color:var(--tm)">Loading…</div>
 
   <div id="acct-signed-out" style="display:none;max-width:380px;margin:0 auto">
-    <div class="q-card">
-      <div id="acct-mode-signin">
-        <div style="font-size:15px;font-weight:600;margin-bottom:1rem">👤 Sign in</div>
-        <input type="email" id="si-email" placeholder="Email" class="answer-box" style="margin-bottom:8px" autocomplete="email">
-        <input type="password" id="si-password" placeholder="Password" class="answer-box" style="margin-bottom:8px" autocomplete="current-password">
-        <div id="si-error" style="color:#e74c3c;font-size:12px;margin-bottom:8px;display:none"></div>
-        <button class="btn primary full" onclick="doSignIn()">Sign in ↗</button>
-        <p style="font-size:12px;color:var(--tm);margin-top:1rem;text-align:center">No account yet? <a href="#" onclick="acctShowMode('signup');return false" style="color:var(--green)">Create one</a></p>
-      </div>
-      <div id="acct-mode-signup" style="display:none">
-        <div style="font-size:15px;font-weight:600;margin-bottom:1rem">👤 Create account</div>
-        <input type="text" id="su-name" placeholder="Your name" class="answer-box" style="margin-bottom:8px" autocomplete="name">
-        <input type="text" id="su-class" placeholder="Class code (from your teacher)" class="answer-box" style="margin-bottom:8px">
-        <input type="email" id="su-email" placeholder="Email" class="answer-box" style="margin-bottom:8px" autocomplete="email">
-        <input type="password" id="su-password" placeholder="Password (min 6 characters)" class="answer-box" style="margin-bottom:8px" autocomplete="new-password">
-        <div id="su-error" style="color:#e74c3c;font-size:12px;margin-bottom:8px;display:none"></div>
-        <button class="btn primary full" onclick="doSignUp()">Create account ↗</button>
-        <p style="font-size:12px;color:var(--tm);margin-top:1rem;text-align:center">Already have an account? <a href="#" onclick="acctShowMode('signin');return false" style="color:var(--green)">Sign in</a></p>
-      </div>
-    </div>
+    <div class="q-card" id="acct-login"></div>
   </div>
 
   <div id="acct-signed-in" style="display:none;max-width:380px;margin:0 auto">
@@ -527,7 +535,17 @@ textarea.answer-box:focus{outline:none;border-color:var(--green)}
       <div id="acct-name" style="font-size:16px;font-weight:700"></div>
       <div id="acct-class" style="font-size:12px;color:var(--tm);margin-bottom:1rem"></div>
       <div id="acct-avatar-status" style="font-size:11px;color:var(--tm);margin-bottom:1rem"></div>
-      <button class="btn full" onclick="doSignOut()">Sign out</button>
+      <button class="btn full" onclick="doSignOut()">Log out</button>
+    </div>
+  </div>
+
+  <div id="acct-teacher" style="display:none;max-width:380px;margin:0 auto">
+    <div class="q-card" style="text-align:center">
+      <div style="font-size:2rem;margin-bottom:.5rem">👩‍🏫</div>
+      <div style="font-size:16px;font-weight:700;margin-bottom:.25rem">Teacher login</div>
+      <p style="font-size:12px;color:var(--tm);margin-bottom:1rem">You can open every class for 12 hours.</p>
+      <button class="btn primary full" onclick="switchTab('teacher')">Open the Class tab ↗</button>
+      <button class="btn full" onclick="doSignOut()">Log out</button>
     </div>
   </div>
 </div>
@@ -597,126 +615,268 @@ const LS_KEY = 'igcse_pe_progress';
 const SR_KEY = 'igcse_pe_sr';
 
 /* ═══════════════════════════════════════════════════════════
-   ACCOUNTS & LEADERBOARD (Supabase)
+   ACCOUNTS & LEADERBOARD (Supabase): class code, then your name, then a 4-digit PIN.
+   There are no email accounts. The teacher creates the classes and adds the students
+   (see supabase/setup.sql). Every call goes through a pe_* database function that checks
+   a class code, a PIN or a login token.
    ═══════════════════════════════════════════════════════════ */
-// The anon key is public by design; access is controlled by the row-level
-// security rules in supabase/setup.sql.
+// The anon key is public by design: the tables are locked, and the pe_* functions check every request.
 const SUPABASE_URL = 'https://kdtiofzujbeiwxkvyncu.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_MwPkTklgH8tA2lNiHVdQMA_cl1RIyxN';
-const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, { auth: { persistSession: false } });
 
-let currentUser = null;    // Supabase auth user object, or null if signed out
-let currentProfile = null; // {id,name,class_code,avatar_url}, or null
-let isTeacher = false;     // true when the user has a row in the `teachers` table
+let S = { role: null, token: null, student: null, cls: null }; // the logged-in session: 'student' or 'teacher'
+let currentUser = null;    // {id} while a student is logged in, else null
+let currentProfile = null; // {id,name,class_code (the class name),avatar_url}, or null
+let isTeacher = false;     // true during a teacher session (12 hours)
 
-function acctShowMode(mode){
-  document.getElementById('acct-mode-signin').style.display = mode==='signin' ? 'block' : 'none';
-  document.getElementById('acct-mode-signup').style.display = mode==='signup' ? 'block' : 'none';
+// "Keep me logged in" decides where the login is saved: this browser (localStorage) or this tab only (sessionStorage)
+const AUTH_KEY = 'igcse_pe_auth';
+const auth = {
+  get(){ try{ return JSON.parse(sessionStorage.getItem(AUTH_KEY)) || JSON.parse(localStorage.getItem(AUTH_KEY)); }catch(e){ return null; } },
+  save(a, keep){ this.clear(); try{ (keep ? localStorage : sessionStorage).setItem(AUTH_KEY, JSON.stringify(a)); }catch(e){} },
+  update(a){ try{ (sessionStorage.getItem(AUTH_KEY) ? sessionStorage : localStorage).setItem(AUTH_KEY, JSON.stringify(a)); }catch(e){} },
+  clear(){ try{ sessionStorage.removeItem(AUTH_KEY); localStorage.removeItem(AUTH_KEY); }catch(e){} }
+};
+
+let toastT;
+function toast(msg){
+  let t = document.getElementById('toast');
+  if(!t){ t = document.createElement('div'); t.id = 'toast'; t.setAttribute('role', 'status'); document.body.appendChild(t); }
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), 4500);
 }
 
-function acctError(fieldId, msg){
-  const el = document.getElementById(fieldId);
-  el.textContent = msg;
-  el.style.display = msg ? 'block' : 'none';
-}
-
-async function doSignUp(){
-  const name = document.getElementById('su-name').value.trim();
-  const classCode = document.getElementById('su-class').value.trim();
-  const email = document.getElementById('su-email').value.trim();
-  const password = document.getElementById('su-password').value;
-  acctError('su-error','');
-  if(!name || !classCode || !email || !password){ acctError('su-error','Please fill in every field.'); return; }
-  if(password.length < 6){ acctError('su-error','Password must be at least 6 characters.'); return; }
-  try{
-    const { data, error } = await sb.auth.signUp({ email, password });
-    if(error) throw error;
-    if(!data.session){
-      // Supabase created the account but didn\'t log us in — this happens
-      // when "Confirm email" is still enabled for this project. Without an
-      // active session the very next request (writing the profile row)
-      // would fail with a confusing row-level-security error, so catch it
-      // here with a clear explanation instead.
-      acctError('su-error','Account created, but email confirmation is still required — ask your teacher to check the app setup (Confirm email should be off).');
-      return;
-    }
-    const uid = data.user.id;
-    const { error: profErr } = await sb.from('profiles').insert({ id: uid, name, class_code: classCode });
-    if(profErr) throw profErr;
-    await refreshAuthState();
-  }catch(err){
-    acctError('su-error', err.message || 'Could not create account.');
+async function rpc(fn, args){
+  const { data, error } = await sb.rpc(fn, args || {});
+  if(error){
+    const m = error.message || 'Request failed';
+    if(error.code === 'PGRST202' || /schema cache|could not find the function/i.test(m))
+      throw new Error('The class login is not set up in the database yet. Run supabase/setup.sql in the Supabase SQL Editor.');
+    // a saved login that ran out (30 days for students, 12 hours for teachers): back to the login screen
+    if(/session has expired/i.test(m) && S.token && args && args.p_token === S.token) endSession();
+    throw new Error(m);
   }
+  if(data && !Array.isArray(data) && typeof data === 'object' && data.error) throw new Error(data.error);
+  return data;
 }
 
-async function doSignIn(){
-  const email = document.getElementById('si-email').value.trim();
-  const password = document.getElementById('si-password').value;
-  acctError('si-error','');
-  if(!email || !password){ acctError('si-error','Please fill in both fields.'); return; }
-  try{
-    const { error } = await sb.auth.signInWithPassword({ email, password });
-    if(error) throw error;
-    await refreshAuthState();
-  }catch(err){
-    acctError('si-error', err.message || 'Could not sign in.');
-  }
+function applySession(){
+  isTeacher = S.role === 'teacher';
+  currentUser = S.role === 'student' && S.student ? { id: S.student.id } : null;
+  currentProfile = currentUser ? { id: S.student.id, name: S.student.name, class_code: S.cls ? S.cls.name : '', avatar_url: S.student.avatar || null } : null;
 }
-
+function renderAuthState(){
+  applySession();
+  renderAccountSection();
+  renderTopbarAccount();
+  renderLeaderboard();
+  renderTeacherTab();
+}
+function saveSession(keep){ auth.save({ role: S.role, token: S.token, student: S.student, cls: S.cls }, keep); }
+function endSession(){
+  S = { role: null, token: null, student: null, cls: null };
+  auth.clear(); LG.started = false; tch = tchNew();
+  renderAuthState();
+  const sec = document.getElementById('sec-teacher');
+  if(sec && sec.classList.contains('active')) switchTab('account');
+}
 async function doSignOut(){
-  await sb.auth.signOut();
-  currentUser = null; currentProfile = null; isTeacher = false;
-  renderAccountSection();
-  renderTopbarAccount();
-  renderLeaderboard();
-  renderTeacherTab();
+  const t = S.token;
+  endSession();
+  if(t){ try{ await rpc('pe_logout', { p_token: t }); }catch(e){} }
 }
 
-async function refreshAuthState(){
-  const { data: { session } } = await sb.auth.getSession();
-  currentUser = session ? session.user : null;
-  currentProfile = null;
-  isTeacher = false;
-  if(currentUser){
-    const { data, error } = await sb.from('profiles').select('*').eq('id', currentUser.id).maybeSingle();
-    if(!error) currentProfile = data;
-    // Teachers are added by hand in Supabase (see supabase/setup.sql) — a
-    // missing table or row simply means "not a teacher".
-    const t = await sb.from('teachers').select('user_id').eq('user_id', currentUser.id).maybeSingle();
-    isTeacher = !t.error && !!t.data;
-    flushAttemptQueue();
+/* ── Login: class, then name, then PIN ── */
+let LG = { classes: [], cls: null, code: '', list: [], started: false };
+const val = id => { const el = document.getElementById(id); return el ? el.value : ''; };
+function lgError(msg){
+  const el = document.getElementById('lg-err');
+  if(!el) return;
+  el.textContent = msg || ''; el.style.display = msg ? 'block' : 'none';
+}
+const lgBox = () => document.getElementById('acct-login');
+
+// pre = {classId, code} when the page was opened from a class link or QR code
+async function lgStart(pre){
+  const box = lgBox(); if(!box) return;
+  LG.started = true;
+  box.innerHTML = '<div style="text-align:center;padding:1rem;color:var(--tm)">Loading classes…</div>';
+  try{ LG.classes = await rpc('pe_list_classes'); }
+  catch(e){ box.innerHTML = `<div class="lg-err" style="display:block">${esc(e.message)}</div>`; LG.started = false; return; }
+  const last = lsGet('igcse_pe_last', {});
+  const want = (pre && pre.classId) || last.class_id;
+  box.innerHTML = `
+    <div style="font-size:15px;font-weight:600;margin-bottom:.25rem">👤 Log in</div>
+    <p class="lg-note">Choose your class and type the class code from your teacher. No email needed.</p>
+    <label class="lg-lbl" for="lg-class">Class</label>
+    <select id="lg-class" class="lg-in">
+      ${LG.classes.length
+        ? '<option value="">Choose your class</option>' + LG.classes.map(c => `<option value="${esc(c.id)}"${c.id === want ? ' selected' : ''}>${esc(c.name)}</option>`).join('')
+        : '<option value="">No classes yet. Ask your teacher.</option>'}
+    </select>
+    <label class="lg-lbl" for="lg-code">Class code</label>
+    <input id="lg-code" class="lg-in" autocomplete="off" autocapitalize="off" placeholder="Given by your teacher" onkeydown="if(event.key==='Enter')lgNext()">
+    <div id="lg-err" class="lg-err" role="alert"></div>
+    <button class="btn primary full" id="lg-next" onclick="lgNext()">Continue ↗</button>
+    <p style="font-size:12px;color:var(--tm);margin-top:1rem;text-align:center">Teacher? <button class="lg-link" onclick="lgTeacher()">Teacher login</button></p>`;
+  if(pre && pre.classId && LG.classes.some(c => c.id === pre.classId)){
+    document.getElementById('lg-class').value = pre.classId;
+    if(pre.code){ document.getElementById('lg-code').value = pre.code; lgNext(); }
   }
-  renderAccountSection();
-  renderTopbarAccount();
-  renderLeaderboard();
-  renderTeacherTab();
+}
+
+async function lgNext(){
+  const id = val('lg-class'), code = val('lg-code').trim();
+  if(!id) return lgError('Choose your class.');
+  if(!code) return lgError('Type your class code.');
+  lgError('');
+  const btn = document.getElementById('lg-next'); btn.disabled = true;
+  try{
+    LG.list = await rpc('pe_list_students', { p_class_id: id, p_code: code });
+    LG.cls = LG.classes.find(c => c.id === id); LG.code = code;
+    lgName();
+  }catch(e){ btn.disabled = false; lgError(e.message); }
+}
+
+function lgName(){
+  const last = lsGet('igcse_pe_last', {});
+  lgBox().innerHTML = `
+    <div style="font-size:15px;font-weight:600;margin-bottom:.75rem">${esc(LG.cls.name)}</div>
+    <label class="lg-lbl" for="lg-stu">Your name</label>
+    <select id="lg-stu" class="lg-in" onchange="lgPinUI()">
+      ${LG.list.length
+        ? '<option value="">Choose your name</option>' + LG.list.map(s => `<option value="${esc(s.id)}"${last.student_id === s.id ? ' selected' : ''}>${esc(s.name)}</option>`).join('')
+        : '<option value="">No names yet. Ask your teacher.</option>'}
+    </select>
+    <div id="lg-pin"></div>
+    <label class="lg-check" id="lg-keep-row"><input type="checkbox" id="lg-keep" checked> Keep me logged in on this device</label>
+    <div id="lg-err" class="lg-err" role="alert"></div>
+    <button class="btn primary full" id="lg-go" onclick="lgLogin()">Log in ↗</button>
+    <button class="btn full" onclick="lgStart()">← Back</button>`;
+  lgPinUI();
+}
+
+function lgPinUI(){
+  const s = LG.list.find(x => x.id === val('lg-stu')), box = document.getElementById('lg-pin');
+  document.getElementById('lg-keep-row').style.display = s && s.is_teacher ? 'none' : '';
+  const enter = `onkeydown="if(event.key==='Enter')lgLogin()"`;
+  if(!s){ box.innerHTML = ''; return; }
+  if(s.is_teacher){
+    box.innerHTML = `<label class="lg-lbl" for="lg-pin1">Teacher PIN</label><input id="lg-pin1" class="lg-in" type="password" autocomplete="current-password" ${enter}>`;
+  }else if(s.has_pin){
+    box.innerHTML = `<label class="lg-lbl" for="lg-pin1">Your 4-digit PIN</label>
+      <input id="lg-pin1" class="lg-in" type="password" inputmode="numeric" maxlength="4" autocomplete="off" ${enter}>
+      <p style="margin:-4px 0 10px"><button class="lg-link" onclick="lgForgot()">I forgot my PIN: ask my teacher</button></p>
+      <p class="lg-note" id="lg-forgot-msg"></p>`;
+  }else{
+    box.innerHTML = `<p class="lg-note">First time here. Create a 4-digit PIN you will remember.</p>
+      <label class="lg-lbl" for="lg-pin1">New PIN</label>
+      <input id="lg-pin1" class="lg-in" type="password" inputmode="numeric" maxlength="4" autocomplete="off">
+      <label class="lg-lbl" for="lg-pin2">Type it again</label>
+      <input id="lg-pin2" class="lg-in" type="password" inputmode="numeric" maxlength="4" autocomplete="off" ${enter}>`;
+  }
+  const first = document.getElementById('lg-pin1'); if(first) first.focus();
+}
+
+async function lgLogin(){
+  const s = LG.list.find(x => x.id === val('lg-stu'));
+  if(!s) return lgError('Choose your name.');
+  const pin = val('lg-pin1').trim();
+  if(!s.is_teacher){
+    if(!/^\d{4}$/.test(pin)) return lgError('Your PIN must be 4 digits.');
+    if(!s.has_pin && pin !== val('lg-pin2').trim()) return lgError('The two PINs do not match.');
+  }
+  lgError('');
+  const btn = document.getElementById('lg-go'); btn.disabled = true;
+  try{
+    const r = await rpc('pe_student_login', { p_student_id: s.id, p_code: LG.code, p_pin: pin });
+    lsSet('igcse_pe_last', { class_id: LG.cls.id, student_id: s.id });
+    finishLogin(r, document.getElementById('lg-keep').checked);
+  }catch(e){ btn.disabled = false; lgError(e.message); }
+}
+
+async function lgForgot(){
+  const s = LG.list.find(x => x.id === val('lg-stu')), msg = document.getElementById('lg-forgot-msg');
+  if(!s) return;
+  try{
+    const r = await rpc('pe_request_pin_reset', { p_student_id: s.id, p_code: LG.code });
+    msg.textContent = r.status === 'pending' ? 'Your request is already waiting for your teacher.'
+      : r.status === 'nopin' ? 'You have no PIN yet: create one above.'
+      : 'Request sent to your teacher. When they accept it, choose your name again and create a new PIN.';
+  }catch(e){ msg.textContent = e.message; }
+}
+
+function lgTeacher(){
+  lgBox().innerHTML = `
+    <div style="font-size:15px;font-weight:600;margin-bottom:.25rem">👩‍🏫 Teacher login</div>
+    <p class="lg-note">Every teacher uses the same PIN. It opens the Class tab for all classes for 12 hours.</p>
+    <label class="lg-lbl" for="lg-tpin">Teacher PIN</label>
+    <input id="lg-tpin" class="lg-in" type="password" autocomplete="current-password" onkeydown="if(event.key==='Enter')lgTeacherLogin()">
+    <div id="lg-err" class="lg-err" role="alert"></div>
+    <button class="btn primary full" id="lg-go" onclick="lgTeacherLogin()">Log in ↗</button>
+    <button class="btn full" onclick="lgStart()">← Back</button>`;
+  document.getElementById('lg-tpin').focus();
+}
+async function lgTeacherLogin(){
+  const pin = val('lg-tpin');
+  if(!pin) return lgError('Type the teacher PIN.');
+  lgError('');
+  const btn = document.getElementById('lg-go'); btn.disabled = true;
+  try{ finishLogin(await rpc('pe_teacher_login', { p_pin: pin }), false); }
+  catch(e){ btn.disabled = false; lgError(e.message); }
+}
+
+function finishLogin(r, keep){
+  S = r.role === 'teacher'
+    ? { role: 'teacher', token: r.token, student: null, cls: null }
+    : { role: 'student', token: r.token, student: r.student, cls: r.cls };
+  saveSession(keep && r.role === 'student'); // a teacher session (12 hours) is never kept across browser restarts
+  renderAuthState();
+  if(r.role === 'teacher') switchTab('teacher'); else flushAttemptQueue();
+}
+
+// On page load: check the saved login, and open the join form when the page came from a class link or QR code (?join=<id>&k=<code>)
+async function restoreSession(){
+  const a = auth.get();
+  if(a && a.token){
+    S = { role: a.role, token: a.token, student: a.student || null, cls: a.cls || null };
+    renderAuthState();
+    try{
+      const me = await rpc('pe_me', { p_token: a.token });
+      if(me.role === 'student'){ S.student = me.student; S.cls = me.cls; }
+      auth.update({ role: S.role, token: S.token, student: S.student, cls: S.cls });
+    }catch(e){ /* expired: rpc already logged out. Offline: keep the saved login */ }
+  }
+  const J = new URLSearchParams(location.search), jc = J.get('join'), jk = J.get('k');
+  if(jc){
+    try{ history.replaceState(null, '', location.pathname); }catch(e){}
+    if(!S.role){ switchTab('account'); renderAuthState(); lgStart({ classId: jc, code: jk || '' }); return; }
+  }
+  renderAuthState();
+  flushAttemptQueue();
 }
 
 function renderTopbarAccount(){
   const btn = document.getElementById('topbar-account-btn');
   if(!btn) return;
-  if(!currentUser || !currentProfile){
-    btn.innerHTML = '👤 Sign in';
-    return;
-  }
+  if(isTeacher){ btn.innerHTML = '👩‍🏫 Teacher'; return; }
+  if(!currentProfile){ btn.innerHTML = '👤 Log in'; return; }
   const avatar = currentProfile.avatar_url
-    ? `<img src="${currentProfile.avatar_url}" style="width:18px;height:18px;border-radius:50%;object-fit:cover">`
+    ? `<img src="${esc(currentProfile.avatar_url)}" alt="" style="width:18px;height:18px;border-radius:50%;object-fit:cover">`
     : '👤';
-  const firstName = currentProfile.name.split(' ')[0];
-  btn.innerHTML = `${avatar} ${firstName}`;
+  btn.innerHTML = `${avatar} ${esc(currentProfile.name.split(' ')[0])}`;
 }
 
 function renderAccountSection(){
   const loading = document.getElementById('acct-loading');
-  const out = document.getElementById('acct-signed-out');
-  const inn = document.getElementById('acct-signed-in');
   if(!loading) return; // section not yet in DOM
   loading.style.display = 'none';
-  if(!currentUser || !currentProfile){
-    out.style.display = 'block'; inn.style.display = 'none';
-    return;
-  }
-  out.style.display = 'none'; inn.style.display = 'block';
+  document.getElementById('acct-signed-out').style.display = S.role ? 'none' : 'block';
+  document.getElementById('acct-signed-in').style.display = currentUser ? 'block' : 'none';
+  document.getElementById('acct-teacher').style.display = isTeacher ? 'block' : 'none';
+  if(!S.role && !LG.started) lgStart();
+  if(!currentUser) return;
   document.getElementById('acct-name').textContent = currentProfile.name;
   document.getElementById('acct-class').textContent = 'Class: ' + currentProfile.class_code;
   document.getElementById('acct-avatar-img').src = currentProfile.avatar_url || 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 84 84"%3E%3Crect width="84" height="84" fill="%23334155"/%3E%3Ctext x="42" y="52" font-size="34" text-anchor="middle" fill="%2394a3b8"%3E%F0%9F%91%A4%3C/text%3E%3C/svg%3E';
@@ -848,19 +1008,31 @@ async function uploadAvatar(file){
   await doUploadAvatar(file);
 }
 
+// Centre-crop to a square and shrink, so the photo stored in the database stays a few KB
+function resizeToDataUrl(file, size){
+  return new Promise((resolve, reject) => {
+    const url = URL.createObjectURL(file), img = new Image();
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      const side = Math.min(img.width, img.height), c = document.createElement('canvas');
+      c.width = c.height = size;
+      c.getContext('2d').drawImage(img, (img.width - side) / 2, (img.height - side) / 2, side, side, 0, 0, size, size);
+      resolve(c.toDataURL('image/jpeg', 0.8));
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('Could not read that image.')); };
+    img.src = url;
+  });
+}
+
 async function doUploadAvatar(file){
   const status = document.getElementById('acct-avatar-status');
   status.textContent = 'Uploading…';
   try{
-    const ext = file.name.split('.').pop();
-    const path = `${currentUser.id}/avatar.${ext}`;
-    const { error: upErr } = await sb.storage.from('avatars').upload(path, file, { upsert: true });
-    if(upErr) throw upErr;
-    const { data: pub } = sb.storage.from('avatars').getPublicUrl(path);
-    const url = pub.publicUrl + '?t=' + Date.now(); // cache-bust so the new photo shows immediately
-    const { error: updErr } = await sb.from('profiles').update({ avatar_url: url }).eq('id', currentUser.id);
-    if(updErr) throw updErr;
-    currentProfile.avatar_url = url;
+    const url = await resizeToDataUrl(file, 128);
+    await rpc('pe_set_avatar', { p_token: S.token, p_data: url });
+    S.student.avatar = url;
+    auth.update({ role: S.role, token: S.token, student: S.student, cls: S.cls });
+    applySession();
     document.getElementById('acct-avatar-img').src = url;
     status.textContent = 'Photo updated ✓';
     renderTopbarAccount();
@@ -869,29 +1041,13 @@ async function doUploadAvatar(file){
   }
 }
 
-/* Save (or update, if better) the current quiz result to the leaderboard.
-   One row per (user, chapter_filter, question_count) — only overwritten
-   when the new score beats the existing best, so this is always safe to
-   call after every quiz regardless of the result. */
+/* Save the current quiz result to the class leaderboard. The database keeps one row per
+   (student, chapter, quiz length) and only replaces it when the new score is better,
+   so this is safe to call after every quiz. */
 async function syncQuizScore(chapterFilter, questionCount, score, maxScore){
-  if(!currentUser) return; // not signed in — nothing to sync, quiz still works locally
-  const pct = maxScore>0 ? Math.round(score/maxScore*100) : 0;
+  if(!currentUser) return; // not logged in: the quiz still works, just not on the leaderboard
   try{
-    const { data: existing } = await sb.from('quiz_scores')
-      .select('score,max_score')
-      .eq('user_id', currentUser.id)
-      .eq('chapter_filter', chapterFilter)
-      .eq('question_count', questionCount)
-      .maybeSingle();
-    const existingPct = existing ? Math.round(existing.score/existing.max_score*100) : -1;
-    if(pct <= existingPct) return; // not a new best — leave the leaderboard row as-is
-    await sb.from('quiz_scores').upsert({
-      user_id: currentUser.id,
-      chapter_filter: chapterFilter,
-      question_count: questionCount,
-      score, max_score: maxScore, pct,
-      achieved_at: new Date().toISOString()
-    }, { onConflict: 'user_id,chapter_filter,question_count' });
+    await rpc('pe_submit_score', { p_token: S.token, p_chapter_filter: chapterFilter, p_question_count: questionCount, p_score: score, p_max: maxScore });
   }catch(err){
     console.warn('Leaderboard sync failed (quiz result is still shown locally):', err.message);
   }
@@ -901,7 +1057,7 @@ async function renderLeaderboard(){
   const out = document.getElementById('lb-signed-out');
   const inn = document.getElementById('lb-signed-in');
   if(!out) return; // section not yet in DOM
-  if(!currentUser || !currentProfile){
+  if(!currentUser){
     out.style.display = 'block'; inn.style.display = 'none';
     return;
   }
@@ -921,33 +1077,22 @@ async function renderLeaderboard(){
   list.innerHTML = '<div style="text-align:center;padding:1.5rem;color:var(--tm)">Loading leaderboard…</div>';
 
   try{
-    const { data, error } = await sb.from('quiz_scores')
-      .select('score,max_score,pct,achieved_at,profiles(name,class_code,avatar_url)')
-      .eq('chapter_filter', chapterFilter)
-      .eq('question_count', questionCount)
-      .order('pct', { ascending: false })
-      .limit(50);
-    if(error) throw error;
-    // Compared with trim + lowercase so accounts created with slightly
-    // different capitalization or stray whitespace in the class code
-    // (e.g. "10A-PE" vs "10a-pe " ) still correctly see each other —
-    // this fixes existing accounts too, no database change needed.
-    const myClass = (currentProfile.class_code||'').trim().toLowerCase();
-    const rows = (data||[]).filter(r=>r.profiles && (r.profiles.class_code||'').trim().toLowerCase()===myClass);
+    // the database only returns the scores of the student's own class
+    const rows = await rpc('pe_leaderboard', { p_token: S.token, p_chapter_filter: chapterFilter, p_question_count: questionCount });
     if(!rows.length){
       list.innerHTML = '<div class="q-card" style="text-align:center;padding:1.5rem;color:var(--tm)">No scores yet for this chapter/length in your class — be the first!</div>';
       return;
     }
     const medals=['🥇','🥈','🥉'];
     list.innerHTML = rows.map((r,i)=>{
-      const avatarImg = r.profiles.avatar_url
-        ? `<img src="${r.profiles.avatar_url}" style="width:32px;height:32px;border-radius:50%;object-fit:cover;background:var(--s2)">`
+      const avatarImg = r.avatar
+        ? `<img src="${esc(r.avatar)}" alt="" style="width:32px;height:32px;border-radius:50%;object-fit:cover;background:var(--s2)">`
         : `<div style="width:32px;height:32px;border-radius:50%;background:var(--s2);display:flex;align-items:center;justify-content:center;font-size:15px">👤</div>`;
       return `
       <div class="q-card" style="display:flex;align-items:center;gap:12px;padding:.75rem 1rem;margin-bottom:8px">
         <div style="width:28px;text-align:center;font-size:14px;font-weight:700;color:var(--tm)">${medals[i]||('#'+(i+1))}</div>
         ${avatarImg}
-        <div style="flex:1;font-size:13px;font-weight:600">${r.profiles.name}</div>
+        <div style="flex:1;font-size:13px;font-weight:600">${esc(r.name)}</div>
         <div style="font-size:13px;font-weight:700;color:var(--green)">${r.pct}%</div>
       </div>`;
     }).join('');
@@ -956,8 +1101,6 @@ async function renderLeaderboard(){
   }
 }
 
-sb.auth.onAuthStateChange((_event, _session) => { refreshAuthState(); });
-refreshAuthState();
 
 /* ═══════════════════════════════════════════════════════════
    FULL TOPIC DATA  (direct from Collins Cambridge textbook)
@@ -3834,14 +3977,16 @@ async function flushAttemptQueue(){
   const mine = lsGet(ATTEMPT_QUEUE_KEY, []).filter(r => r.user_id === currentUser.id);
   if(!mine.length) return;
   attemptFlushBusy = true;
+  const batch = mine.slice(0, 100);
+  let more = false;
   try{
-    const { error } = await sb.from('question_attempts').insert(mine.map(({ _k, ...row }) => row));
-    if(!error){
-      const sent = new Set(mine.map(r => r._k));
-      lsSet(ATTEMPT_QUEUE_KEY, lsGet(ATTEMPT_QUEUE_KEY, []).filter(r => !sent.has(r._k)));
-    }
+    await rpc('pe_record', { p_token: S.token, p_rows: batch.map(r => ({ c: r.chapter_id, q: r.question_id, s: r.score, m: r.max_score, src: r.source })) });
+    const sent = new Set(batch.map(r => r._k));
+    lsSet(ATTEMPT_QUEUE_KEY, lsGet(ATTEMPT_QUEUE_KEY, []).filter(r => !sent.has(r._k)));
+    more = lsGet(ATTEMPT_QUEUE_KEY, []).some(r => r.user_id === currentUser.id); // also answers added while this was sending
   }catch(e){ /* stays queued */ }
   attemptFlushBusy = false;
+  if(more) flushAttemptQueue();
 }
 
 // Latest result per question as {"ch1:3": {s, m, t}}. The older per-chapter
@@ -4003,13 +4148,11 @@ async function renderSyllabus(){
   };
   sylResults = localResults();
   draw();
-  // Signed in: also include answers from this student's other devices.
+  // Logged in: also include answers from this student's other devices.
   if(currentUser){
     try{
-      const { data, error } = await sb.from('question_attempts')
-        .select('chapter_id,question_id,score,max_score,created_at')
-        .eq('user_id', currentUser.id).order('created_at', { ascending: false }).limit(1000);
-      if(!error && data && data.length){ sylResults = mergeResults(sylResults, resultsFromRows(data)); draw(); }
+      const data = await rpc('pe_my_attempts', { p_token: S.token });
+      if(data && data.length){ sylResults = mergeResults(sylResults, Object.fromEntries(data.map(r => [`${r.c}:${r.q}`, { s: r.sc, m: r.m, t: r.t }]))); draw(); }
     }catch(e){}
   }
 }
@@ -4057,31 +4200,33 @@ function practiseWeakest(){
 }
 
 /* ═══════════════════════════════════════════════════════════
-   TEACHER DASHBOARD — visible only to accounts in the `teachers` table
+   TEACHER: class dashboard, and classes & students (during a teacher session)
    ═══════════════════════════════════════════════════════════ */
 function renderTeacherTab(){
   const t = document.getElementById('teacher-tab');
   if(t) t.style.display = isTeacher ? '' : 'none';
 }
 
-const classKey = c => (c || '').trim().toLowerCase(); // same matching rule as the leaderboard
-let tch = { classes: null, cls: null, students: [], results: {}, stats: {} };
+const tchNew = () => ({ view: 'dash', classes: null, clsId: null, students: [], roster: [], pending: [] });
+let tch = tchNew();
+// Class codes avoid look-alike characters (no 0/o, 1/l/i)
+const genCode = () => { const A = 'abcdefghjkmnpqrstuvwxyz23456789', r = crypto.getRandomValues(new Uint32Array(6)); return Array.from(r, x => A[x % A.length]).join(''); };
+const normName = s => String(s ?? '').trim().toLowerCase();
+const pctPill = p => `<span class="pill ${p >= 80 ? 'pill-ok' : p >= 50 ? 'pill-warn' : 'pill-miss'}">${p}%</span>`;
+const tchMsg = html => `<div class="q-card" style="text-align:center;padding:1.5rem;color:var(--tm)">${html}</div>`;
 
-async function fetchAttempts(userIds){
-  const rows = [];
-  for(let i = 0; i < userIds.length; i += 100){
-    const ids = userIds.slice(i, i + 100);
-    for(let from = 0; ; from += 1000){
-      const { data, error } = await sb.from('question_attempts')
-        .select('user_id,chapter_id,question_id,score,max_score,created_at')
-        .in('user_id', ids).order('created_at', { ascending: true }).range(from, from + 999);
-      if(error) throw error;
-      rows.push(...data);
-      if(data.length < 1000) break;
-    }
-  }
-  return rows;
+const _scripts = {};
+function loadScript(src){
+  return _scripts[src] ||= new Promise((resolve, reject) => {
+    const s = document.createElement('script');
+    s.src = src; s.onload = resolve;
+    s.onerror = () => { delete _scripts[src]; reject(new Error('Could not load ' + src)); };
+    document.head.appendChild(s);
+  });
 }
+// Loaded only when a teacher needs them, so students never download them
+const XLSX_URL = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+const QR_URL = 'https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js';
 
 function relDays(t){
   if(!t) return 'never';
@@ -4089,130 +4234,463 @@ function relDays(t){
   return d <= 0 ? 'today' : d === 1 ? 'yesterday' : `${d} days ago`;
 }
 
-async function renderTeacherDashboard(forceReload){
+function tchNavHTML(){
+  return `<div class="tch-nav"><button class="${tch.view === 'dash' ? 'on' : ''}" onclick="tchView('dash')">📊 Dashboard</button>
+    <button class="${tch.view === 'manage' ? 'on' : ''}" onclick="tchView('manage')">🏫 Classes &amp; students</button></div>`;
+}
+function tchView(v){ tch.view = v; renderTeacherDashboard(); }
+
+async function renderTeacherDashboard(force){
   const root = document.getElementById('tch-root');
   if(!root) return;
-  if(!isTeacher){
-    root.innerHTML = '<div class="q-card" style="text-align:center;padding:1.5rem;color:var(--tm)">This page is only available to teacher accounts.</div>';
+  if(!isTeacher){ root.innerHTML = tchMsg('This page is for teachers. Open the Account tab and use <strong>Teacher login</strong>.'); return; }
+  root.innerHTML = '<div style="text-align:center;padding:1.5rem;color:var(--tm)">Loading…</div>';
+  try{
+    if(!tch.classes || force) tch.classes = await rpc('pe_t_classes', { p_token: S.token });
+    if(!tch.classes.some(c => c.id === tch.clsId)) tch.clsId = tch.classes.length ? tch.classes[0].id : null;
+    if(tch.view === 'manage') await tchRenderManage(root); else await tchRenderDash(root);
+  }catch(err){
+    if(!isTeacher) return; // the session ended: the login screen is showing
+    root.innerHTML = tchNavHTML() + tchMsg(esc(err.message || "Couldn't load class data right now. Check your connection and try again."));
+  }
+}
+
+async function tchRenderDash(root){
+  if(!tch.classes.length){
+    root.innerHTML = tchNavHTML() + tchMsg('No classes yet. Open <strong>Classes &amp; students</strong> to create your first class and add its students.');
     return;
   }
-  root.innerHTML = '<div style="text-align:center;padding:1.5rem;color:var(--tm)">Loading class data…</div>';
-  try{
-    if(!tch.classes || forceReload){
-      const { data, error } = await sb.from('profiles').select('id,name,class_code');
-      if(error) throw error;
-      const classes = {};
-      data.forEach(p => {
-        const k = classKey(p.class_code);
-        if(!k || p.id === currentUser.id) return;
-        (classes[k] ||= { label: p.class_code.trim(), students: [] }).students.push(p);
-      });
-      tch.classes = classes;
-    }
-    const keys = Object.keys(tch.classes).sort();
-    if(!keys.length){
-      root.innerHTML = '<div class="q-card" style="text-align:center;padding:1.5rem;color:var(--tm)">No students have signed up yet. Give your class their class code so they can create accounts.</div>';
-      return;
-    }
-    if(!tch.cls || !tch.classes[tch.cls]) tch.cls = keys[0];
-    const students = tch.classes[tch.cls].students.slice().sort((a, b) => a.name.localeCompare(b.name));
-    const rows = await fetchAttempts(students.map(s => s.id));
-
-    // Latest result per student per question
-    const byUser = {};
-    rows.forEach(r => (byUser[r.user_id] ||= []).push(r));
-    const weekAgo = Date.now() - 7 * 864e5;
-    tch.students = students.map(s => {
-      const mine = byUser[s.id] || [];
-      const results = resultsFromRows(mine);
-      const vals = Object.values(results);
-      const avg = vals.length ? Math.round(vals.reduce((a, r) => a + r.s / r.m, 0) / vals.length * 100) : null;
-      const last = mine.length ? Date.parse(mine[mine.length - 1].created_at) : 0;
-      let weakest = null;
-      SYLLABUS.forEach(sec => sec.topics.forEach(([name, map]) => {
-        const st = topicStatus(map, results);
-        if(st.pct != null && (!weakest || st.pct < weakest.pct)) weakest = { name, pct: st.pct };
-      }));
-      return { ...s, results, answered: vals.length, attempts: mine.length, avg, last, weakest };
-    });
-
-    // Class view of each syllabus point: average over students who have answered it
-    const topicRows = [];
+  const data = await rpc('pe_t_class_data', { p_token: S.token, p_class_id: tch.clsId });
+  const byStu = {};
+  data.results.forEach(r => (byStu[r.s] ||= {})[`${r.c}:${r.q}`] = { s: r.sc, m: r.m, t: r.t });
+  const weekAgo = Date.now() - 7 * 864e5;
+  tch.students = data.students.map(s => {
+    const results = byStu[s.id] || {};
+    const vals = Object.values(results);
+    const avg = vals.length ? Math.round(vals.reduce((a, r) => a + r.s / r.m, 0) / vals.length * 100) : null;
+    let weakest = null;
     SYLLABUS.forEach(sec => sec.topics.forEach(([name, map]) => {
-      const pcts = tch.students.map(s => topicStatus(map, s.results).pct).filter(p => p != null);
-      if(pcts.length) topicRows.push({ name, pct: Math.round(pcts.reduce((a, b) => a + b, 0) / pcts.length), n: pcts.length });
+      const st = topicStatus(map, results);
+      if(st.pct != null && (!weakest || st.pct < weakest.pct)) weakest = { name, pct: st.pct };
     }));
-    topicRows.sort((a, b) => a.pct - b.pct);
+    return { ...s, results, answered: vals.length, avg, last: s.last_at || 0, weakest };
+  });
+  const students = tch.students;
 
-    // Most-missed questions (latest score per student)
-    const qAgg = {};
-    tch.students.forEach(s => Object.entries(s.results).forEach(([k, r]) => {
-      (qAgg[k] ||= { sum: 0, n: 0 }); qAgg[k].sum += r.s / r.m; qAgg[k].n++;
-    }));
-    const minN = students.length >= 6 ? 2 : 1;
-    const missed = Object.entries(qAgg).filter(([, a]) => a.n >= minN)
-      .map(([k, a]) => {
-        const [ch, id] = k.split(':');
-        const t = TOPICS.find(x => x.id === ch);
-        const q = t && t.questions.find(x => x.id === +id);
-        return q ? { ch, id: +id, label: t.label, text: q.text, pct: Math.round(a.sum / a.n * 100), n: a.n } : null;
-      }).filter(Boolean).sort((a, b) => a.pct - b.pct).slice(0, 6);
+  // Class view of each syllabus point: average over students who have answered it
+  const topicRows = [];
+  SYLLABUS.forEach(sec => sec.topics.forEach(([name, map]) => {
+    const pcts = students.map(s => topicStatus(map, s.results).pct).filter(p => p != null);
+    if(pcts.length) topicRows.push({ name, pct: Math.round(pcts.reduce((a, b) => a + b, 0) / pcts.length), n: pcts.length });
+  }));
+  topicRows.sort((a, b) => a.pct - b.pct);
 
-    const active = tch.students.filter(s => s.last >= weekAgo).length;
-    const avgs = tch.students.map(s => s.avg).filter(a => a != null);
-    const classAvg = avgs.length ? Math.round(avgs.reduce((a, b) => a + b, 0) / avgs.length) : null;
-    const pctPill = p => `<span class="pill ${p >= 80 ? 'pill-ok' : p >= 50 ? 'pill-warn' : 'pill-miss'}">${p}%</span>`;
+  // Most-missed questions (latest score per student)
+  const qAgg = {};
+  students.forEach(s => Object.entries(s.results).forEach(([k, r]) => {
+    (qAgg[k] ||= { sum: 0, n: 0 }); qAgg[k].sum += r.s / r.m; qAgg[k].n++;
+  }));
+  const minN = students.length >= 6 ? 2 : 1;
+  const missed = Object.entries(qAgg).filter(([, a]) => a.n >= minN)
+    .map(([k, a]) => {
+      const [ch, id] = k.split(':');
+      const t = TOPICS.find(x => x.id === ch);
+      const q = t && t.questions.find(x => x.id === +id);
+      return q ? { ch, id: +id, label: t.label, text: q.text, pct: Math.round(a.sum / a.n * 100), n: a.n } : null;
+    }).filter(Boolean).sort((a, b) => a.pct - b.pct).slice(0, 6);
 
-    root.innerHTML = `
+  const active = students.filter(s => s.last >= weekAgo).length;
+  const avgs = students.map(s => s.avg).filter(a => a != null);
+  const classAvg = avgs.length ? Math.round(avgs.reduce((a, b) => a + b, 0) / avgs.length) : null;
+  const marked = students.reduce((a, s) => a + s.attempts, 0);
+
+  root.innerHTML = tchNavHTML() + `
+    <div class="q-card">
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:.9rem">
+        <div style="font-size:15px;font-weight:600;flex:1">👩‍🏫 Class dashboard</div>
+        <select class="topic-select" style="width:auto;min-width:140px" aria-label="Class" onchange="tch.clsId=this.value;renderTeacherDashboard()">
+          ${tch.classes.map(c => `<option value="${esc(c.id)}"${c.id === tch.clsId ? ' selected' : ''}>${esc(c.name)} (${c.students})</option>`).join('')}
+        </select>
+        <button class="btn" onclick="renderTeacherDashboard(true)">↻ Refresh</button>
+      </div>
+      <div class="tch-stats">
+        <div class="stat"><div class="stat-n">${students.length}</div><div class="stat-l">students</div></div>
+        <div class="stat"><div class="stat-n">${active}</div><div class="stat-l">active this week</div></div>
+        <div class="stat"><div class="stat-n">${classAvg != null ? classAvg + '%' : '—'}</div><div class="stat-l">class average</div></div>
+        <div class="stat"><div class="stat-n">${marked}</div><div class="stat-l">answers marked</div></div>
+      </div>
+    </div>
+
+    <div class="tch-grid">
       <div class="q-card">
-        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:.9rem">
-          <div style="font-size:15px;font-weight:600;flex:1">👩‍🏫 Class dashboard</div>
-          <select class="topic-select" style="width:auto;min-width:140px" onchange="tch.cls=this.value;renderTeacherDashboard()">
-            ${keys.map(k => `<option value="${esc(k)}"${k === tch.cls ? ' selected' : ''}>${esc(tch.classes[k].label)} (${tch.classes[k].students.length})</option>`).join('')}
-          </select>
-          <button class="btn" onclick="renderTeacherDashboard(true)">↻ Refresh</button>
-        </div>
-        <div class="tch-stats">
-          <div class="stat"><div class="stat-n">${students.length}</div><div class="stat-l">students</div></div>
-          <div class="stat"><div class="stat-n">${active}</div><div class="stat-l">active this week</div></div>
-          <div class="stat"><div class="stat-n">${classAvg != null ? classAvg + '%' : '—'}</div><div class="stat-l">class average</div></div>
-          <div class="stat"><div class="stat-n">${rows.length}</div><div class="stat-l">answers marked</div></div>
-        </div>
+        <div class="syl-sec">📉 Reteach these syllabus points</div>
+        ${topicRows.length ? topicRows.slice(0, 6).map(r => `<div class="tch-line"><span style="flex:1">${r.name}<span class="syl-meta"> · ${r.n} student${r.n > 1 ? 's' : ''}</span></span>${pctPill(r.pct)}</div>`).join('')
+          : '<p class="syl-meta" style="padding:.5rem 0">No marked answers yet.</p>'}
       </div>
-
-      <div class="tch-grid">
-        <div class="q-card">
-          <div class="syl-sec">📉 Reteach these syllabus points</div>
-          ${topicRows.length ? topicRows.slice(0, 6).map(r => `<div class="tch-line"><span style="flex:1">${r.name}<span class="syl-meta"> · ${r.n} student${r.n > 1 ? 's' : ''}</span></span>${pctPill(r.pct)}</div>`).join('')
-            : '<p class="syl-meta" style="padding:.5rem 0">No marked answers yet.</p>'}
-        </div>
-        <div class="q-card">
-          <div class="syl-sec">❌ Most-missed questions</div>
-          ${missed.length ? missed.map(m => `<div class="tch-line"><span style="flex:1;min-width:0">${esc(m.label)} · Q${m.id}<div class="syl-meta">${esc(m.text.length > 80 ? m.text.slice(0, 80) + '…' : m.text)}</div></span>${pctPill(m.pct)}</div>`).join('')
-            : '<p class="syl-meta" style="padding:.5rem 0">No marked answers yet.</p>'}
-        </div>
-      </div>
-
       <div class="q-card">
-        <div class="syl-sec" style="margin-bottom:.5rem">🧑‍🎓 Students <span class="syl-meta">— tap a student to see their syllabus checklist</span></div>
-        <div class="tch-wrap"><table class="tch-table">
-          <thead><tr><th>Name</th><th>Answered</th><th>Average</th><th>Last active</th><th>Weakest point</th></tr></thead>
-          <tbody>${tch.students.map((s, i) => `<tr class="click" onclick="showStudentChecklist(${i})">
-            <td style="font-weight:600">${esc(s.name)}</td>
-            <td>${s.answered}</td>
-            <td>${s.avg != null ? pctPill(s.avg) : '<span class="syl-meta">—</span>'}</td>
-            <td class="syl-meta">${relDays(s.last)}</td>
-            <td class="syl-meta">${s.weakest ? `${s.weakest.name} (${s.weakest.pct}%)` : '—'}</td>
-          </tr>`).join('')}</tbody>
-        </table></div>
+        <div class="syl-sec">❌ Most-missed questions</div>
+        ${missed.length ? missed.map(m => `<div class="tch-line"><span style="flex:1;min-width:0">${esc(m.label)} · Q${m.id}<div class="syl-meta">${esc(m.text.length > 80 ? m.text.slice(0, 80) + '…' : m.text)}</div></span>${pctPill(m.pct)}</div>`).join('')
+          : '<p class="syl-meta" style="padding:.5rem 0">No marked answers yet.</p>'}
       </div>
-      <div id="tch-student"></div>`;
-  }catch(err){
-    const missingTable = /question_attempts|teachers|relation|does not exist|schema cache/i.test(err.message || '');
-    root.innerHTML = `<div class="q-card" style="text-align:center;padding:1.5rem;color:var(--tm)">
-      ${missingTable ? 'The class-tracking tables aren\'t set up in Supabase yet. Run <strong>supabase/setup.sql</strong> in the Supabase SQL editor, then refresh.' : 'Couldn\'t load class data right now. Check your connection and try again.'}
-    </div>`;
+    </div>
+
+    <div class="q-card">
+      <div class="syl-sec" style="margin-bottom:.5rem">🧑‍🎓 Students <span class="syl-meta">— tap a student to see their syllabus checklist</span></div>
+      <div class="tch-wrap"><table class="tch-table">
+        <thead><tr><th>Name</th><th>Answered</th><th>Average</th><th>Last active</th><th>Weakest point</th></tr></thead>
+        <tbody>${students.map((s, i) => `<tr class="click" onclick="showStudentChecklist(${i})">
+          <td style="font-weight:600">${esc(s.name)}</td>
+          <td>${s.answered}</td>
+          <td>${s.avg != null ? pctPill(s.avg) : '<span class="syl-meta">—</span>'}</td>
+          <td class="syl-meta">${relDays(s.last)}</td>
+          <td class="syl-meta">${s.weakest ? `${esc(s.weakest.name)} (${s.weakest.pct}%)` : '—'}</td>
+        </tr>`).join('')}</tbody>
+      </table></div>
+    </div>
+    <div id="tch-student"></div>`;
+}
+
+/* ── Classes & students ── */
+async function tchRenderManage(root){
+  const [pending, roster] = await Promise.all([
+    rpc('pe_t_pin_requests', { p_token: S.token }),
+    tch.clsId ? rpc('pe_t_students', { p_token: S.token, p_class_id: tch.clsId }) : Promise.resolve([])
+  ]);
+  tch.pending = pending; tch.roster = roster;
+  const cls = tch.classes.find(c => c.id === tch.clsId);
+  const others = tch.classes.filter(c => !cls || c.id !== cls.id);
+  root.innerHTML = tchNavHTML()
+    + (pending.length ? `<div class="q-card"><div class="syl-sec">🔑 PIN reset requests</div>${pending.map(r => `
+        <div class="tch-row"><span class="grow"><strong>${esc(r.name)}</strong> <span class="syl-meta">${esc(r.class_name)} · ${relDays(Date.parse(r.created_at))}</span></span>
+          <button class="btn sm primary" onclick="tchPinResolve('${r.id}',true)">Reset PIN</button>
+          <button class="btn sm" onclick="tchPinResolve('${r.id}',false)">Decline</button></div>`).join('')}</div>` : '')
+    + `<div class="q-card"><div class="syl-sec">🏫 Classes</div>
+        ${tch.classes.map(c => `<div class="tch-row"><span class="grow"${c.id === tch.clsId ? ' style="font-weight:700"' : ''}>${esc(c.name)} <span class="syl-meta">· code <strong>${esc(c.code)}</strong> · ${c.students} student${+c.students === 1 ? '' : 's'}</span></span>
+            <button class="btn sm${c.id === tch.clsId ? ' primary' : ''}" onclick="tchOpen('${c.id}')">Open</button>
+            <button class="btn sm" onclick="tchSheet('${c.id}')">Join sheet</button>
+            <button class="btn sm" onclick="tchEditClass('${c.id}')">Edit</button>
+            <button class="btn sm danger" onclick="tchDeleteClass('${c.id}')">Delete</button></div>`).join('')
+          || '<p class="syl-meta" style="padding:.4rem 0">No classes yet. Add your first one below.</p>'}
+        <div class="tch-row" style="align-items:flex-end">
+          <div class="grow"><label class="lg-lbl" for="tch-cname">New class name</label><input id="tch-cname" class="lg-in" style="margin:0" maxlength="60" placeholder="e.g. 10A PE"></div>
+          <div style="width:140px"><label class="lg-lbl" for="tch-ccode">Class code</label><input id="tch-ccode" class="lg-in" style="margin:0" maxlength="40" value="${genCode()}" autocomplete="off"></div>
+          <button class="btn sm primary" onclick="tchAddClass()">Add class</button></div></div>`
+    + (cls ? `<div class="q-card"><div class="syl-sec">👥 ${esc(cls.name)} <span class="syl-meta">· class code <strong>${esc(cls.code)}</strong></span></div>
+        <label class="lg-lbl" for="tch-names">Add students (one name per line)</label>
+        <textarea id="tch-names" class="answer-box" rows="4" style="min-height:90px" placeholder="Alice Martin&#10;Bob Dupont"></textarea>
+        <div class="tch-row" style="border-top:0"><button class="btn sm primary" onclick="tchAddNames()">Add students</button>
+          <button class="btn sm" onclick="imOpen()">📥 Import from Excel / CSV</button></div>
+        ${roster.length ? `<div class="tch-row"><label class="lg-check" style="margin:0"><input type="checkbox" onchange="tchPickAll(this.checked)"> Select all</label>
+            <button class="btn sm" onclick="tchResetPins()">Reset PINs</button>
+            ${others.length ? `<select id="tch-moveto" class="lg-in" style="margin:0;width:auto" aria-label="Move to class">${others.map(c => `<option value="${esc(c.id)}">${esc(c.name)}</option>`).join('')}</select><button class="btn sm" onclick="tchMoveSelected()">Move</button>` : ''}</div>
+          ${roster.map(s => `<div class="tch-row"><input type="checkbox" class="tch-pick" value="${esc(s.id)}" aria-label="Select ${esc(s.name)}"><span class="grow">${esc(s.name)}</span>
+            <span class="pill ${s.has_pin ? 'pill-ok' : ''}">${s.has_pin ? 'PIN set' : 'no PIN yet'}</span>
+            <button class="btn sm danger" onclick="tchRemove('${s.id}')">Remove</button></div>`).join('')}`
+        : '<p class="syl-meta" style="padding:.5rem 0">No students yet. Type or paste names above, or import a file.</p>'}</div>` : '')
+    + `<div id="tch-import"></div>
+       <div class="q-card"><div class="syl-sec">🔐 Teacher PIN</div>
+        <p class="lg-note">Every teacher uses the same PIN. Use at least 6 characters.</p>
+        <div class="tch-row" style="align-items:flex-end;border-top:0">
+          <div class="grow"><label class="lg-lbl" for="tch-pin-old">Current PIN</label><input id="tch-pin-old" class="lg-in" style="margin:0" type="password" autocomplete="current-password"></div>
+          <div class="grow"><label class="lg-lbl" for="tch-pin-new">New PIN</label><input id="tch-pin-new" class="lg-in" style="margin:0" type="password" autocomplete="new-password"></div>
+          <button class="btn sm" onclick="tchChangePin()">Change PIN</button></div></div>`;
+}
+
+// Runs a teacher action, shows the result, and reloads the page. Errors become a message, never a crash.
+async function tchDo(fn, done){
+  try{ const msg = await fn(); if(msg) toast(msg); tch.classes = null; await renderTeacherDashboard(true); if(done) done(); }
+  catch(e){ if(isTeacher) toast(e.message); }
+}
+function tchOpen(id){ tch.clsId = id; renderTeacherDashboard(); }
+function tchAddClass(){
+  const name = val('tch-cname').trim(), code = val('tch-ccode').trim();
+  if(!name) return toast('Type a name for the class.');
+  tchDo(async () => { tch.clsId = await rpc('pe_t_add_class', { p_token: S.token, p_name: name, p_code: code }); return `${name} created. Now add its students.`; });
+}
+function tchEditClass(id){
+  const c = tch.classes.find(x => x.id === id); if(!c) return;
+  const name = prompt('Class name', c.name); if(name === null) return;
+  const code = prompt('Class code (students type this to join)', c.code); if(code === null) return;
+  tchDo(async () => { await rpc('pe_t_update_class', { p_token: S.token, p_id: id, p_name: name, p_code: code }); return 'Class saved.'; });
+}
+function tchDeleteClass(id){
+  const c = tch.classes.find(x => x.id === id); if(!c) return;
+  if(!confirm(`Delete ${c.name} with its ${c.students} student(s) and all their results? This cannot be undone.`)) return;
+  tchDo(async () => { await rpc('pe_t_delete_class', { p_token: S.token, p_id: id }); return `${c.name} deleted.`; });
+}
+function tchAddNames(){
+  const names = val('tch-names').split(/\r?\n/).map(s => s.trim()).filter(Boolean);
+  if(!names.length) return toast('Type or paste at least one name.');
+  tchDo(async () => {
+    const n = await rpc('pe_t_add_students', { p_token: S.token, p_class_id: tch.clsId, p_names: names });
+    return `${n} student${n === 1 ? '' : 's'} added${names.length > n ? `, ${names.length - n} already in the class` : ''}.`;
+  });
+}
+const tchPicked = () => [...document.querySelectorAll('.tch-pick:checked')].map(x => x.value);
+function tchPickAll(on){ document.querySelectorAll('.tch-pick').forEach(x => x.checked = on); }
+function tchResetPins(){
+  const ids = tchPicked();
+  if(!ids.length) return toast('Tick the students first.');
+  if(!confirm(`Clear the PIN of ${ids.length} student(s)? Each creates a new PIN at their next login. Their results are kept.`)) return;
+  tchDo(async () => `${await rpc('pe_t_reset_pins', { p_token: S.token, p_ids: ids })} PIN(s) cleared.`);
+}
+function tchMoveSelected(){
+  const ids = tchPicked(), to = val('tch-moveto');
+  if(!ids.length) return toast('Tick the students first.');
+  tchDo(async () => {
+    const n = await rpc('pe_t_move_students', { p_token: S.token, p_to: to, p_ids: ids });
+    return `${n} moved${ids.length > n ? `, ${ids.length - n} skipped (same name already there)` : ''}. Their PIN and results went with them.`;
+  });
+}
+function tchRemove(id){
+  const s = tch.roster.find(x => x.id === id); if(!s) return;
+  if(!confirm(`Remove ${s.name} and all their results? This cannot be undone.`)) return;
+  tchDo(async () => { await rpc('pe_t_remove_student', { p_token: S.token, p_student_id: id }); return `${s.name} removed.`; });
+}
+function tchPinResolve(id, ok){
+  tchDo(async () => { await rpc('pe_t_pin_resolve', { p_token: S.token, p_id: id, p_accept: ok }); return ok ? 'PIN cleared. The student creates a new one at their next login.' : 'Request declined.'; });
+}
+async function tchChangePin(){
+  const o = val('tch-pin-old'), n = val('tch-pin-new');
+  if(!o || !n) return toast('Type the current PIN and the new PIN.');
+  try{ await rpc('pe_t_change_pin', { p_token: S.token, p_old: o, p_new: n }); document.getElementById('tch-pin-old').value = document.getElementById('tch-pin-new').value = ''; toast('Teacher PIN changed.'); }
+  catch(e){ toast(e.message); }
+}
+
+// One printable page per class: class code, QR code and the three login steps
+async function tchSheet(id){
+  const c = tch.classes.find(x => x.id === id); if(!c) return;
+  const link = `${location.href.split('#')[0].split('?')[0]}?join=${encodeURIComponent(c.id)}&k=${encodeURIComponent(c.code)}`;
+  let qr = '';
+  try{ await loadScript(QR_URL); const q = qrcode(0, 'M'); q.addData(link); q.make(); qr = q.createSvgTag(5, 2); }catch(e){}
+  let o = document.getElementById('sheet-overlay');
+  if(!o){ o = document.createElement('div'); o.id = 'sheet-overlay'; document.body.appendChild(o); }
+  o.innerHTML = `<div class="sheet">
+    <p class="noprint" style="display:flex;gap:8px;margin:0 0 14px"><button class="btn sm" onclick="document.getElementById('sheet-overlay').classList.remove('open')">Close</button>
+      <button class="btn sm primary" onclick="tchPrintSheet()">Print or save as PDF</button></p>
+    <div style="font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#1a6b3c">IGCSE PE Workbook</div>
+    <h2 style="margin:.15em 0 .6em;font-size:24px">${esc(c.name)}: join the PE app</h2>
+    <div class="sheet-grid"><div class="sheet-qr">${qr || '<p>The QR code could not load. Use the link below.</p>'}</div>
+      <ol><li><b>Scan the code</b> with your phone camera, or open the link below.</li>
+        <li><b>Choose your name</b> in the list.</li>
+        <li><b>Create a 4-digit PIN</b> you will remember. Next time, just choose your name and type your PIN.</li></ol></div>
+    <p style="margin:16px 0 4px">Class: <b>${esc(c.name)}</b> &nbsp; Class code: <b style="font-size:20px">${esc(c.code)}</b></p>
+    <p style="font-size:12px;word-break:break-all;color:#444">${esc(link)}</p>
+    <p style="font-size:12px;color:#444">Forgot your PIN? You can ask your PE teacher from the login screen.</p></div>`;
+  o.classList.add('open');
+}
+function tchPrintSheet(){
+  document.body.classList.add('printing-sheet');
+  window.print();
+  document.body.classList.remove('printing-sheet');
+}
+
+/* ── Import students from a spreadsheet (Excel, LibreOffice, CSV, Google Sheets as .xlsx) ──
+   The file is read in the browser. Only student names and class names are sent to the database. */
+const normH = s => String(s ?? '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z]+/g, ' ').trim();
+const HEAD_RX = {  // column headings we recognise, in English and French (accents removed)
+  first: /^(first ?names?|given ?names?|forenames?|prenoms?|first)$/,
+  last: /^(last ?names?|surnames?|family ?names?|noms? de famille|noms?|last)$/,
+  full: /^(full ?names?|names?|students?|student ?names?|pupils?|pupil ?names?|learners?|learner ?names?|eleves?|nom complet|noms? (et )?prenoms?|prenoms? (et )?noms?)$/,
+  cls: /^(class|classes|class ?name|form|forms|form ?group|form ?class|tutor ?group|tutor|reg ?group|registration ?group|groups?|groupes?|sections?|homeroom|division|classe)$/
+};
+// A column of values like 10C, 10 C, 10-C, Y10C or 10/2 is a class column even when its heading is unusual
+const FORM_RX = /^(?:y(?:ea)?r?\s*)?\d{1,2}\s*(?:[-.]?\s*[a-z]{1,3}|\/\s*\d{1,2})$/i;
+const colShare = (rows, start, i, rx) => { const v = rows.slice(start, start + 300).map(r => String(r[i] ?? '').trim()).filter(Boolean); return v.length ? v.filter(x => rx.test(x)).length / v.length : 0; };
+let IM = null;
+const imSheetRows = sn => XLSX.utils.sheet_to_json(IM.wb.Sheets[sn], { header: 1, defval: '', blankrows: false, raw: false });
+
+function detectHeader(rows){
+  for(let i = 0; i < Math.min(rows.length, 10); i++){
+    const kinds = rows[i].map(c => { const h = normH(c); return h ? Object.keys(HEAD_RX).find(k => HEAD_RX[k].test(h)) || null : null; });
+    if(kinds.some(Boolean)) return { row: i, kinds };
   }
+  return { row: -1, kinds: [] };
+}
+async function imReadFile(file){
+  const buf = await file.arrayBuffer();
+  if(/\.(csv|tsv|txt)$/i.test(file.name)){
+    // CSV saved by Excel on Windows is often not UTF-8: fall back so accented names stay correct
+    let text;
+    try{ text = new TextDecoder('utf-8', { fatal: true }).decode(buf); }
+    catch(e){ text = new TextDecoder('windows-1252').decode(buf); }
+    return XLSX.read(text.replace(/^﻿/, ''), { type: 'string', raw: true });
+  }
+  return XLSX.read(buf, { type: 'array' });
+}
+
+function imOpen(){
+  const box = document.getElementById('tch-import'); if(!box) return;
+  box.innerHTML = `<div class="q-card"><div class="syl-sec">📥 Import students</div>
+    <p class="lg-note">Choose an Excel (.xlsx or .xls), LibreOffice (.ods) or CSV file. From Google Sheets, first use File &gt; Download &gt; Microsoft Excel (.xlsx). The file is read on this device: only student names and class names are saved, never the other columns.</p>
+    <input type="file" id="im-file" accept=".xlsx,.xls,.ods,.csv,.tsv,.txt" onchange="imRead(this.files[0])">
+    <div id="im-map"></div><div id="im-prev"></div></div>`;
+  box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+async function imRead(file){
+  if(!file) return;
+  toast('Reading the file…');
+  try{
+    await loadScript(XLSX_URL);
+    const [wb, everyone] = await Promise.all([imReadFile(file), rpc('pe_t_all_students', { p_token: S.token })]);
+    IM = { wb, file: file.name, everyone, byName: new Map(), classes: tch.classes.map(c => ({ id: c.id, name: c.name })),
+           include: {}, dest: {}, codes: {}, newName: file.name.replace(/\.[^.]+$/, '') };
+    everyone.forEach(s => { const k = normName(s.name); if(!IM.byName.has(k)) IM.byName.set(k, []); IM.byName.get(k).push(s); });
+  }catch(e){ return toast(/Could not load/.test(e.message) ? 'The spreadsheet reader did not load. Check your internet connection and try again.' : 'Could not read this file. Save it as .xlsx or .csv and try again.'); }
+  IM.sheets = IM.wb.SheetNames.filter(sn => imSheetRows(sn).length);
+  if(!IM.sheets.length){ document.getElementById('im-map').innerHTML = document.getElementById('im-prev').innerHTML = ''; return toast('This file looks empty.'); }
+  imDetect(); imRender();
+}
+
+function imDetect(){
+  const base = IM.sheets[0], rows = imSheetRows(base), h = detectHeader(rows), at = k => h.kinds.indexOf(k);
+  const fi = at('first'), la = at('last'), fu = at('full');
+  let cl = at('cls');
+  const width = Math.max(1, ...rows.slice(0, 50).map(r => r.length)), start = h.row + 1;
+  if(cl < 0) cl = Array.from({ length: width }, (_, i) => i).find(i => ![fi, la, fu].includes(i) && colShare(rows, start, i, FORM_RX) >= 0.8) ?? -1;
+  IM.sheet = IM.sheets.length > 1 && cl < 0 ? '*' : base;   // several sheets and no class column: one sheet per class
+  IM.hasHeader = h.row >= 0;
+  const head = h.row >= 0 ? rows[h.row] : [], sample = rows[h.row + 1] || [];
+  IM.cols = Array.from({ length: width }, (_, i) => { const t = String(head[i] ?? '').trim(), s = String(sample[i] ?? '').trim(); return `Column ${XLSX.utils.encode_col(i)}${t ? ` (${t})` : s ? ` (e.g. ${s})` : ''}`; });
+  IM.map = {
+    mode: fi >= 0 && la >= 0 ? 'firstlast' : 'full',
+    full: fu >= 0 ? fu : la >= 0 ? la : fi >= 0 ? fi : 0,
+    first: Math.max(fi, 0), last: Math.max(la, 0), order: 'fl',
+    cls: cl >= 0 ? 'col:' + cl : IM.sheet === '*' ? 'sheet' : tch.clsId ? 'into:' + tch.clsId : 'new'
+  };
+}
+
+// Change one setting and redraw (names or class column, sheet, header row...)
+function imSet(key, value){
+  if(key in IM.map) IM.map[key] = key === 'mode' || key === 'cls' || key === 'order' ? value : +value;
+  else IM[key] = value;
+  if(key === 'sheet' || key === 'hasHeader') imDetectKeep();
+  imRender();
+}
+// After the sheet or the header row changes, rebuild the column names but keep the teacher's other choices
+function imDetectKeep(){
+  const rows = imSheetRows(IM.sheet === '*' ? IM.sheets[0] : IM.sheet), h = IM.hasHeader ? Math.max(0, detectHeader(rows).row) : -1;
+  const width = Math.max(1, ...rows.slice(0, 50).map(r => r.length)), head = h >= 0 ? rows[h] : [], sample = rows[h + 1] || rows[0] || [];
+  IM.cols = Array.from({ length: width }, (_, i) => { const t = String(head[i] ?? '').trim(), s = String(sample[i] ?? '').trim(); return `Column ${XLSX.utils.encode_col(i)}${t ? ` (${t})` : s ? ` (e.g. ${s})` : ''}`; });
+}
+
+function imRender(){
+  const m = IM.map, colOpts = v => IM.cols.map((c, i) => `<option value="${i}"${i === v ? ' selected' : ''}>${esc(c)}</option>`).join('');
+  document.getElementById('im-map').innerHTML = `<div style="margin-top:12px"><strong>${esc(IM.file)}</strong>
+    ${IM.sheets.length > 1 ? `<label class="lg-lbl" for="im-s" style="margin-top:8px">Sheet</label><select id="im-s" class="lg-in" onchange="imSet('sheet',this.value)">${IM.sheets.map(s => `<option value="${esc(s)}"${s === IM.sheet ? ' selected' : ''}>${esc(s)}</option>`).join('')}<option value="*"${IM.sheet === '*' ? ' selected' : ''}>All sheets</option></select>` : ''}
+    <label class="lg-check"><input type="checkbox" id="im-h"${IM.hasHeader ? ' checked' : ''} onchange="imSet('hasHeader',this.checked)"> The first row has column headings</label>
+    <label class="lg-lbl" for="im-mode">Student names are in</label>
+    <select id="im-mode" class="lg-in" onchange="imSet('mode',this.value)">
+      <option value="full"${m.mode === 'full' ? ' selected' : ''}>One column with the full name</option>
+      <option value="firstlast"${m.mode === 'firstlast' ? ' selected' : ''}>Two columns: first name and last name</option></select>
+    ${m.mode === 'full'
+      ? `<label class="lg-lbl" for="im-fu">Name column</label><select id="im-fu" class="lg-in" onchange="imSet('full',this.value)">${colOpts(m.full)}</select>`
+      : `<label class="lg-lbl" for="im-fi">First name column</label><select id="im-fi" class="lg-in" onchange="imSet('first',this.value)">${colOpts(m.first)}</select>
+         <label class="lg-lbl" for="im-la">Last name column</label><select id="im-la" class="lg-in" onchange="imSet('last',this.value)">${colOpts(m.last)}</select>
+         <label class="lg-lbl" for="im-o">Write names as</label><select id="im-o" class="lg-in" onchange="imSet('order',this.value)"><option value="fl"${m.order === 'fl' ? ' selected' : ''}>First name, then last name</option><option value="lf"${m.order === 'lf' ? ' selected' : ''}>Last name, then first name</option></select>`}
+    <label class="lg-lbl" for="im-cls">Class</label>
+    <select id="im-cls" class="lg-in" onchange="imSet('cls',this.value)">
+      ${IM.cols.map((c, i) => `<option value="col:${i}"${m.cls === 'col:' + i ? ' selected' : ''}>From ${esc(c)}</option>`).join('')}
+      <option value="sheet"${m.cls === 'sheet' ? ' selected' : ''}>The sheet name (one sheet per class)</option>
+      ${IM.classes.map(c => `<option value="into:${esc(c.id)}"${m.cls === 'into:' + c.id ? ' selected' : ''}>Everyone into ${esc(c.name)}</option>`).join('')}
+      <option value="new"${m.cls === 'new' ? ' selected' : ''}>Everyone into a new class</option></select>
+    ${m.cls === 'new' ? `<label class="lg-lbl" for="im-n">New class name</label><input id="im-n" class="lg-in" maxlength="60" value="${esc(IM.newName)}" oninput="IM.newName=this.value;imPreview()">` : ''}</div>`;
+  imPreview();
+}
+
+function imRows(){
+  const out = [], m = IM.map;
+  for(const sn of IM.sheet === '*' ? IM.sheets : [IM.sheet]){
+    const rows = imSheetRows(sn), h = IM.hasHeader ? Math.max(0, detectHeader(rows).row) : -1;
+    for(const r of rows.slice(h + 1)){
+      if(!r.some(c => String(c ?? '').trim())) continue;   // empty row
+      const cell = i => String(r[i] ?? '').replace(/\s+/g, ' ').trim();
+      const name = m.mode === 'firstlast'
+        ? (m.order === 'lf' ? [cell(m.last), cell(m.first)] : [cell(m.first), cell(m.last)]).filter(Boolean).join(' ')
+        : cell(m.full);
+      out.push({ name, cls: m.cls.startsWith('col:') ? cell(+m.cls.slice(4)) : m.cls === 'sheet' ? sn.trim() : '' });
+    }
+  }
+  return out;
+}
+function imGroups(){
+  const m = IM.map, fixed = m.cls.startsWith('into:') ? IM.classes.find(c => c.id === m.cls.slice(5)) : null;
+  const groups = new Map(); let noName = 0, noClass = 0;
+  for(const r of imRows()){
+    if(!r.name){ noName++; continue; }
+    const label = fixed ? fixed.name : m.cls === 'new' ? IM.newName.trim() : r.cls;
+    if(!fixed && m.cls !== 'new' && !label){ noClass++; continue; }
+    const key = fixed ? 'id:' + fixed.id : m.cls === 'new' ? 'new' : 'n:' + normName(label);
+    let g = groups.get(key);
+    if(!g){ g = { key, label, fixed, names: [], seen: new Set() }; groups.set(key, g); }
+    if(!g.seen.has(normName(r.name))){ g.seen.add(normName(r.name)); g.names.push(r.name); }
+  }
+  return { groups: [...groups.values()].sort((a, b) => a.label.localeCompare(b.label, undefined, { numeric: true })), noName, noClass };
+}
+// A class in the file with the same name as an existing class goes into that class; otherwise it is created
+const imDest = g => g.fixed ? g.fixed.id : IM.dest[g.key] ?? (IM.classes.find(c => normName(c.name) === normName(g.label))?.id || 'new');
+// Students in the file who are already in exactly one other class: they are moved, not duplicated
+const imMovers = (g, dest) => g.names.flatMap(n => {
+  const hits = IM.byName.get(normName(n)) || [];
+  if(hits.some(h => h.class_id === dest)) return [];   // already in this class
+  return hits.length === 1 ? [{ name: n, id: hits[0].id, from: hits[0].class_id }] : [];
+});
+const imClassName = id => (IM.classes.find(c => c.id === id) || {}).name || 'another class';
+
+function imPreview(){
+  const box = document.getElementById('im-prev'), { groups, noName, noClass } = imGroups();
+  if(!groups.length){ box.innerHTML = '<p class="lg-note" style="margin-top:12px">No names found with these settings. Check the columns above.</p>'; return; }
+  const inc = groups.filter(g => IM.include[g.key] !== false), total = inc.reduce((a, g) => a + g.names.length, 0);
+  const skipped = [noName ? `${noName} row${noName === 1 ? '' : 's'} without a name` : '', noClass ? `${noClass} row${noClass === 1 ? '' : 's'} without a class` : ''].filter(Boolean);
+  box.innerHTML = `<div class="syl-sec" style="margin-top:14px">Check before importing</div>
+    ${skipped.length ? `<p class="lg-note">Skipped: ${skipped.join(', ')}.</p>` : ''}
+    ${groups.map(g => {
+      const d = imDest(g), mv = imMovers(g, d);
+      if(d === 'new') IM.codes[g.key] ||= genCode();
+      const from = Object.entries(mv.reduce((a, x) => (a[x.from] = (a[x.from] || 0) + 1, a), {})).map(([id, n]) => `${esc(imClassName(id))} (${n})`).join(', ');
+      return `<div class="tch-row" style="align-items:flex-start"><input type="checkbox" data-inc="${esc(g.key)}"${IM.include[g.key] !== false ? ' checked' : ''} aria-label="Import ${esc(g.label || 'new class')}">
+        <div class="grow"><strong>${esc(g.label || 'New class')}</strong> <span class="syl-meta">${g.names.length} student${g.names.length === 1 ? '' : 's'}${d === 'new' ? ' · new class' : ' · into the existing class'}</span>
+          ${mv.length ? `<div class="syl-meta">${mv.length} already in ${from}: moved here, not duplicated (PIN and results go with them)</div>` : ''}
+          ${d === 'new' ? `<div style="margin-top:6px;max-width:220px"><label class="lg-lbl">Class code for students</label><input class="lg-in" style="margin:0" data-code="${esc(g.key)}" value="${esc(IM.codes[g.key])}" autocomplete="off"></div>` : ''}
+          <details><summary class="syl-meta">See the names</summary><p class="syl-meta">${g.names.map(esc).join(', ')}</p></details></div></div>`;
+    }).join('')}
+    <p style="margin-top:14px"><button class="btn primary" id="im-go" onclick="imRun()"${total ? '' : ' disabled'}>Import ${total} student${total === 1 ? '' : 's'} into ${inc.length} class${inc.length === 1 ? '' : 'es'}</button></p>
+    <p class="lg-note">Names already in a class are skipped, so importing the same file twice is safe.</p>`;
+  box.querySelectorAll('[data-inc]').forEach(x => x.onchange = () => { IM.include[x.dataset.inc] = x.checked; imPreview(); });
+  box.querySelectorAll('[data-code]').forEach(x => x.oninput = () => { IM.codes[x.dataset.code] = x.value; });
+}
+
+async function imRun(){
+  const todo = imGroups().groups.filter(g => IM.include[g.key] !== false);
+  for(const g of todo) if(imDest(g) === 'new'){
+    if(!g.label) return toast('Type a name for the new class.');
+    if(String(IM.codes[g.key] || '').trim().length < 3) return toast(`The class code for ${g.label} needs at least 3 characters.`);
+  }
+  const btn = document.getElementById('im-go'); btn.disabled = true; btn.textContent = 'Importing…';
+  let added = 0, moved = 0, made = 0, total = 0;
+  try{
+    for(const g of todo){
+      let id = imDest(g);
+      if(id === 'new'){
+        id = await rpc('pe_t_add_class', { p_token: S.token, p_name: g.label, p_code: IM.codes[g.key].trim() });
+        IM.classes.push({ id, name: g.label }); IM.dest[g.key] = id; made++;   // a retry adds to this class instead of making another
+      }
+      const mv = imMovers(g, id);
+      if(mv.length){
+        moved += await rpc('pe_t_move_students', { p_token: S.token, p_to: id, p_ids: mv.map(x => x.id) });
+        mv.forEach(x => { IM.byName.get(normName(x.name))[0].class_id = id; });   // so a retry sees them in their new class
+      }
+      added += await rpc('pe_t_add_students', { p_token: S.token, p_class_id: id, p_names: g.names });
+      total += g.names.length;
+    }
+  }catch(e){
+    btn.disabled = false; btn.textContent = 'Try again';
+    return toast(`Import stopped after ${added + moved} student${added + moved === 1 ? '' : 's'}: ${e.message}`);
+  }
+  toast(`${added} student${added === 1 ? '' : 's'} added${moved ? `, ${moved} moved from another class` : ''}${made ? ` in ${made} new class${made === 1 ? '' : 'es'}` : ''}`
+    + `${total > added + moved ? `. ${total - added - moved} were already there` : ''}.`);
+  tch.classes = null; renderTeacherDashboard(true);
 }
 
 function showStudentChecklist(i){
@@ -4238,15 +4716,15 @@ function showStudentChecklist(i){
 function tutEnsureTopic(){ if(!currentTopic) loadTopic(TOPICS[0].id); }
 
 const TUTORIAL_STEPS = [
-  { img:'01-create-account', title:'Create your account',
-    text:`Tap <strong>👤 Sign in</strong> (top right), then <strong>Create one</strong>. Enter:
-      <ul><li>your <strong>name</strong> (this is what your class will see on the leaderboard)</li>
-      <li>the <strong>class code</strong> your teacher gives you. Type it exactly as given, because it decides which class leaderboard you join</li>
-      <li>your <strong>email</strong> and a <strong>password</strong> (at least 6 characters)</li></ul>
-      Next time, just sign in with the same email and password.`,
+  { img:'01-create-account', title:'Join your class',
+    text:`Tap <strong>👤 Log in</strong> (top right). There is no email and no password:
+      <ul><li>choose your <strong>class</strong> and type the <strong>class code</strong> from your teacher (or scan the class QR code, which fills both in)</li>
+      <li>choose your <strong>name</strong> in the list</li>
+      <li>the first time, create a <strong>4-digit PIN</strong> you will remember and type it twice</li></ul>
+      Next time, just choose your name and type your PIN. Forgot it? Tap <strong>I forgot my PIN</strong> to ask your teacher. Leave <strong>Keep me logged in</strong> ticked on your own device.`,
     go:()=>switchTab('account') },
   { img:'02-profile-photo', title:'Add a profile picture',
-    text:`Once you're signed in, your first name shows in the top-right corner. On the Account page, tap the <span class="tut-hl">📷 button</span> on your avatar to <strong>choose a file</strong> or <strong>take a photo</strong>.
+    text:`Once you're logged in, your first name shows in the top-right corner. On the Account page, tap the <span class="tut-hl">📷 button</span> on your avatar to <strong>choose a file</strong> or <strong>take a photo</strong>.
       The photo must clearly show your face. It appears next to your name on the leaderboard.`,
     go:()=>switchTab('account') },
   { img:'03-api-key', title:'Turn on AI marking (free key)',
@@ -4277,7 +4755,7 @@ const TUTORIAL_STEPS = [
     go:()=>switchTab('topics') },
   { img:'syllabus-checklist', title:'Track the whole syllabus',
     text:`The <strong>✅ Syllabus</strong> tab lists every point in the Cambridge IGCSE PE syllabus, coloured by your latest marked answers: <strong style="color:var(--green)">green</strong> = secure, <strong style="color:var(--amber)">amber</strong> = getting there, <strong style="color:var(--red)">red</strong> = needs work, grey = not started.
-      Tap <span class="tut-hl">Practise</span> next to any point to answer just its questions, or <strong>🎯 Practise my weakest points</strong> to revise what needs it most. Sign in so your teacher can see your progress too.`,
+      Tap <span class="tut-hl">Practise</span> next to any point to answer just its questions, or <strong>🎯 Practise my weakest points</strong> to revise what needs it most. Log in so your teacher can see your progress too.`,
     go:()=>switchTab('syllabus') },
   { img:'08-diagrams', title:'Label the diagrams',
     text:`In <strong>🧩 Diagrams</strong>, <strong>tap a label</strong> (it turns <span class="tut-hl">green</span>), then <strong>tap the numbered spot</strong> where it belongs. On a computer you can also drag and drop labels.
@@ -4294,7 +4772,7 @@ const TUTORIAL_STEPS = [
     go:()=>switchTab('quiz') },
   { img:'11-quiz-results', title:'Submit and see your results',
     text:`After the 10th question (or when you tap <strong>End quiz</strong>), you see your <strong>total marks and percentage</strong>, with a score for every question.
-      If you're signed in, your result is <strong>sent to the leaderboard automatically</strong>. Only your <strong>best</strong> score counts. Tap <strong>Try again</strong> to get a new set of questions.`,
+      If you're logged in, your result is <strong>sent to the leaderboard automatically</strong>. Only your <strong>best</strong> score counts. Tap <strong>Try again</strong> to get a new set of questions.`,
     go:()=>switchTab('quiz') },
   { img:'12-leaderboard', title:'Climb the leaderboard',
     text:`<strong>🏆 Leaderboard</strong> ranks everyone with <strong>your class code</strong> by their best quiz percentage. Use the menu to switch between <strong>All chapters</strong> and a single chapter.
@@ -4343,6 +4821,7 @@ document.addEventListener('keydown', e=>{
   else if(e.key==='ArrowRight') tutGo(tutStep+1);
   else if(e.key==='ArrowLeft') tutGo(tutStep-1);
 });
+restoreSession();
 </script>
 </body>
 </html>
