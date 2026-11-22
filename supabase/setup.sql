@@ -357,8 +357,8 @@ begin
   perform pe__teacher(p_token);
   err := pe__teacher_pin_check(p_old);
   if err is not null then return jsonb_build_object('error', err); end if;
-  if length(coalesce(p_new, '')) < 6 then
-    return jsonb_build_object('error', 'The new PIN must be at least 6 characters.');
+  if length(coalesce(p_new, '')) < 4 then
+    return jsonb_build_object('error', 'The new PIN must be at least 4 characters.');
   end if;
   update pe_settings set teacher_pin_hash = crypt(p_new, gen_salt('bf')) where id = 1;
   delete from pe_tokens where role = 'teacher' and token_hash <> pe__hash(p_token);
@@ -532,15 +532,15 @@ begin
 end $$;
 
 /* ---------- 6. The teacher PIN ---------- */
--- Put your own teacher PIN (at least 6 characters) on the next line. It is stored as a bcrypt hash.
+-- Put your own teacher PIN (at least 4 characters) on the next line. It is stored as a bcrypt hash.
 -- Change it later from the app: Class tab > Classes and students > Teacher PIN.
 
 do $$
 declare v_pin text := 'CHANGE-ME-FIRST';   -- <<< EDIT THIS, then run the file
 begin
   if not exists (select 1 from public.pe_settings) then
-    if v_pin = 'CHANGE-ME-FIRST' or length(v_pin) < 6 then
-      raise exception 'Set your teacher PIN first: edit CHANGE-ME-FIRST near the end of this file (at least 6 characters), then run it again.';
+    if v_pin = 'CHANGE-ME-FIRST' or length(v_pin) < 4 then
+      raise exception 'Set your teacher PIN first: edit CHANGE-ME-FIRST near the end of this file (at least 4 characters), then run it again.';
     end if;
     insert into public.pe_settings (id, teacher_pin_hash) values (1, extensions.crypt(v_pin, extensions.gen_salt('bf')));
   end if;
