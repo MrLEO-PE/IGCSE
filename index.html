@@ -4523,9 +4523,10 @@ function imOpen(){
   const box = document.getElementById('tch-import'); if(!box) return;
   box.innerHTML = `<div class="q-card"><div class="syl-sec">📥 Import students</div>
     <p class="lg-note">Choose an Excel (.xlsx or .xls), LibreOffice (.ods) or CSV file. From Google Sheets, first use File &gt; Download &gt; Microsoft Excel (.xlsx). The file is read on this device: only student names and class names are saved, never the other columns.</p>
-    <input type="file" id="im-file" accept=".xlsx,.xls,.ods,.csv,.tsv,.txt" onchange="imRead(this.files[0])">
+    <input type="file" id="im-file" class="lg-in" style="padding:.5rem;cursor:pointer" accept=".xlsx,.xls,.ods,.csv,.tsv,.txt" onchange="imRead(this.files[0])">
     <div id="im-map"></div><div id="im-prev"></div></div>`;
-  box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  box.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  document.getElementById('im-file').click(); // open the file picker straight away (still inside the button click)
 }
 
 async function imRead(file){
