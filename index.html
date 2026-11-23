@@ -121,6 +121,12 @@ textarea.answer-box:focus{outline:none;border-color:var(--green)}
 .diagram-wrap svg{width:100%;display:block;border-radius:8px;height:auto}
 .diagram-wrap .dz-layer{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none}
 .diagram-wrap .dz-layer>div{pointer-events:all}
+/* Diagrams drawn in code keep readable text on phones: they keep a minimum width and scroll sideways */
+@media(max-width:600px){
+  .diagram-wrap:has(svg[role=img]){overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .diagram-wrap:has(svg[role=img])::before{content:'↔ Swipe sideways to see the whole diagram';position:sticky;left:0;display:block;padding:6px 8px;font-size:11px;color:var(--tm)}
+  .diagram-wrap > div:has(> svg[role=img]){min-width:540px}
+}
 .result-msg{font-size:13px;font-weight:600;display:none}
 .result-msg.show{display:block}
 .result-msg.win{color:var(--green)}.result-msg.fail{color:var(--red)}
