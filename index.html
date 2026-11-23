@@ -4546,10 +4546,14 @@ async function imRead(file){
 
 function imDetect(){
   const base = IM.sheets[0], rows = imSheetRows(base), h = detectHeader(rows), at = k => h.kinds.indexOf(k);
-  const fi = at('first'), la = at('last'), fu = at('full');
-  let cl = at('cls');
+  let fi = at('first'), la = at('last'), fu = at('full'), cl = at('cls');
   const width = Math.max(1, ...rows.slice(0, 50).map(r => r.length)), start = h.row + 1;
   if(cl < 0) cl = Array.from({ length: width }, (_, i) => i).find(i => ![fi, la, fu].includes(i) && colShare(rows, start, i, FORM_RX) >= 0.8) ?? -1;
+  // A surname column without a first-name heading: "Surname | Name", or first names next to it under another heading
+  if(la >= 0 && fi < 0){
+    if(fu >= 0 && /^names?$/.test(normH(rows[h.row][fu]))){ fi = fu; fu = -1; }
+    else if(fu < 0) fi = [la + 1, la - 1].find(i => i >= 0 && i < width && i !== cl && colShare(rows, start, i, /^[^\d@]{2,}$/) >= 0.8) ?? -1;
+  }
   IM.sheet = IM.sheets.length > 1 && cl < 0 ? '*' : base;   // several sheets and no class column: one sheet per class
   IM.hasHeader = h.row >= 0;
   const head = h.row >= 0 ? rows[h.row] : [], sample = rows[h.row + 1] || [];
@@ -4558,7 +4562,8 @@ function imDetect(){
     mode: fi >= 0 && la >= 0 ? 'firstlast' : 'full',
     full: fu >= 0 ? fu : la >= 0 ? la : fi >= 0 ? fi : 0,
     first: Math.max(fi, 0), last: Math.max(la, 0), order: 'fl',
-    cls: cl >= 0 ? 'col:' + cl : IM.sheet === '*' ? 'sheet' : tch.clsId ? 'into:' + tch.clsId : 'new'
+    // Opened from a class: everyone goes into that class. The teacher can still pick the file's class column.
+    cls: tch.clsId ? 'into:' + tch.clsId : cl >= 0 ? 'col:' + cl : IM.sheet === '*' ? 'sheet' : 'new'
   };
 }
 
